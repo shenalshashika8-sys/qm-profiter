@@ -1,0 +1,597 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QM PROFITER - Paper Trading History</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#080d18; color:white; font-family:Arial,sans-serif; padding:25px; }
+.container { max-width:1300px; margin:auto; }
+.header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:25px; }
+h1 { font-size:27px; }
+h3 { margin-bottom:15px; }
+.subtitle,.message { color:#8995a9; font-size:13px; margin-top:8px; }
+button { background:#1677ff; color:white; border:none; padding:10px 14px; border-radius:7px; cursor:pointer; font-weight:bold; margin:3px; }
+button:hover { opacity:.85; }
+.export-button { background:#16834a; }
+.clear-button { background:#475569; }
+.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:20px; }
+.card,.panel { background:#111a2b; border:1px solid #26334a; border-radius:12px; padding:20px; }
+.card p { color:#8995a9; font-size:13px; margin-bottom:12px; }
+.card h2 { font-size:25px; }
+.panel { margin-top:20px; }
+.panel-header { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:20px; }
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; min-width:1050px; }
+th,td { padding:14px 10px; text-align:left; border-bottom:1px solid #26334a; font-size:12px; }
+th { color:#8995a9; font-weight:normal; }
+td { color:#e5eaf3; }
+.status { background:#193c34; color:#4ade80; padding:6px 10px; border-radius:20px; font-size:11px; }
+.action-button { font-size:11px; padding:8px; }
+.empty { text-align:center; padding:35px; color:#8995a9; }
+.error { color:#fb7185; }
+.positive { color:#4ade80; }
+.negative { color:#fb7185; }
+.chart-container { position:relative; width:100%; height:300px; margin-top:15px; }
+canvas { width:100% !important; height:100% !important; }
+.filter-grid { display:grid; grid-template-columns:repeat(5,minmax(140px,1fr)); gap:12px; margin-bottom:15px; }
+.filter-field label { display:block; color:#8995a9; font-size:12px; margin-bottom:7px; }
+.filter-field input,.filter-field select { width:100%; background:#080d18; color:white; border:1px solid #34435c; border-radius:7px; padding:11px; outline:none; }
+.filter-field input:focus,.filter-field select:focus { border-color:#1677ff; }
+.filter-info { color:#8995a9; font-size:13px; margin-top:12px; }
+body { padding-left:245px; }
+.sidebar { position:fixed; top:0; left:0; width:220px; height:100vh; background:#111a2b; border-right:1px solid #26334a; padding:20px 12px; z-index:1000; transition:width .25s ease; overflow-y:auto; }
+.sidebar-brand { font-size:20px; font-weight:bold; color:white; text-align:center; margin-bottom:25px; }
+.nav-toggle { width:100%; background:#26334a; color:white; border:1px solid #34435c; padding:11px 8px; margin:0 0 18px; border-radius:7px; cursor:pointer; }
+.sidebar a { display:flex; align-items:center; gap:13px; color:#aebbd0; text-decoration:none; padding:13px 12px; border-radius:8px; margin-bottom:7px; font-size:14px; }
+.sidebar a:hover,.sidebar a.active { background:#1677ff; color:white; }
+.nav-icon { width:21px; height:21px; min-width:21px; }
+.sidebar.icons-only { width:78px; }
+.sidebar.icons-only .sidebar-brand,.sidebar.icons-only .nav-label { display:none; }
+.sidebar.icons-only a { justify-content:center; padding:13px 5px; }
+.sidebar-footer { color:#64748b; font-size:10px; text-align:center; margin-top:25px; }
+@media(max-width:1000px) { .filter-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:850px) { .stats { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:700px) {
+    body { padding:15px; padding-left:90px; }
+    .sidebar { width:78px; }
+    .sidebar .sidebar-brand,.sidebar .nav-label { display:none; }
+    .sidebar a { justify-content:center; padding:13px 5px; }
+    .sidebar.icons-only { width:78px; }
+}
+@media(max-width:500px) { body { padding:15px 15px 15px 90px; } .stats,.filter-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">QM PROFITER</div>
+    <button class="nav-toggle" id="navToggle">☰ Icons Only</button>
+
+    <a href="index.html"><span class="nav-label">⌂ Home</span></a>
+    <a href="analyzer.html"><span class="nav-label">⌁ Analyzer</span></a>
+    <a href="signals.html"><span class="nav-label">✳ Signals</span></a>
+    <a href="chart.html"><span class="nav-label">▥ Charts</span></a>
+    <a href="calculator.html"><span class="nav-label">▦ Calculator</span></a>
+    <a href="history.html" class="active"><span class="nav-label">◷ Paper Trading History</span></a>
+
+    <div class="sidebar-footer">Powered by Shenal Shashika</div>
+</aside>
+
+<div class="container">
+
+<div class="header">
+    <div>
+        <h1>Paper Trading History</h1>
+        <p class="subtitle">QM PROFITER — Performance Dashboard</p>
+    </div>
+    <div>
+        <button class="export-button" onclick="exportCSV()">Export CSV</button>
+        <button onclick="loadTrades()">Refresh Dashboard</button>
+    </div>
+</div>
+
+<div class="stats">
+    <div class="card"><p>Total Simulated Trades</p><h2 id="totalTrades">0</h2></div>
+    <div class="card"><p>Completed Trades</p><h2 id="completedTrades">0</h2></div>
+    <div class="card"><p>Winning Trades</p><h2 id="wins">0</h2></div>
+    <div class="card"><p>Losing Trades</p><h2 id="losses">0</h2></div>
+    <div class="card"><p>Break-even Trades</p><h2 id="breakEven">0</h2></div>
+    <div class="card"><p>Simulated Win Rate</p><h2 id="winRate">0%</h2></div>
+    <div class="card"><p>Simulated P&amp;L</p><h2 id="simulatedPnL">0.00</h2></div>
+    <div class="card"><p>Long / Short</p><h2><span id="longTrades">0</span> / <span id="shortTrades">0</span></h2></div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2>Trade Performance Summary</h2>
+        <span class="subtitle">Completed simulations</span>
+    </div>
+    <div class="stats">
+        <div class="card"><p>Best Simulated Trade</p><h2 id="bestTrade" class="positive">0.00</h2></div>
+        <div class="card"><p>Worst Simulated Trade</p><h2 id="worstTrade" class="negative">0.00</h2></div>
+        <div class="card"><p>Total Simulated Gains</p><h2 id="totalGains" class="positive">0.00</h2></div>
+        <div class="card"><p>Total Simulated Losses</p><h2 id="totalLosses" class="negative">0.00</h2></div>
+        <div class="card"><p>Average Simulated P&amp;L</p><h2 id="averagePnL">0.00</h2></div>
+    </div>
+    <p class="message" id="summaryMessage">Waiting for completed simulated trades...</p>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2>Trade Records</h2>
+        <span class="subtitle">Search and filter saved simulations</span>
+    </div>
+
+    <div class="filter-grid">
+        <div class="filter-field"><label for="searchCoin">Search Coin</label><input type="text" id="searchCoin" placeholder="Example: BTC"></div>
+        <div class="filter-field"><label for="filterDirection">Direction</label><select id="filterDirection"><option value="ALL">All Directions</option><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select></div>
+        <div class="filter-field"><label for="filterOutcome">Outcome</label><select id="filterOutcome"><option value="ALL">All Outcomes</option><option value="WIN">WIN</option><option value="LOSS">LOSS</option><option value="BREAK_EVEN">BREAK-EVEN</option><option value="PENDING">Pending</option></select></div>
+        <div class="filter-field"><label for="filterStatus">Status</label><select id="filterStatus"><option value="ALL">All Statuses</option><option value="COMPLETED">Completed</option><option value="SIMULATED">Simulated</option></select></div>
+        <div class="filter-field"><label for="filterFrom">From Date</label><input type="date" id="filterFrom"></div>
+        <div class="filter-field"><label for="filterTo">To Date</label><input type="date" id="filterTo"></div>
+    </div>
+
+    <button class="clear-button" onclick="clearFilters()">Clear Filters</button>
+    <p class="filter-info" id="filterInfo">Showing all trades</p>
+
+    <div class="table-wrap" style="margin-top:18px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Coin</th><th>Direction</th><th>Entry</th><th>Stop Loss</th><th>Take Profit</th><th>Status</th><th>Outcome</th><th>Simulated P&amp;L</th><th>Date</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tradeTable"><tr><td colspan="10" class="empty">Loading history...</td></tr></tbody>
+        </table>
+    </div>
+    <p id="message" class="message">Connecting to backend...</p>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2>Performance Analytics</h2>
+        <span class="subtitle">Paper Trading Statistics</span>
+    </div>
+    <h3>Daily Simulated P&amp;L</h3>
+    <div id="dailyAnalytics" class="message">Loading daily performance...</div>
+    <h3 style="margin-top:25px;">Win / Loss Distribution</h3>
+    <div id="tradeDistribution" class="message">Loading trade distribution...</div>
+    <h3 style="margin-top:25px;">Monthly Simulated P&amp;L</h3>
+    <div id="monthlyAnalytics" class="message">Loading monthly performance...</div>
+    <div style="margin-top:30px;"><h3>Daily P&amp;L Chart</h3><div class="chart-container"><canvas id="dailyChart"></canvas></div></div>
+    <div style="margin-top:35px;"><h3>Win / Loss Chart</h3><div class="chart-container"><canvas id="winLossChart"></canvas></div></div>
+</div>
+
+<p class="message">Educational paper-trading records only. No real orders are placed. Statistics reflect manually recorded simulated outcomes and do not predict future results.</p>
+</div>
+
+<script>
+const SUPABASE_URL = "https://wuvzojlpegfqwsfhoobc.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_VnpF9r4AtZmiNLdO8SzBvg_WCb-PF2t";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+const API = "http://localhost:3000/api/paper-trades";
+
+let accessToken = null;
+let dailyChartInstance = null;
+let winLossChartInstance = null;
+let allTrades = [];
+
+async function checkAuthentication() {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error || !data.session) {
+        window.location.href = "login.html";
+        return false;
+    }
+
+    accessToken = data.session.access_token;
+    return true;
+}
+
+async function apiFetch(url, options = {}) {
+    if (!accessToken) {
+        const authenticated = await checkAuthentication();
+        if (!authenticated) throw new Error("Please sign in again.");
+    }
+
+    const headers = new Headers(options.headers || {});
+    headers.set("Authorization", "Bearer " + accessToken);
+
+    if (options.body && !headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+    }
+
+    let response = await fetch(url, { ...options, headers });
+
+    if (response.status === 401) {
+        const { data, error } = await supabaseClient.auth.refreshSession();
+
+        if (error || !data.session) {
+            window.location.href = "login.html";
+            throw new Error("Your login session expired. Please sign in again.");
+        }
+
+        accessToken = data.session.access_token;
+        headers.set("Authorization", "Bearer " + accessToken);
+        response = await fetch(url, { ...options, headers });
+    }
+
+    return response;
+}
+
+function formatNumber(value) {
+    return Number(value || 0).toFixed(2);
+}
+
+function escapeCSV(value) {
+    const text = String(value ?? "");
+    return '"' + text.replace(/"/g, '""') + '"';
+}
+
+async function exportCSV() {
+    try {
+        const response = await apiFetch(API);
+        if (!response.ok) throw new Error("Could not retrieve trade history.");
+
+        const trades = await response.json();
+        if (!Array.isArray(trades) || !trades.length) {
+            alert("There are no simulated trades to export yet.");
+            return;
+        }
+
+        const headers = ["Trade ID","Coin","Direction","Entry","Stop Loss","Take Profit","Status","Outcome","Simulated P&L","Created At"];
+        const rows = trades.map(t => [
+            t.id,t.symbol,t.direction,t.entry,t.stopLoss,t.takeProfit,
+            t.status,t.result || "Pending",t.pnl ?? "",
+            t.createdAt ? new Date(t.createdAt).toLocaleString() : ""
+        ]);
+
+        const csv = [headers.map(escapeCSV).join(","), ...rows.map(r => r.map(escapeCSV).join(","))].join("\r\n");
+        const blob = new Blob(["\uFEFF" + csv], {type:"text/csv;charset=utf-8;"});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "QM_PROFITER_Paper_Trading_History_" + new Date().toISOString().slice(0,10) + ".csv";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch(error) {
+        alert("Export failed: " + error.message);
+    }
+}
+
+function filterTrades() {
+    const coin = document.getElementById("searchCoin").value.trim().toLowerCase();
+    const direction = document.getElementById("filterDirection").value;
+    const outcome = document.getElementById("filterOutcome").value;
+    const status = document.getElementById("filterStatus").value;
+    const fromDate = document.getElementById("filterFrom").value;
+    const toDate = document.getElementById("filterTo").value;
+
+    if (fromDate && toDate && fromDate > toDate) {
+        document.getElementById("filterInfo").textContent = "The start date cannot be later than the end date.";
+        document.getElementById("tradeTable").innerHTML = '<tr><td colspan="10" class="empty">Please correct the date range.</td></tr>';
+        return;
+    }
+
+    const filtered = allTrades.filter(t => {
+        const date = t.createdAt ? new Date(t.createdAt).toISOString().slice(0,10) : "";
+        return (!coin || String(t.symbol || "").toLowerCase().includes(coin)) &&
+            (direction === "ALL" || t.direction === direction) &&
+            (outcome === "ALL" || (t.result || "PENDING") === outcome) &&
+            (status === "ALL" || t.status === status) &&
+            (!fromDate || (date && date >= fromDate)) &&
+            (!toDate || (date && date <= toDate));
+    });
+
+    renderTradeTable(filtered);
+    document.getElementById("filterInfo").textContent = "Showing " + filtered.length + " of " + allTrades.length + " simulated trades.";
+}
+
+function clearFilters() {
+    ["searchCoin","filterFrom","filterTo"].forEach(id => document.getElementById(id).value = "");
+    ["filterDirection","filterOutcome","filterStatus"].forEach(id => document.getElementById(id).value = "ALL");
+    filterTrades();
+}
+
+function renderPerformanceSummary(completed) {
+    const values = completed.map(t => Number(t.pnl || 0));
+    const best = values.length ? Math.max(...values) : 0;
+    const worst = values.length ? Math.min(...values) : 0;
+    const gains = values.filter(v => v > 0).reduce((a,v) => a + v,0);
+    const losses = values.filter(v => v < 0).reduce((a,v) => a + Math.abs(v),0);
+    const total = values.reduce((a,v) => a + v,0);
+    const average = values.length ? total / values.length : 0;
+
+    document.getElementById("bestTrade").textContent = formatNumber(best);
+    document.getElementById("worstTrade").textContent = formatNumber(worst);
+    document.getElementById("totalGains").textContent = formatNumber(gains);
+    document.getElementById("totalLosses").textContent = formatNumber(losses);
+
+    const averageElement = document.getElementById("averagePnL");
+    averageElement.textContent = formatNumber(average);
+    averageElement.className = average > 0 ? "positive" : average < 0 ? "negative" : "";
+    document.getElementById("summaryMessage").textContent = completed.length + " completed simulated trades included in this summary.";
+}
+
+function renderAnalytics(trades) {
+    const completed = trades.filter(t => t.status === "COMPLETED");
+    renderPerformanceSummary(completed);
+
+    const daily = {};
+    completed.forEach(t => {
+        const date = new Date(t.createdAt).toLocaleDateString();
+        daily[date] = (daily[date] || 0) + Number(t.pnl || 0);
+    });
+
+    const dailyElement = document.getElementById("dailyAnalytics");
+    dailyElement.innerHTML = "";
+    const dailyEntries = Object.entries(daily);
+
+    if (!dailyEntries.length) dailyElement.textContent = "No completed simulations yet.";
+    else dailyEntries.slice(-7).forEach(([date,pnl]) => {
+        const item = document.createElement("p");
+        item.textContent = date + " : " + formatNumber(pnl);
+        dailyElement.appendChild(item);
+    });
+
+    const wins = completed.filter(t => t.result === "WIN").length;
+    const losses = completed.filter(t => t.result === "LOSS").length;
+    const breakEven = completed.filter(t => t.result === "BREAK_EVEN").length;
+
+    document.getElementById("tradeDistribution").textContent =
+        "Wins: " + wins + " | Losses: " + losses + " | Break-even: " + breakEven;
+
+    const monthly = {};
+    completed.forEach(t => {
+        const month = new Date(t.createdAt).toLocaleString("en", {month:"long",year:"numeric"});
+        monthly[month] = (monthly[month] || 0) + Number(t.pnl || 0);
+    });
+
+    const monthlyElement = document.getElementById("monthlyAnalytics");
+    monthlyElement.innerHTML = "";
+    const monthlyEntries = Object.entries(monthly);
+
+    if (!monthlyEntries.length) monthlyElement.textContent = "No completed simulations yet.";
+    else monthlyEntries.forEach(([month,pnl]) => {
+        const item = document.createElement("p");
+        item.textContent = month + " : " + formatNumber(pnl);
+        monthlyElement.appendChild(item);
+    });
+
+    if (typeof Chart === "undefined") return;
+
+    if (dailyChartInstance) dailyChartInstance.destroy();
+    const dailyLabels = Object.keys(daily).slice(-7);
+    const dailyValues = dailyLabels.map(date => daily[date]);
+
+    dailyChartInstance = new Chart(document.getElementById("dailyChart"), {
+        type:"bar",
+        data:{
+            labels:dailyLabels.length ? dailyLabels : ["No completed trades"],
+            datasets:[{
+                label:"Simulated P&L",
+                data:dailyValues.length ? dailyValues : [0],
+                backgroundColor:"#1677ff",
+                borderColor:"#4da3ff",
+                borderWidth:1
+            }]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+            plugins:{legend:{labels:{color:"white"}}},
+            scales:{
+                x:{ticks:{color:"white"},grid:{color:"#26334a"}},
+                y:{ticks:{color:"white"},grid:{color:"#26334a"}}
+            }
+        }
+    });
+
+    if (winLossChartInstance) winLossChartInstance.destroy();
+
+    winLossChartInstance = new Chart(document.getElementById("winLossChart"), {
+        type:"doughnut",
+        data:{
+            labels:["Wins","Losses","Break-even"],
+            datasets:[{
+                data:[wins,losses,breakEven],
+                backgroundColor:["#22c55e","#ef4444","#64748b"],
+                borderWidth:1
+            }]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+            plugins:{legend:{position:"bottom",labels:{color:"white"}}}
+        }
+    });
+}
+
+function renderTradeTable(trades) {
+    const table = document.getElementById("tradeTable");
+    table.innerHTML = "";
+
+    if (!trades.length) {
+        table.innerHTML = '<tr><td colspan="10" class="empty">No trades match your filters.</td></tr>';
+        return;
+    }
+
+    trades.slice().reverse().forEach(trade => {
+        const row = document.createElement("tr");
+
+        [trade.symbol,trade.direction,trade.entry,trade.stopLoss,trade.takeProfit].forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value ?? "--";
+            row.appendChild(cell);
+        });
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = trade.status ?? "--";
+        row.appendChild(statusCell);
+
+        const outcomeCell = document.createElement("td");
+        outcomeCell.textContent = trade.result ?? "Pending";
+        row.appendChild(outcomeCell);
+
+        const pnlCell = document.createElement("td");
+        pnlCell.textContent = trade.pnl == null ? "--" : formatNumber(trade.pnl);
+        row.appendChild(pnlCell);
+
+        const dateCell = document.createElement("td");
+        dateCell.textContent = trade.createdAt ? new Date(trade.createdAt).toLocaleString() : "--";
+        row.appendChild(dateCell);
+
+        const actionCell = document.createElement("td");
+
+        if (trade.status !== "COMPLETED") {
+            ["WIN","LOSS","BREAK_EVEN"].forEach(result => {
+                const button = document.createElement("button");
+                button.className = "action-button";
+                button.textContent = result === "BREAK_EVEN" ? "Break-even" : result;
+                button.onclick = () => recordOutcome(trade.id,result);
+                actionCell.appendChild(button);
+            });
+        } else {
+            const badge = document.createElement("span");
+            badge.className = "status";
+            badge.textContent = "RECORDED";
+            actionCell.appendChild(badge);
+        }
+
+        row.appendChild(actionCell);
+        table.appendChild(row);
+    });
+}
+
+async function loadTrades() {
+    const table = document.getElementById("tradeTable");
+    const message = document.getElementById("message");
+    message.className = "message";
+    message.textContent = "Loading dashboard...";
+
+    try {
+        const authenticated = await checkAuthentication();
+        if (!authenticated) return;
+
+        const [tradesResponse,statsResponse] = await Promise.all([
+            apiFetch(API),
+            apiFetch(API + "/stats")
+        ]);
+
+        if (!tradesResponse.ok || !statsResponse.ok) {
+            const errorData = await tradesResponse.json().catch(() => ({}));
+            throw new Error(errorData.error || "Could not load dashboard.");
+        }
+
+        const trades = await tradesResponse.json();
+        const stats = await statsResponse.json();
+        allTrades = trades;
+
+        renderAnalytics(trades);
+
+        document.getElementById("totalTrades").textContent = stats.totalTrades;
+        document.getElementById("completedTrades").textContent = stats.completedTrades;
+        document.getElementById("wins").textContent = stats.wins;
+        document.getElementById("losses").textContent = stats.losses;
+        document.getElementById("breakEven").textContent = stats.breakEven;
+        document.getElementById("winRate").textContent = stats.winRate + "%";
+
+        const pnlElement = document.getElementById("simulatedPnL");
+        pnlElement.textContent = formatNumber(stats.simulatedPnL);
+        pnlElement.className = stats.simulatedPnL > 0 ? "positive" : stats.simulatedPnL < 0 ? "negative" : "";
+
+        document.getElementById("longTrades").textContent = trades.filter(t => t.direction === "LONG").length;
+        document.getElementById("shortTrades").textContent = trades.filter(t => t.direction === "SHORT").length;
+
+        filterTrades();
+        message.textContent = "Dashboard updated successfully: " + new Date().toLocaleTimeString();
+
+    } catch(error) {
+        message.className = "message error";
+        message.textContent = "Dashboard error: " + error.message;
+        table.innerHTML = '<tr><td colspan="10" class="empty">Could not load trade history.</td></tr>';
+    }
+}
+
+async function recordOutcome(id,result) {
+    const pnlText = prompt(
+        "Enter the simulated P&L for this completed paper trade.\nUse a positive number for a simulated gain, a negative number for a simulated loss, or 0 for break-even."
+    );
+
+    if (pnlText === null) return;
+    const pnl = Number(pnlText);
+
+    if (pnlText.trim() === "" || !Number.isFinite(pnl)) {
+        alert("Please enter a valid number.");
+        return;
+    }
+
+    if ((result === "WIN" && pnl <= 0) ||
+        (result === "LOSS" && pnl >= 0) ||
+        (result === "BREAK_EVEN" && pnl !== 0)) {
+        alert("The P&L amount does not match the selected outcome.");
+        return;
+    }
+
+    if (!confirm("Save this completed simulated outcome?\nOutcome: " + result + "\nSimulated P&L: " + pnl)) return;
+
+    try {
+        const response = await apiFetch(
+            API + "/" + encodeURIComponent(id) + "/result",
+            {
+                method:"PATCH",
+                body:JSON.stringify({result,pnl})
+            }
+        );
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not save outcome.");
+
+        alert("Simulated outcome saved successfully.");
+        await loadTrades();
+    } catch(error) {
+        alert(error.message);
+    }
+}
+
+document.getElementById("searchCoin").addEventListener("input",filterTrades);
+
+["filterDirection","filterOutcome","filterStatus","filterFrom","filterTo"].forEach(id => {
+    document.getElementById(id).addEventListener("change",filterTrades);
+});
+
+const sidebar = document.getElementById("sidebar");
+const navToggle = document.getElementById("navToggle");
+
+function updateNavigation() {
+    const mode = localStorage.getItem("qmNavigationMode") || "labels";
+    sidebar.classList.toggle("icons-only", mode === "icons");
+    navToggle.textContent = mode === "icons" ? "☰ Show Labels" : "☰ Icons Only";
+}
+
+navToggle.addEventListener("click", () => {
+    const isIconsOnly = sidebar.classList.contains("icons-only");
+    localStorage.setItem("qmNavigationMode", isIconsOnly ? "labels" : "icons");
+    updateNavigation();
+});
+
+updateNavigation();
+loadTrades();
+</script>
+
+</body>
+</html>

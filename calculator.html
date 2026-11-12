@@ -1,0 +1,475 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QM PROFITER - Calculator</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    padding:25px;
+    padding-left:260px;
+    background:#080d18;
+    color:#ffffff;
+    font-family:Arial,sans-serif;
+}
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:235px;
+    height:100vh;
+    background:#0b1423;
+    border-right:1px solid #202d43;
+    padding:20px 14px;
+    display:flex;
+    flex-direction:column;
+    z-index:1000;
+    transition:width .25s ease;
+}
+
+.sidebar-brand{
+    color:#20d9a0;
+    font-size:21px;
+    font-weight:bold;
+    padding:10px 12px 25px;
+    white-space:nowrap;
+    overflow:hidden;
+}
+
+.nav-toggle{
+    width:100%;
+    padding:11px;
+    margin-bottom:20px;
+    background:#111e30;
+    border:1px solid #293952;
+    color:#20d9a0;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.nav-links{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.nav-link{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    padding:13px 12px;
+    border-radius:8px;
+    color:#aab7ca;
+    text-decoration:none;
+    font-size:14px;
+    white-space:nowrap;
+    overflow:hidden;
+    transition:.2s;
+}
+
+.nav-link:hover,
+.nav-link.active{
+    background:#13283a;
+    color:#20d9a0;
+}
+
+.nav-icon{
+    width:21px;
+    height:21px;
+    min-width:21px;
+    stroke:currentColor;
+    fill:none;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.nav-label{overflow:hidden}
+
+.sidebar-footer{
+    margin-top:auto;
+    color:#637189;
+    font-size:10px;
+    text-align:center;
+    padding:15px 5px;
+}
+
+.sidebar.icons-only{width:88px}
+
+.sidebar.icons-only .sidebar-brand{
+    font-size:16px;
+    padding-left:7px;
+}
+
+.sidebar.icons-only .nav-label,
+.sidebar.icons-only .sidebar-footer{
+    display:none;
+}
+
+.sidebar.icons-only .nav-link{
+    justify-content:center;
+    padding:13px 5px;
+}
+
+.sidebar.icons-only .nav-toggle{
+    font-size:0;
+    padding:11px 5px;
+}
+
+.sidebar.icons-only .nav-toggle::after{
+    content:"☰";
+    font-size:19px;
+}
+
+body.icons-only{padding-left:110px}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+.header{margin-bottom:25px}
+
+.header h1{
+    color:#00d4ff;
+    margin-bottom:8px;
+}
+
+.header p{color:#8b9bb4}
+
+.calculator{
+    background:#111b2d;
+    padding:25px;
+    border:1px solid #263750;
+    border-radius:14px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+
+.field label{
+    display:block;
+    color:#aabbd1;
+    margin-bottom:9px;
+}
+
+.field input{
+    width:100%;
+    padding:14px;
+    border-radius:8px;
+    border:1px solid #30435d;
+    background:#091322;
+    color:white;
+    font-size:16px;
+    outline:none;
+}
+
+.field input:focus{border-color:#00d4ff}
+
+.calculate-button{
+    width:100%;
+    padding:15px;
+    margin-top:25px;
+    background:#00bfe8;
+    color:#06111c;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.calculate-button:hover{background:#00d4ff}
+
+.results{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+    margin-top:25px;
+}
+
+.result{
+    background:#091322;
+    border:1px solid #263750;
+    border-radius:10px;
+    padding:18px;
+}
+
+.result span{
+    display:block;
+    color:#91a5c0;
+    margin-bottom:10px;
+    font-size:13px;
+}
+
+.result strong{
+    font-size:22px;
+    color:#00d4ff;
+}
+
+.note{
+    margin-top:20px;
+    color:#8b9bb4;
+    font-size:12px;
+    line-height:1.6;
+}
+
+@media(max-width:700px){
+    body{padding:15px;padding-left:100px}
+    .sidebar{width:88px}
+    .sidebar .nav-label,
+    .sidebar .sidebar-footer{display:none}
+    .sidebar .nav-link{justify-content:center;padding:13px 5px}
+    .sidebar .sidebar-brand{font-size:16px;padding-left:7px}
+    .sidebar .nav-toggle{font-size:0;padding:11px 5px}
+    .sidebar .nav-toggle::after{content:"☰";font-size:19px}
+}
+
+@media(max-width:600px){
+    .grid,.results{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-brand">QM PROFITER</div>
+
+    <button class="nav-toggle" id="navToggle">☰ Icons Only</button>
+
+    <nav class="nav-links">
+
+        <a href="index.html" class="nav-link">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="m3 10 9-7 9 7"/>
+                <path d="M5 9v12h14V9"/>
+                <path d="M9 21v-7h6v7"/>
+            </svg>
+            <span class="nav-label">Home</span>
+        </a>
+
+        <a href="analyzer.html" class="nav-link">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M3 3v18h18"/>
+                <path d="m7 14 4-4 4 3 6-7"/>
+            </svg>
+            <span class="nav-label">Analyzer</span>
+        </a>
+
+        <a href="signals.html" class="nav-link">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"/>
+                <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span class="nav-label">Signals</span>
+        </a>
+
+        <a href="chart.html" class="nav-link">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M3 3v18h18"/>
+                <path d="M7 14h2v4H7zM12 8h2v10h-2zM17 4h2v14h-2z"/>
+            </svg>
+            <span class="nav-label">Charts</span>
+        </a>
+
+        <a href="calculator.html" class="nav-link active">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <rect x="4" y="2" width="16" height="20" rx="2"/>
+                <path d="M8 6h8"/>
+                <path d="M8 11h.01M12 11h.01M16 11h.01"/>
+                <path d="M8 15h.01M12 15h.01M16 15h.01"/>
+                <path d="M8 19h.01M12 19h.01M16 19h.01"/>
+            </svg>
+            <span class="nav-label">Calculator</span>
+        </a>
+
+        <a href="history.html" class="nav-link">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+                <path d="M3 3v5h5"/>
+                <path d="M12 7v5l3 2"/>
+            </svg>
+            <span class="nav-label">Paper Trading History</span>
+        </a>
+
+    </nav>
+
+    <div class="sidebar-footer">Powered by Shenal Shashika</div>
+
+</aside>
+
+<div class="container">
+
+    <div class="header">
+        <h1>QM PROFITER</h1>
+        <p>Professional Risk & Position Calculator</p>
+    </div>
+
+    <div class="calculator">
+
+        <h2>Position Calculator</h2>
+
+        <div class="grid">
+
+            <div class="field">
+                <label>Wallet Balance ($)</label>
+                <input type="number" id="balance" value="100" min="0.01" step="any">
+            </div>
+
+            <div class="field">
+                <label>Risk Percentage (%)</label>
+                <input type="number" id="risk" value="1" min="0.01" max="100" step="any">
+            </div>
+
+            <div class="field">
+                <label>Entry Price ($)</label>
+                <input type="number" id="entry" value="100" min="0.00000001" step="any">
+            </div>
+
+            <div class="field">
+                <label>Stop Loss Price ($)</label>
+                <input type="number" id="stop" value="98" min="0.00000001" step="any">
+            </div>
+
+            <div class="field">
+                <label>Target Price ($)</label>
+                <input type="number" id="target" value="104" min="0.00000001" step="any">
+            </div>
+
+            <div class="field">
+                <label>Leverage (x)</label>
+                <input type="number" id="leverage" value="1" min="1" max="100" step="any">
+            </div>
+
+        </div>
+
+        <button class="calculate-button" onclick="calculate()">CALCULATE</button>
+
+        <div class="results">
+
+            <div class="result">
+                <span>Risk Amount</span>
+                <strong id="riskAmount">$0.00</strong>
+            </div>
+
+            <div class="result">
+                <span>Estimated Position Size</span>
+                <strong id="positionSize">$0.00</strong>
+            </div>
+
+            <div class="result">
+                <span>Estimated Margin</span>
+                <strong id="margin">$0.00</strong>
+            </div>
+
+            <div class="result">
+                <span>Potential Loss</span>
+                <strong id="potentialLoss">$0.00</strong>
+            </div>
+
+            <div class="result">
+                <span>Potential Profit</span>
+                <strong id="potentialProfit">$0.00</strong>
+            </div>
+
+            <div class="result">
+                <span>Risk / Reward</span>
+                <strong id="riskReward">0.00</strong>
+            </div>
+
+        </div>
+
+        <p class="note">
+            Educational calculator only. Estimates exclude fees, slippage,
+            funding costs and liquidation effects. Leverage does not reduce
+            the underlying market risk.
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+// Shared navigation preference across all pages
+const sidebar=document.getElementById("sidebar");
+const navToggle=document.getElementById("navToggle");
+
+function applyNavigationMode(){
+    const iconsOnly=localStorage.getItem("qmNavigationMode")==="icons";
+    sidebar.classList.toggle("icons-only",iconsOnly);
+    document.body.classList.toggle("icons-only",iconsOnly);
+    navToggle.textContent=iconsOnly?"☰ Show Labels":"☰ Icons Only";
+}
+
+navToggle.addEventListener("click",function(){
+    const currentlyIcons=sidebar.classList.contains("icons-only");
+    localStorage.setItem("qmNavigationMode",currentlyIcons?"labels":"icons");
+    applyNavigationMode();
+});
+
+applyNavigationMode();
+
+function calculate() {
+    const balance = Number(document.getElementById("balance").value);
+    const risk = Number(document.getElementById("risk").value);
+    const entry = Number(document.getElementById("entry").value);
+    const stop = Number(document.getElementById("stop").value);
+    const target = Number(document.getElementById("target").value);
+    const leverage = Number(document.getElementById("leverage").value);
+
+    const values = [balance, risk, entry, stop, target, leverage];
+
+    if (!values.every(Number.isFinite) ||
+        balance <= 0 || risk <= 0 || risk > 100 ||
+        entry <= 0 || stop <= 0 || target <= 0 ||
+        leverage < 1 || leverage > 100 ||
+        entry === stop || entry === target) {
+        alert("Please enter valid positive values. Entry, Stop Loss and Target must be different.");
+        return;
+    }
+
+    const stopDistance = Math.abs(entry - stop) / entry;
+    const targetDistance = Math.abs(target - entry) / entry;
+
+    const riskAmount = balance * risk / 100;
+    const positionSize = riskAmount / stopDistance;
+    const margin = positionSize / leverage;
+    const potentialProfit = positionSize * targetDistance;
+    const riskReward = potentialProfit / riskAmount;
+
+    document.getElementById("riskAmount").textContent =
+        "$" + riskAmount.toFixed(2);
+
+    document.getElementById("positionSize").textContent =
+        "$" + positionSize.toFixed(2);
+
+    document.getElementById("margin").textContent =
+        "$" + margin.toFixed(2);
+
+    document.getElementById("potentialLoss").textContent =
+        "$" + riskAmount.toFixed(2);
+
+    document.getElementById("potentialProfit").textContent =
+        "$" + potentialProfit.toFixed(2);
+
+    document.getElementById("riskReward").textContent =
+        "1 : " + riskReward.toFixed(2);
+}
+
+calculate();
+</script>
+
+</body>
+</html>

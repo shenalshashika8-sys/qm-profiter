@@ -1,0 +1,1949 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QM PROFITER - Analyzer</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #080d18;
+    color: #e8edf7;
+    font-family: Arial, sans-serif;
+}
+
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    background: #101827;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.25s ease, padding 0.25s ease;
+}
+
+.logo {
+    color: #00e5a0;
+    font-size: 21px;
+    margin-bottom: 35px;
+    text-align: center;
+}
+
+.nav-toggle {
+    width: 100%;
+    background: #18263b;
+    color: #00e5a0;
+    border: 1px solid #30415a;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-bottom: 22px;
+}
+
+.nav-toggle:hover {
+    background: #123a35;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-height: 48px;
+    color: #c5d0e0;
+    text-decoration: none;
+    padding: 13px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+    background: #1b2d46;
+    color: #00e5a0;
+}
+
+.nav-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.nav-label {
+    white-space: nowrap;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 30px;
+    text-align: center;
+    color: #8191a9;
+    font-size: 11px;
+    line-height: 1.8;
+}
+
+.sidebar.icons-only {
+    width: 88px;
+    padding: 25px 12px;
+}
+
+.sidebar.icons-only .logo {
+    font-size: 12px;
+    letter-spacing: 0;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar.icons-only nav {
+    gap: 12px;
+}
+
+.sidebar.icons-only nav a {
+    justify-content: center;
+    padding: 13px 8px;
+}
+
+.sidebar.icons-only .nav-label {
+    display: none;
+}
+
+.sidebar.icons-only .nav-toggle {
+    font-size: 11px;
+    padding: 9px 3px;
+}
+
+.sidebar.icons-only .sidebar-footer {
+    text-align: center;
+    font-size: 9px;
+    overflow-wrap: anywhere;
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 25px;
+}
+
+.container {
+    max-width: 1450px;
+    margin: auto;
+}
+
+.header {
+    margin-bottom: 24px;
+}
+
+.header h1 {
+    font-size: 27px;
+    color: #ffffff;
+}
+
+.header p {
+    color: #8995aa;
+    margin-top: 7px;
+}
+
+.panel {
+    background: #111a2b;
+    border: 1px solid #24334c;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+input, select, button, textarea {
+    background: #0b1424;
+    color: white;
+    border: 1px solid #33445f;
+    padding: 12px;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+input, select {
+    min-width: 150px;
+}
+
+button {
+    cursor: pointer;
+    background: #1769e0;
+    border: none;
+}
+
+button:hover {
+    background: #3282f2;
+}
+
+button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.chart-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.chart-heading h2 {
+    font-size: 19px;
+}
+
+#liveChart {
+    width: 100%;
+    height: 520px;
+    border: 0;
+    border-radius: 8px;
+    background: #080d18;
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
+}
+
+.metric {
+    background: #0b1424;
+    border: 1px solid #273852;
+    padding: 17px;
+    border-radius: 9px;
+    min-height: 90px;
+}
+
+.metric p {
+    color: #8c9ab0;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.metric h3 {
+    font-size: 20px;
+    color: #ffffff;
+    overflow-wrap: anywhere;
+}
+
+.status {
+    color: #f3bd54;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+.green {
+    color: #28d995 !important;
+}
+
+.red {
+    color: #ff6475 !important;
+}
+
+.neutral {
+    color: #e8edf7 !important;
+}
+
+#imagePreview {
+    display: none;
+    max-width: 100%;
+    max-height: 450px;
+    margin-top: 15px;
+    border-radius: 8px;
+    border: 1px solid #33445f;
+}
+
+.note {
+    color: #8c9ab0;
+    font-size: 12px;
+    line-height: 1.6;
+    margin-top: 15px;
+}
+
+.ai-panel {
+    border-color: #176b61;
+    background: linear-gradient(145deg, #111d30, #101a2b);
+}
+
+.ai-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.ai-heading h2 {
+    font-size: 21px;
+}
+
+.ai-tag {
+    background: #123c37;
+    color: #35e0b0;
+    border: 1px solid #176b61;
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: 11px;
+}
+
+.upload-area {
+    border: 1px dashed #3c5875;
+    background: #0b1424;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 18px;
+}
+
+.upload-area input {
+    width: 100%;
+    max-width: 100%;
+}
+
+.ai-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.ai-primary {
+    background: #087f65;
+}
+
+.ai-primary:hover {
+    background: #0a9d7c;
+}
+
+.ai-secondary {
+    background: #263953;
+}
+
+.ai-secondary:hover {
+    background: #354d70;
+}
+
+.ai-status {
+    color: #f3bd54;
+    font-size: 13px;
+    margin-top: 15px;
+    line-height: 1.6;
+}
+
+.prompt-box {
+    width: 100%;
+    min-height: 230px;
+    resize: vertical;
+    margin-top: 15px;
+    line-height: 1.6;
+    font-size: 12px;
+    border: 1px solid #33445f;
+}
+
+.ai-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.ai-step {
+    background: #0b1424;
+    border: 1px solid #273852;
+    border-radius: 9px;
+    padding: 15px;
+}
+
+.ai-step h3 {
+    color: #00e5a0;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.ai-step p {
+    color: #a4b1c5;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.warning-note {
+    border-left: 3px solid #e6ae48;
+    background: #211d17;
+    padding: 12px;
+    color: #e5c58b;
+    font-size: 12px;
+    line-height: 1.7;
+    margin-top: 18px;
+}
+
+@media(max-width: 650px) {
+    .dashboard {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .sidebar nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .sidebar nav a {
+        flex: 1 1 auto;
+    }
+
+    .sidebar-footer {
+        margin-top: 25px;
+    }
+
+    .sidebar.icons-only {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .sidebar.icons-only nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .sidebar.icons-only .sidebar-footer {
+        margin-top: 25px;
+    }
+
+    .main-content {
+        padding: 12px;
+    }
+
+    #liveChart {
+        height: 380px;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    input, select, .controls button {
+        width: 100%;
+    }
+
+    .ai-buttons {
+        flex-direction: column;
+    }
+
+    .ai-buttons button {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<aside class="sidebar" id="sidebar">
+
+    <button class="nav-toggle" id="navToggle" type="button">
+        ☰ Icons Only
+    </button>
+
+    <h2 class="logo">QM PROFITER</h2>
+
+    <nav>
+
+        <a href="index.html" title="Home">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M3 10.5L12 3l9 7.5"></path>
+                <path d="M5 9.5V21h14V9.5"></path>
+                <path d="M9 21v-7h6v7"></path>
+            </svg>
+            <span class="nav-label">Home</span>
+        </a>
+
+        <a class="active" href="analyzer.html" title="Analyzer">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M3 3v18h18"></path>
+                <path d="M7 14l4-4 4 3 6-7"></path>
+            </svg>
+            <span class="nav-label">Analyzer</span>
+        </a>
+
+        <a href="signals.html" title="Signals">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M3 12h4l3-8 4 16 3-8h4"></path>
+            </svg>
+            <span class="nav-label">Signals</span>
+        </a>
+
+        <a href="chart.html" title="Charts">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M4 4v16"></path>
+                <path d="M10 7v10"></path>
+                <path d="M16 3v18"></path>
+                <path d="M22 6v12"></path>
+                <path d="M2 9h4"></path>
+                <path d="M8 12h4"></path>
+                <path d="M14 8h4"></path>
+                <path d="M20 14h3"></path>
+            </svg>
+            <span class="nav-label">Charts</span>
+        </a>
+
+        <a href="calculator.html" title="Calculator">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                <path d="M8 6h8"></path>
+                <path d="M8 11h2"></path>
+                <path d="M14 11h2"></path>
+                <path d="M8 15h2"></path>
+                <path d="M14 15h2"></path>
+                <path d="M8 19h2"></path>
+                <path d="M14 19h2"></path>
+            </svg>
+            <span class="nav-label">Calculator</span>
+        </a>
+
+        <a href="history.html" title="Paper Trading History">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 7v5l3 2"></path>
+                <path d="M3 4v5h5"></path>
+            </svg>
+            <span class="nav-label">Paper Trading History</span>
+        </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+        <p>AI TRADING PLATFORM</p>
+        <small>Powered by Shenal Shashika</small>
+    </div>
+
+</aside>
+
+<main class="main-content">
+
+<div class="container">
+
+    <div class="header">
+        <h1>QM PROFITER - ANALYZER</h1>
+        <p>Live market data and educational technical analysis</p>
+    </div>
+
+    <div class="panel">
+        <div class="controls">
+
+            <input
+                type="text"
+                id="coinSearch"
+                placeholder="Search coin: BTC, ETH..."
+            >
+
+            <select id="coin">
+                <option value="BTC-USD" data-tv="BINANCE:BTCUSDT">BTC / USDT</option>
+                <option value="ETH-USD" data-tv="BINANCE:ETHUSDT">ETH / USDT</option>
+                <option value="SOL-USD" data-tv="BINANCE:SOLUSDT">SOL / USDT</option>
+                <option value="BNB-USD" data-tv="BINANCE:BNBUSDT">BNB / USDT</option>
+                <option value="XRP-USD" data-tv="BINANCE:XRPUSDT">XRP / USDT</option>
+                <option value="DOGE-USD" data-tv="BINANCE:DOGEUSDT">DOGE / USDT</option>
+                <option value="ADA-USD" data-tv="BINANCE:ADAUSDT">ADA / USDT</option>
+                <option value="AVAX-USD" data-tv="BINANCE:AVAXUSDT">AVAX / USDT</option>
+                <option value="LINK-USD" data-tv="BINANCE:LINKUSDT">LINK / USDT</option>
+                <option value="LTC-USD" data-tv="BINANCE:LTCUSDT">LTC / USDT</option>
+            </select>
+
+            <select id="timeframe">
+                <option value="1m">1 Minute</option>
+                <option value="5m">5 Minutes</option>
+                <option value="15m" selected>15 Minutes</option>
+                <option value="30m">30 Minutes</option>
+                <option value="1h">1 Hour</option>
+                <option value="4h">4 Hours</option>
+                <option value="1d">1 Day</option>
+                <option value="1w">1 Week</option>
+            </select>
+
+            <button id="refreshButton" type="button">
+                Refresh Analysis
+            </button>
+
+        </div>
+    </div>
+
+    <div class="panel">
+
+        <div class="chart-heading">
+            <h2>Live TradingView Chart</h2>
+            <span id="chartSymbol">BTC / USDT</span>
+        </div>
+
+        <iframe
+            id="liveChart"
+            title="TradingView Live Chart"
+            src="https://s.tradingview.com/widgetembed/?symbol=BINANCE%3ABTCUSDT&interval=15&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=111a2b&theme=dark&style=1&timezone=Etc%2FUTC&withdateranges=1&hideideas=1&hidevolume=0&locale=en"
+            allowfullscreen>
+        </iframe>
+
+    </div>
+
+    <div class="panel">
+
+        <div class="chart-heading">
+            <h2>Technical Analysis</h2>
+            <span id="analysisStatus" class="status">
+                Waiting for market data...
+            </span>
+        </div>
+
+        <div class="metrics">
+
+            <div class="metric">
+                <p>Current Price</p>
+                <h3 id="qm-price">Loading...</h3>
+            </div>
+
+            <div class="metric">
+                <p>Market Trend</p>
+                <h3 id="qm-trend">Loading...</h3>
+            </div>
+
+            <div class="metric">
+                <p>RSI (14)</p>
+                <h3 id="qm-rsi">Loading...</h3>
+            </div>
+
+            <div class="metric">
+                <p>EMA 20</p>
+                <h3 id="qm-ema20">Loading...</h3>
+            </div>
+
+            <div class="metric">
+                <p>EMA 50</p>
+                <h3 id="qm-ema50">Loading...</h3>
+            </div>
+
+            <div class="metric">
+                <p>MACD</p>
+                <h3 id="qm-macd">Loading...</h3>
+            </div>
+
+            <div class="metric">
+                <p>Momentum</p>
+                <h3 id="qm-momentum">Loading...</h3>
+            </div>
+
+            <div class="metric">
+                <p>Support</p>
+                <h3 id="qm-support">Loading...</h3>
+            </div>
+
+            <div class="metric">
+                <p>Resistance</p>
+                <h3 id="qm-resistance">Loading...</h3>
+            </div>
+
+        </div>
+
+        <p class="note">
+            Technical indicators are mathematical measurements of historical
+            market data. They are educational information, not guaranteed
+            predictions or instructions to trade.
+        </p>
+
+    </div>
+
+    <!-- PAPER TRADE SIMULATOR -->
+
+    <div class="panel" id="paperTradePanel">
+
+        <div class="chart-heading">
+            <h2>Paper Trade Simulator</h2>
+            <span class="ai-tag">SIMULATION ONLY</span>
+        </div>
+
+        <p class="note">
+            Record a hypothetical trade for educational practice.
+            No real orders or money are involved.
+        </p>
+
+        <div class="controls" style="margin-top:18px;">
+
+            <input
+                type="text"
+                id="paperSymbol"
+                placeholder="Coin (e.g. BTC/USDT)"
+                required
+            >
+
+            <select id="paperDirection">
+                <option value="BUY">BUY</option>
+                <option value="SELL">SELL</option>
+            </select>
+
+            <input
+                type="number"
+                id="paperEntry"
+                placeholder="Entry price"
+                min="0"
+                step="any"
+                required
+            >
+
+            <input
+                type="number"
+                id="paperStopLoss"
+                placeholder="Stop Loss"
+                min="0"
+                step="any"
+                required
+            >
+
+            <input
+                type="number"
+                id="paperTakeProfit"
+                placeholder="Take Profit"
+                min="0"
+                step="any"
+                required
+            >
+
+            <button
+                type="button"
+                id="savePaperTrade"
+                class="ai-primary"
+            >
+                Save Simulated Trade
+            </button>
+
+        </div>
+
+        <p id="paperTradeStatus" class="ai-status">
+            Ready to record a simulated trade.
+        </p>
+
+    </div>
+
+    <!-- AI SCREENSHOT ANALYZER -->
+
+    <div class="panel ai-panel">
+
+        <div class="ai-heading">
+            <h2>AI Multi-Strategy Analyzer</h2>
+            <span class="ai-tag">FREE WORKFLOW</span>
+        </div>
+
+        <p class="note">
+            Upload a chart screenshot, prepare an analysis prompt,
+            and use ChatGPT to examine the image.
+        </p>
+
+        <div class="upload-area">
+
+            <h3>Upload Chart Screenshot</h3>
+
+            <p class="note">
+                Supported formats: PNG, JPG and WEBP.
+                Maximum file size: 10 MB.
+            </p>
+
+            <br>
+
+            <input
+                type="file"
+                id="chartUpload"
+                accept="image/png,image/jpeg,image/webp"
+            >
+
+            <img
+                id="imagePreview"
+                alt="Uploaded chart preview"
+            >
+
+            <div class="ai-buttons">
+
+                <button
+                    id="copyPromptButton"
+                    class="ai-primary"
+                    type="button"
+                    disabled
+                >
+                    Copy AI Analysis Prompt
+                </button>
+
+                <button
+                    id="openChatGPTButton"
+                    class="ai-secondary"
+                    type="button"
+                >
+                    Open ChatGPT
+                </button>
+
+                <button
+                    id="removeImageButton"
+                    class="ai-secondary"
+                    type="button"
+                    disabled
+                >
+                    Remove Image
+                </button>
+
+            </div>
+
+            <p id="imageStatus" class="ai-status">
+                Waiting for chart screenshot...
+            </p>
+
+        </div>
+
+        <div class="ai-steps">
+
+            <div class="ai-step">
+                <h3>01. Upload</h3>
+                <p>
+                    Select a chart screenshot from your computer.
+                </p>
+            </div>
+
+            <div class="ai-step">
+                <h3>02. Copy Prompt</h3>
+                <p>
+                    QM PROFITER prepares a detailed analysis
+                    instruction using your selected coin and timeframe.
+                </p>
+            </div>
+
+            <div class="ai-step">
+                <h3>03. ChatGPT</h3>
+                <p>
+                    Open ChatGPT, attach the same screenshot,
+                    and paste the copied prompt.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="warning-note">
+            IMPORTANT: The screenshot is not automatically sent to ChatGPT.
+            You must upload it manually in the ChatGPT conversation.
+            The analysis is educational and must not be treated as
+            instructions for real-money trading.
+        </div>
+
+        <h3 style="margin-top:22px;">
+            Generated AI Analysis Prompt
+        </h3>
+
+        <textarea
+            id="analysisPrompt"
+            class="prompt-box"
+            readonly
+            placeholder="Upload a screenshot to generate your analysis prompt..."
+        ></textarea>
+
+        <p class="note">
+            This prompt asks ChatGPT to identify visible evidence,
+            explain uncertainty, and avoid inventing patterns or levels.
+        </p>
+
+    </div>
+
+</div>
+
+</main>
+</div>
+
+<!-- SUPABASE LIBRARY -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+/* SUPABASE AND BACKEND CONNECTION */
+
+const SUPABASE_URL =
+    "https://wuvzojlpegfqwsfhoobc.supabase.co";
+
+const SUPABASE_ANON_KEY =
+    "sb_publishable_VnpF9r4AtZmiNLdO8SzBvg_WCb-PF2t";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+const API_URL = "http://localhost:3000";
+
+
+/* AUTHENTICATION CHECK */
+
+async function checkAnalyzerAuthentication() {
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.auth.getSession();
+
+        if (error) throw error;
+
+        if (!data.session) {
+
+            window.location.href = "login.html";
+
+            return false;
+        }
+
+        return true;
+
+    } catch (error) {
+
+        console.error("Authentication check failed:", error);
+
+        document.getElementById("paperTradeStatus").textContent =
+            "Could not verify your login. Please refresh the page.";
+
+        return false;
+    }
+}
+
+
+/* SIDEBAR TOGGLE */
+
+const sidebar = document.getElementById("sidebar");
+const navToggle = document.getElementById("navToggle");
+
+function updateNavigationMode(iconOnly) {
+
+    sidebar.classList.toggle("icons-only", iconOnly);
+
+    navToggle.textContent = iconOnly
+        ? "☰ Show Labels"
+        : "☰ Icons Only";
+
+    navToggle.title = iconOnly
+        ? "Show navigation labels"
+        : "Show icons only";
+
+    try {
+        localStorage.setItem(
+            "qmNavigationMode",
+            iconOnly ? "icons" : "full"
+        );
+    } catch (error) {
+        console.warn("Navigation preference could not be saved.");
+    }
+}
+
+let savedNavigationMode = "full";
+
+try {
+    savedNavigationMode =
+        localStorage.getItem("qmNavigationMode") || "full";
+} catch (error) {
+    console.warn("Navigation preference could not be loaded.");
+}
+
+updateNavigationMode(savedNavigationMode === "icons");
+
+navToggle.addEventListener("click", function() {
+
+    const currentlyIconsOnly =
+        sidebar.classList.contains("icons-only");
+
+    updateNavigationMode(!currentlyIconsOnly);
+});
+
+
+/* ANALYZER */
+
+const coinSelect = document.getElementById("coin");
+const timeframeSelect = document.getElementById("timeframe");
+
+let requestNumber = 0;
+
+const timeframeSettings = {
+    "1m":  { base: 60, factor: 1, chart: "1" },
+    "5m":  { base: 300, factor: 1, chart: "5" },
+    "15m": { base: 900, factor: 1, chart: "15" },
+    "30m": { base: 900, factor: 2, chart: "30" },
+    "1h":  { base: 3600, factor: 1, chart: "60" },
+    "4h":  { base: 3600, factor: 4, chart: "240" },
+    "1d":  { base: 86400, factor: 1, chart: "D" },
+    "1w":  { base: 86400, factor: 7, chart: "W" }
+};
+
+function setValue(id, value, colorClass = "") {
+
+    const element = document.getElementById(id);
+
+    element.textContent = value;
+    element.className = colorClass;
+}
+
+function formatPrice(value) {
+
+    if (!Number.isFinite(value)) {
+        return "Unavailable";
+    }
+
+    return "$" + value.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6
+    });
+}
+
+function calculateEMA(values, period) {
+
+    if (values.length < period) return null;
+
+    const multiplier = 2 / (period + 1);
+
+    let ema = values
+        .slice(0, period)
+        .reduce((sum, value) => sum + value, 0) / period;
+
+    for (let i = period; i < values.length; i++) {
+
+        ema = (values[i] - ema) * multiplier + ema;
+    }
+
+    return ema;
+}
+
+function calculateRSI(values, period = 14) {
+
+    if (values.length <= period) return null;
+
+    let gains = 0;
+    let losses = 0;
+
+    for (let i = 1; i <= period; i++) {
+
+        const change = values[i] - values[i - 1];
+
+        if (change > 0) gains += change;
+        else losses += Math.abs(change);
+    }
+
+    let avgGain = gains / period;
+    let avgLoss = losses / period;
+
+    for (let i = period + 1; i < values.length; i++) {
+
+        const change = values[i] - values[i - 1];
+
+        avgGain =
+            (avgGain * (period - 1) + Math.max(change, 0)) / period;
+
+        avgLoss =
+            (avgLoss * (period - 1) + Math.max(-change, 0)) / period;
+    }
+
+    if (avgLoss === 0) return 100;
+
+    const rs = avgGain / avgLoss;
+
+    return 100 - (100 / (1 + rs));
+}
+
+function calculateMACD(values) {
+
+    if (values.length < 35) return null;
+
+    const ema12 = calculateEMA(values, 12);
+    const ema26 = calculateEMA(values, 26);
+
+    if (ema12 === null || ema26 === null) return null;
+
+    return ema12 - ema26;
+}
+
+function aggregateCandles(candles, factor) {
+
+    if (factor === 1) return candles;
+
+    const result = [];
+
+    for (let i = 0; i + factor <= candles.length; i += factor) {
+
+        const group = candles.slice(i, i + factor);
+
+        result.push({
+            time: group[0].time,
+            low: Math.min(...group.map(c => c.low)),
+            high: Math.max(...group.map(c => c.high)),
+            close: group[group.length - 1].close
+        });
+    }
+
+    return result;
+}
+
+function updateChart() {
+
+    const option = coinSelect.selectedOptions[0];
+
+    const symbol = option.dataset.tv;
+
+    const interval =
+        timeframeSettings[timeframeSelect.value].chart;
+
+    const url =
+        "https://s.tradingview.com/widgetembed/?" +
+        "symbol=" + encodeURIComponent(symbol) +
+        "&interval=" + encodeURIComponent(interval) +
+        "&hidesidetoolbar=0" +
+        "&symboledit=1" +
+        "&saveimage=1" +
+        "&toolbarbg=111a2b" +
+        "&theme=dark" +
+        "&style=1" +
+        "&timezone=Etc%2FUTC" +
+        "&withdateranges=1" +
+        "&hideideas=1" +
+        "&hidevolume=0" +
+        "&locale=en";
+
+    document.getElementById("liveChart").src = url;
+
+    document.getElementById("chartSymbol").textContent =
+        option.textContent;
+}
+
+async function loadTechnicalAnalysis() {
+
+    const thisRequest = ++requestNumber;
+
+    const product = coinSelect.value;
+
+    const timeframe = timeframeSelect.value;
+
+    const settings = timeframeSettings[timeframe];
+
+    const status = document.getElementById("analysisStatus");
+
+    status.textContent = "Loading market data...";
+
+    try {
+
+        const end = new Date();
+
+        const start = new Date(
+            end.getTime() - settings.base * 300 * 1000
+        );
+
+        const url =
+            "https://api.exchange.coinbase.com/products/" +
+            encodeURIComponent(product) +
+            "/candles?granularity=" +
+            settings.base +
+            "&start=" +
+            encodeURIComponent(start.toISOString()) +
+            "&end=" +
+            encodeURIComponent(end.toISOString());
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Market data unavailable. HTTP " + response.status
+            );
+        }
+
+        const data = await response.json();
+
+        if (thisRequest !== requestNumber) return;
+
+        if (!Array.isArray(data) || data.length < 20) {
+
+            throw new Error(
+                "Not enough candle data for this selection."
+            );
+        }
+
+        const baseCandles = data
+            .map(item => ({
+                time: Number(item[0]),
+                low: Number(item[1]),
+                high: Number(item[2]),
+                close: Number(item[4])
+            }))
+            .filter(c =>
+                Number.isFinite(c.low) &&
+                Number.isFinite(c.high) &&
+                Number.isFinite(c.close)
+            )
+            .sort((a, b) => a.time - b.time);
+
+        const candles = aggregateCandles(
+            baseCandles,
+            settings.factor
+        );
+
+        if (candles.length < 20) {
+
+            throw new Error(
+                "Not enough historical candles for this timeframe."
+            );
+        }
+
+        const closes = candles.map(c => c.close);
+
+        const currentPrice = closes[closes.length - 1];
+
+        const ema20 = calculateEMA(closes, 20);
+
+        const ema50 = calculateEMA(closes, 50);
+
+        const rsi = calculateRSI(closes, 14);
+
+        const macd = calculateMACD(closes);
+
+        const recent = candles.slice(-20);
+
+        const support = Math.min(
+            ...recent.map(c => c.low)
+        );
+
+        const resistance = Math.max(
+            ...recent.map(c => c.high)
+        );
+
+        let trend = "SIDEWAYS";
+        let trendClass = "neutral";
+
+        if (ema20 !== null && ema50 !== null) {
+
+            if (ema20 > ema50 && currentPrice > ema20) {
+
+                trend = "UPTREND";
+                trendClass = "green";
+
+            } else if (ema20 < ema50 && currentPrice < ema20) {
+
+                trend = "DOWNTREND";
+                trendClass = "red";
+            }
+        }
+
+        let momentum = "NEUTRAL";
+        let momentumClass = "neutral";
+
+        if (rsi !== null && rsi >= 55) {
+
+            momentum = "POSITIVE";
+            momentumClass = "green";
+
+        } else if (rsi !== null && rsi <= 45) {
+
+            momentum = "NEGATIVE";
+            momentumClass = "red";
+        }
+
+        setValue("qm-price", formatPrice(currentPrice));
+
+        setValue("qm-trend", trend, trendClass);
+
+        setValue(
+            "qm-rsi",
+            rsi === null ? "Unavailable" : rsi.toFixed(2)
+        );
+
+        setValue(
+            "qm-ema20",
+            ema20 === null ? "Not enough data" : formatPrice(ema20)
+        );
+
+        setValue(
+            "qm-ema50",
+            ema50 === null ? "Not enough data" : formatPrice(ema50)
+        );
+
+        setValue(
+            "qm-macd",
+            macd === null ? "Unavailable" : macd.toFixed(6)
+        );
+
+        setValue("qm-momentum", momentum, momentumClass);
+
+        setValue("qm-support", formatPrice(support));
+
+        setValue("qm-resistance", formatPrice(resistance));
+
+        status.textContent =
+            "Market data updated: " + new Date().toLocaleTimeString();
+
+    } catch (error) {
+
+        if (thisRequest !== requestNumber) return;
+
+        console.error("QM PROFITER analysis error:", error);
+
+        status.textContent = error.message;
+    }
+}
+
+function refreshAnalyzer() {
+
+    updateChart();
+
+    loadTechnicalAnalysis();
+}
+
+coinSelect.addEventListener("change", refreshAnalyzer);
+
+timeframeSelect.addEventListener("change", refreshAnalyzer);
+
+document.getElementById("refreshButton")
+    .addEventListener("click", refreshAnalyzer);
+
+
+/* COIN SEARCH */
+
+document.getElementById("coinSearch")
+    .addEventListener("input", function() {
+
+        const search = this.value.trim().toUpperCase();
+
+        for (const option of coinSelect.options) {
+
+            if (
+                option.textContent.toUpperCase().includes(search) ||
+                option.value.toUpperCase().includes(search)
+            ) {
+
+                if (coinSelect.value !== option.value) {
+
+                    coinSelect.value = option.value;
+
+                    refreshAnalyzer();
+                }
+
+                break;
+            }
+        }
+    });
+
+
+/* PAPER TRADE SIMULATOR */
+
+const savePaperTradeButton =
+    document.getElementById("savePaperTrade");
+
+const paperTradeStatus =
+    document.getElementById("paperTradeStatus");
+
+function setPaperTradeStatus(message, color = "#f3bd54") {
+
+    paperTradeStatus.textContent = message;
+    paperTradeStatus.style.color = color;
+}
+
+savePaperTradeButton.addEventListener("click", async function() {
+
+    if (savePaperTradeButton.disabled) return;
+
+    const symbol =
+        document.getElementById("paperSymbol").value.trim().toUpperCase();
+
+    const direction =
+        document.getElementById("paperDirection").value;
+
+    const entry =
+        Number(document.getElementById("paperEntry").value);
+
+    const stopLoss =
+        Number(document.getElementById("paperStopLoss").value);
+
+    const takeProfit =
+        Number(document.getElementById("paperTakeProfit").value);
+
+    if (!symbol || !/^[A-Z0-9]+(?:[/-][A-Z0-9]+)*$/.test(symbol)) {
+
+        setPaperTradeStatus(
+            "Please enter a valid coin symbol, such as BTC/USDT.",
+            "#ff6475"
+        );
+
+        return;
+    }
+
+    if (
+        !Number.isFinite(entry) ||
+        !Number.isFinite(stopLoss) ||
+        !Number.isFinite(takeProfit) ||
+        entry <= 0 ||
+        stopLoss <= 0 ||
+        takeProfit <= 0
+    ) {
+
+        setPaperTradeStatus(
+            "Please enter valid positive prices for all three fields.",
+            "#ff6475"
+        );
+
+        return;
+    }
+
+    if (direction === "BUY" && !(stopLoss < entry && takeProfit > entry)) {
+
+        setPaperTradeStatus(
+            "For a BUY simulation, Stop Loss must be below Entry and Take Profit must be above Entry.",
+            "#ff6475"
+        );
+
+        return;
+    }
+
+    if (direction === "SELL" && !(stopLoss > entry && takeProfit < entry)) {
+
+        setPaperTradeStatus(
+            "For a SELL simulation, Stop Loss must be above Entry and Take Profit must be below Entry.",
+            "#ff6475"
+        );
+
+        return;
+    }
+
+    savePaperTradeButton.disabled = true;
+
+    savePaperTradeButton.textContent = "Saving...";
+
+    setPaperTradeStatus("Checking your login...");
+
+    try {
+
+        const { data: sessionData, error: sessionError } =
+            await supabaseClient.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        const session = sessionData.session;
+
+        if (!session) {
+
+            window.location.href = "login.html";
+
+            return;
+        }
+
+        setPaperTradeStatus("Saving simulated trade...");
+
+        const response = await fetch(
+            API_URL + "/api/paper-trades",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + session.access_token
+                },
+
+                body: JSON.stringify({
+    symbol,
+    direction: direction === "BUY" ? "LONG" : "SHORT",
+    entry,
+    stopLoss,
+    takeProfit
+})
+            }
+        );
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                result.message ||
+                "The backend could not save this simulated trade."
+            );
+        }
+
+        setPaperTradeStatus(
+            "Simulated trade saved successfully! You can view it in Paper Trading History.",
+            "#28d995"
+        );
+
+        document.getElementById("paperSymbol").value = "";
+        document.getElementById("paperEntry").value = "";
+        document.getElementById("paperStopLoss").value = "";
+        document.getElementById("paperTakeProfit").value = "";
+
+    } catch (error) {
+
+        console.error("Paper trade save error:", error);
+
+        setPaperTradeStatus(
+            "Could not save simulated trade: " + error.message,
+            "#ff6475"
+        );
+
+    } finally {
+
+        savePaperTradeButton.disabled = false;
+
+        savePaperTradeButton.textContent =
+            "Save Simulated Trade";
+    }
+});
+
+
+/* AI SCREENSHOT ANALYZER */
+
+const chartUpload = document.getElementById("chartUpload");
+
+const imagePreview = document.getElementById("imagePreview");
+
+const imageStatus = document.getElementById("imageStatus");
+
+const copyPromptButton =
+    document.getElementById("copyPromptButton");
+
+const openChatGPTButton =
+    document.getElementById("openChatGPTButton");
+
+const removeImageButton =
+    document.getElementById("removeImageButton");
+
+const analysisPrompt =
+    document.getElementById("analysisPrompt");
+
+let selectedImage = null;
+
+let imageObjectUrl = null;
+
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+
+function setImageStatus(message, color = "#f3bd54") {
+
+    imageStatus.textContent = message;
+
+    imageStatus.style.color = color;
+}
+
+function generateAnalysisPrompt() {
+
+    const selectedCoin =
+        coinSelect.selectedOptions[0].textContent;
+
+    const selectedTimeframe =
+        timeframeSelect.options[
+            timeframeSelect.selectedIndex
+        ].textContent;
+
+    const currentPrice =
+        document.getElementById("qm-price").textContent;
+
+    const trend =
+        document.getElementById("qm-trend").textContent;
+
+    const rsi =
+        document.getElementById("qm-rsi").textContent;
+
+    const ema20 =
+        document.getElementById("qm-ema20").textContent;
+
+    const ema50 =
+        document.getElementById("qm-ema50").textContent;
+
+    const macd =
+        document.getElementById("qm-macd").textContent;
+
+    const momentum =
+        document.getElementById("qm-momentum").textContent;
+
+    const support =
+        document.getElementById("qm-support").textContent;
+
+    const resistance =
+        document.getElementById("qm-resistance").textContent;
+
+    return `
+You are helping me understand a cryptocurrency chart for educational purposes.
+
+I have attached a chart screenshot. Carefully inspect the actual image before making any observations.
+
+QM PROFITER CHART DETAILS
+
+Coin: ${selectedCoin}
+Selected timeframe: ${selectedTimeframe}
+
+Additional indicator readings from QM PROFITER:
+Current price: ${currentPrice}
+Market trend: ${trend}
+RSI (14): ${rsi}
+EMA 20: ${ema20}
+EMA 50: ${ema50}
+MACD: ${macd}
+Momentum: ${momentum}
+Support estimate: ${support}
+Resistance estimate: ${resistance}
+
+IMPORTANT ANALYSIS RULES
+
+1. Only describe patterns and levels that are actually visible or reasonably supported by the screenshot.
+2. Do not invent missing price levels, volume information, candles, indicators or patterns.
+3. If the screenshot is unclear, say what cannot be identified.
+4. Explain the difference between observed evidence and interpretation.
+5. Do not claim that any method guarantees a successful outcome.
+6. Do not assume that every strategy or theory will produce a valid result.
+7. If there is insufficient evidence, clearly report NO CLEAR EDUCATIONAL SETUP.
+8. This is an educational chart-reading exercise, not real-money trading advice.
+
+ANALYSIS AREAS
+
+A. MARKET STRUCTURE
+- Higher highs and higher lows
+- Lower highs and lower lows
+- Break of Structure (BOS)
+- Change of Character (CHoCH)
+- Consolidation and range conditions
+
+B. SMC AND ICT CONCEPTS
+- Visible liquidity areas
+- Possible liquidity sweeps
+- Order blocks, only where supported
+- Fair Value Gaps (FVG)
+- Premium and discount areas, if identifiable
+- Possible displacement
+- Possible mitigation areas
+
+C. ELLIOTT WAVE
+- Whether a wave structure is reasonably identifiable
+- Possible wave count
+- Alternative wave interpretation
+- Explain why the count may be uncertain
+
+D. WYCKOFF
+- Possible accumulation or distribution
+- Trading range
+- Signs of supply or demand
+- Explain whether there is enough evidence
+
+E. FIBONACCI
+- Identify visible swing points if possible
+- Explain relevant retracement or extension areas
+- Do not invent exact Fibonacci levels if swing points are unclear
+
+F. CANDLESTICK ANALYSIS
+- Visible candlestick patterns
+- Rejection candles
+- Engulfing patterns
+- Doji or other recognizable formations
+- Explain the context of each pattern
+
+G. TECHNICAL INDICATORS
+- EMA relationship
+- RSI interpretation
+- MACD interpretation
+- Volume, only if visible
+- Momentum
+- Possible divergence, only if supported
+
+H. MULTI-TIMEFRAME ANALYSIS
+- Identify which timeframe is actually visible
+- Do not pretend that other timeframes were inspected
+- Explain what additional timeframes would be needed for confirmation
+
+REQUIRED REPORT FORMAT
+
+1. SCREENSHOT QUALITY
+Explain whether the chart is readable and what information is missing.
+
+2. MARKET OVERVIEW
+Describe the visible trend and market structure.
+
+3. STRATEGY-BY-STRATEGY ANALYSIS
+Create a table with:
+Strategy | Observation | Evidence | Confidence
+
+Include SMC, ICT, liquidity, order blocks, FVG, Elliott Wave, Wyckoff, Fibonacci, candlesticks, market structure and indicators.
+
+Use "Not identifiable" when the screenshot does not provide enough evidence.
+
+4. SUPPORT AND RESISTANCE
+Describe visible or supplied levels. Explain their limitations.
+
+5. CONFLICTING EVIDENCE
+Explain which observations support one another and which disagree.
+
+6. EDUCATIONAL SCENARIO
+If the screenshot supports a clearly defined hypothetical paper-trading exercise, describe:
+- Possible scenario direction
+- Hypothetical observation or entry area
+- A hypothetical invalidation area
+- Possible educational target areas TP1, TP2 and TP3
+
+Do not invent exact numerical levels. If the chart scale or evidence is insufficient, write "Not enough information".
+
+These hypothetical levels are for learning and paper simulation only. They are not instructions to place real orders.
+
+7. FINAL ASSESSMENT
+Choose one:
+- Bullish evidence
+- Bearish evidence
+- Mixed evidence
+- No clear educational setup
+
+Explain the reasons.
+
+8. WHAT TO LEARN NEXT
+Give a short list of additional chart information or concepts that would improve the analysis.
+
+Be careful, honest and evidence-based. Accuracy and uncertainty are more important than producing a confident-looking report.
+`.trim();
+}
+
+
+/* IMAGE UPLOAD */
+
+chartUpload.addEventListener("change", function(event) {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const allowedTypes = [
+        "image/png",
+        "image/jpeg",
+        "image/webp"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+
+        setImageStatus(
+            "Please select a PNG, JPG or WEBP image.",
+            "#ff6475"
+        );
+
+        chartUpload.value = "";
+
+        return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+
+        setImageStatus(
+            "Image is too large. Please select an image smaller than 10 MB.",
+            "#ff6475"
+        );
+
+        chartUpload.value = "";
+
+        return;
+    }
+
+    if (imageObjectUrl) {
+
+        URL.revokeObjectURL(imageObjectUrl);
+
+        imageObjectUrl = null;
+    }
+
+    selectedImage = file;
+
+    imageObjectUrl = URL.createObjectURL(file);
+
+    imagePreview.src = imageObjectUrl;
+
+    imagePreview.style.display = "block";
+
+    copyPromptButton.disabled = false;
+
+    removeImageButton.disabled = false;
+
+    analysisPrompt.value = generateAnalysisPrompt();
+
+    setImageStatus(
+        "Screenshot loaded successfully. Copy your prompt and upload this same image to ChatGPT.",
+        "#28d995"
+    );
+});
+
+
+/* REFRESH PROMPT WHEN COIN OR TIMEFRAME CHANGES */
+
+coinSelect.addEventListener("change", function() {
+
+    if (selectedImage) {
+
+        analysisPrompt.value = generateAnalysisPrompt();
+    }
+});
+
+timeframeSelect.addEventListener("change", function() {
+
+    if (selectedImage) {
+
+        analysisPrompt.value = generateAnalysisPrompt();
+    }
+});
+
+
+/* COPY AI PROMPT */
+
+copyPromptButton.addEventListener("click", async function() {
+
+    if (!selectedImage) {
+
+        setImageStatus(
+            "Please upload a chart screenshot first.",
+            "#ff6475"
+        );
+
+        return;
+    }
+
+    analysisPrompt.value = generateAnalysisPrompt();
+
+    try {
+
+        await navigator.clipboard.writeText(
+            analysisPrompt.value
+        );
+
+        setImageStatus(
+            "AI analysis prompt copied! Now open ChatGPT, upload your screenshot and paste the prompt.",
+            "#28d995"
+        );
+
+    } catch (error) {
+
+        analysisPrompt.focus();
+
+        analysisPrompt.select();
+
+        setImageStatus(
+            "Automatic copying is unavailable. Select the prompt below and press Ctrl + C.",
+            "#f3bd54"
+        );
+    }
+});
+
+
+/* OPEN CHATGPT */
+
+openChatGPTButton.addEventListener("click", function() {
+
+    window.open(
+        "https://chatgpt.com/",
+        "_blank",
+        "noopener,noreferrer"
+    );
+
+    if (selectedImage) {
+
+        setImageStatus(
+            "ChatGPT opened. Upload your selected screenshot there and paste the prompt from QM PROFITER.",
+            "#28d995"
+        );
+
+    } else {
+
+        setImageStatus(
+            "ChatGPT opened. Upload a chart screenshot in QM PROFITER first to prepare the analysis prompt.",
+            "#f3bd54"
+        );
+    }
+});
+
+
+/* REMOVE SCREENSHOT */
+
+removeImageButton.addEventListener("click", function() {
+
+    selectedImage = null;
+
+    chartUpload.value = "";
+
+    imagePreview.removeAttribute("src");
+
+    imagePreview.style.display = "none";
+
+    if (imageObjectUrl) {
+
+        URL.revokeObjectURL(imageObjectUrl);
+
+        imageObjectUrl = null;
+    }
+
+    analysisPrompt.value = "";
+
+    copyPromptButton.disabled = true;
+
+    removeImageButton.disabled = true;
+
+    setImageStatus(
+        "Screenshot removed. Upload another chart when ready.",
+        "#f3bd54"
+    );
+});
+
+
+/* INITIAL LOAD */
+
+refreshAnalyzer();
+
+
+/* AUTOMATIC MARKET DATA REFRESH */
+
+setInterval(() => {
+
+    loadTechnicalAnalysis();
+
+}, 60000);
+
+
+/* CLEAN UP IMAGE URL WHEN PAGE CLOSES */
+
+window.addEventListener("beforeunload", function() {
+
+    if (imageObjectUrl) {
+
+        URL.revokeObjectURL(imageObjectUrl);
+    }
+});
+
+
+/* CHECK LOGIN */
+
+checkAnalyzerAuthentication();
+
+</script>
+
+</body>
+</html>

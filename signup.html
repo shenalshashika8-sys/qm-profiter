@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QM PROFITER - Create Account</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #080d18;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .signup-box {
+            width: 90%;
+            max-width: 420px;
+            padding: 35px;
+            background: #111b2d;
+            border: 1px solid #263751;
+            border-radius: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #20d6a0;
+            margin-bottom: 10px;
+        }
+
+        p {
+            text-align: center;
+            color: #9aa9bd;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border: 1px solid #34445d;
+            border-radius: 8px;
+            background: #080f1d;
+            color: white;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #20d6a0;
+            color: #07130f;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #message {
+            margin-top: 18px;
+            font-size: 14px;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        a {
+            color: #20d6a0;
+            text-decoration: none;
+        }
+
+        .login-link {
+            margin-top: 22px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="signup-box">
+
+        <h1>QM PROFITER</h1>
+        <p>Create your account</p>
+
+        <form id="signupForm">
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Email address"
+                autocomplete="email"
+                required
+            >
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Create password (minimum 8 characters)"
+                autocomplete="new-password"
+                minlength="8"
+                required
+            >
+
+            <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Confirm password"
+                autocomplete="new-password"
+                required
+            >
+
+            <button type="submit" id="signupBtn">
+                CREATE ACCOUNT
+            </button>
+
+        </form>
+
+        <div id="message" role="status"></div>
+
+        <p class="login-link">
+            Already have an account?
+            <a href="login.html">Login here</a>
+        </p>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="signup.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QM PROFITER - Signals Center</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#080d18;color:#fff;font-family:Arial,sans-serif;padding:22px;padding-left:260px}
+.sidebar{position:fixed;left:0;top:0;width:235px;height:100vh;background:#0b1423;border-right:1px solid #202d43;padding:20px 14px;display:flex;flex-direction:column;z-index:1000;transition:width .25s ease}
+.sidebar-brand{color:#20d9a0;font-size:21px;font-weight:bold;padding:10px 12px 25px;white-space:nowrap;overflow:hidden}
+.nav-toggle{width:100%;padding:11px;margin-bottom:20px;background:#111e30;border:1px solid #293952;color:#20d9a0;border-radius:8px;cursor:pointer;font-size:13px}
+.nav-links{display:flex;flex-direction:column;gap:8px}
+.nav-link{display:flex;align-items:center;gap:13px;padding:13px 12px;border-radius:8px;color:#aab7ca;text-decoration:none;font-size:14px;white-space:nowrap;overflow:hidden;transition:.2s}
+.nav-link:hover,.nav-link.active{background:#13283a;color:#20d9a0}
+.nav-icon{width:21px;height:21px;min-width:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-label{overflow:hidden}
+.sidebar-footer{margin-top:auto;color:#637189;font-size:10px;text-align:center;padding:15px 5px}
+.sidebar.icons-only{width:88px}
+.sidebar.icons-only .sidebar-brand{font-size:16px;padding-left:7px}
+.sidebar.icons-only .nav-label,.sidebar.icons-only .sidebar-footer{display:none}
+.sidebar.icons-only .nav-link{justify-content:center;padding:13px 5px}
+.sidebar.icons-only .nav-toggle{font-size:0;padding:11px 5px}
+.sidebar.icons-only .nav-toggle::after{content:"☰";font-size:19px}
+body.icons-only{padding-left:110px}
+.container{max-width:1200px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:25px}
+h1{color:#20d9a0;font-size:27px}
+.subtitle{color:#8995aa;margin-top:7px;font-size:13px}
+.back{color:#20d9a0;text-decoration:none}
+.panel{background:#111a2b;border:1px solid #202d43;border-radius:13px;padding:20px;margin-bottom:20px}
+h2{font-size:18px;margin-bottom:17px}
+.controls{display:flex;flex-wrap:wrap;gap:12px}
+input,select,button{background:#080f1d;border:1px solid #293952;color:white;padding:12px;border-radius:7px;font-size:14px}
+input,select{min-width:150px}
+button{background:#087e65;border:none;cursor:pointer;font-weight:bold}
+button:hover{background:#0aa982}
+button:disabled{opacity:.5;cursor:not-allowed}
+.status{color:#9ba9bd;font-size:13px;margin-top:14px}
+.dot{color:#20d9a0;margin-right:7px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px}
+.metric{background:#0b1423;padding:17px;border:1px solid #25334a;border-radius:10px;min-height:88px}
+.metric p{color:#8997ad;font-size:12px;margin-bottom:12px}
+.metric span{font-size:19px;font-weight:bold;overflow-wrap:anywhere}
+.green{color:#20d9a0}
+.red{color:#ff6177}
+.yellow{color:#ffc65c}
+.neutral{color:#b7c3d5}
+.direction{font-size:25px;font-weight:bold;margin:8px 0 15px}
+.chart-frame{width:100%;height:500px;border:0;border-radius:9px;background:#080d18}
+.note{color:#91a0b5;font-size:12px;line-height:1.7}
+.footer{text-align:center;color:#637189;font-size:11px;padding:15px}
+.save-area{margin-top:18px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.save-button{padding:13px 20px}
+#saveMessage{font-size:13px;color:#ffc65c}
+@media(max-width:700px){
+body{padding:12px;padding-left:100px}
+.sidebar{width:88px}
+.sidebar .nav-label,.sidebar .sidebar-footer{display:none}
+.sidebar .nav-link{justify-content:center;padding:13px 5px}
+.sidebar .sidebar-brand{font-size:16px;padding-left:7px}
+.sidebar .nav-toggle{font-size:0;padding:11px 5px}
+.sidebar .nav-toggle::after{content:"☰";font-size:19px}
+.chart-frame{height:380px}
+h1{font-size:22px}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-brand">QM PROFITER</div>
+<button class="nav-toggle" id="navToggle">☰ Icons Only</button>
+
+<nav class="nav-links">
+<a href="index.html" class="nav-link">
+<svg class="nav-icon" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9"/><path d="M9 21v-7h6v7"/></svg>
+<span class="nav-label">Home</span></a>
+
+<a href="analyzer.html" class="nav-link">
+<svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 3 6-7"/></svg>
+<span class="nav-label">Analyzer</span></a>
+
+<a href="signals.html" class="nav-link active">
+<svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"/><path d="m9 12 2 2 4-4"/></svg>
+<span class="nav-label">Signals</span></a>
+
+<a href="chart.html" class="nav-link">
+<svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14h2v4H7zM12 8h2v10h-2zM17 4h2v14h-2z"/></svg>
+<span class="nav-label">Charts</span></a>
+
+<a href="calculator.html" class="nav-link">
+<svg class="nav-icon" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 11h.01M12 11h.01M16 11h.01"/><path d="M8 15h.01M12 15h.01M16 15h.01"/><path d="M8 19h.01M12 19h.01M16 19h.01"/></svg>
+<span class="nav-label">Calculator</span></a>
+
+<a href="history.html" class="nav-link">
+<svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
+<span class="nav-label">Paper Trading History</span></a>
+</nav>
+
+<div class="sidebar-footer">Powered by Shenal Shashika</div>
+</aside>
+
+<div class="container">
+<header>
+<div>
+<h1>QM PROFITER</h1>
+<p class="subtitle">Market Analysis & Signals Center</p>
+</div>
+<a class="back" href="index.html">← Dashboard</a>
+</header>
+
+<section class="panel">
+<h2>Market Selection</h2>
+<div class="controls">
+<input id="coinSearch" type="text" placeholder="Search BTC, ETH, SOL...">
+<select id="coin">
+<option value="BTC-USD">BTC / USD</option>
+<option value="ETH-USD">ETH / USD</option>
+<option value="SOL-USD">SOL / USD</option>
+<option value="BNB-USD">BNB / USD</option>
+<option value="XRP-USD">XRP / USD</option>
+<option value="DOGE-USD">DOGE / USD</option>
+<option value="ADA-USD">ADA / USD</option>
+<option value="AVAX-USD">AVAX / USD</option>
+<option value="LINK-USD">LINK / USD</option>
+<option value="LTC-USD">LTC / USD</option>
+</select>
+<select id="timeframe">
+<option value="60">1 Minute</option>
+<option value="300">5 Minutes</option>
+<option value="900" selected>15 Minutes</option>
+<option value="1800">30 Minutes</option>
+<option value="3600">1 Hour</option>
+<option value="14400">4 Hours</option>
+<option value="86400">1 Day</option>
+</select>
+<button id="refreshButton">Refresh Analysis</button>
+</div>
+<p class="status"><span class="dot">●</span><span id="connectionText">Waiting for market data...</span></p>
+<p class="note" style="margin-top:12px;">Market Data Source: Coinbase Exchange Public API <span style="color:#20d9a0;"> ● Public Market Data</span></p>
+</section>
+
+<section class="panel">
+<h2>Automatic Market Analysis</h2>
+<div class="direction neutral" id="direction">WAITING FOR DATA</div>
+<div class="metrics">
+<div class="metric"><p>Automatic Analysis</p><span id="autoSignal">Waiting...</span></div>
+<div class="metric"><p>Indicator Agreement</p><span id="agreement">--</span></div>
+<div class="metric"><p>Alignment Description</p><span id="agreementLabel">--</span></div>
+<div class="metric"><p>Analysis Timeframe</p><span id="signalTimeframe">15 Minutes</span></div>
+<div class="metric"><p>Last Updated</p><span id="lastUpdated">Waiting...</span></div>
+<div class="metric"><p>Current Price</p><span id="price">--</span></div>
+<div class="metric"><p>Market Trend</p><span id="trend">--</span></div>
+<div class="metric"><p>RSI (14)</p><span id="rsi">--</span></div>
+<div class="metric"><p>EMA 20</p><span id="ema20">--</span></div>
+<div class="metric"><p>EMA 50</p><span id="ema50">--</span></div>
+<div class="metric"><p>MACD</p><span id="macd">--</span></div>
+<div class="metric"><p>Momentum</p><span id="momentum">--</span></div>
+<div class="metric"><p>Support</p><span id="support">--</span></div>
+<div class="metric"><p>Resistance</p><span id="resistance">--</span></div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Educational Paper Trading Scenario</h2>
+<p class="note">Hypothetical educational scenarios only. Calculated levels are not validated predictions or real-money trading instructions.</p>
+<div class="direction neutral" id="scenarioDirection">WAITING FOR DATA</div>
+<div class="metrics">
+<div class="metric"><p>Scenario Entry</p><span id="scenarioEntry">--</span></div>
+<div class="metric"><p>Stop Loss (SL)</p><span id="scenarioSL" class="red">--</span></div>
+<div class="metric"><p>Take Profit 1</p><span id="scenarioTP1" class="green">--</span></div>
+<div class="metric"><p>Take Profit 2</p><span id="scenarioTP2" class="green">--</span></div>
+<div class="metric"><p>Take Profit 3</p><span id="scenarioTP3" class="green">--</span></div>
+<div class="metric"><p>Risk / Reward (TP1)</p><span id="scenarioRR">--</span></div>
+</div>
+<p class="note" id="scenarioReason" style="margin-top:15px">Waiting for market analysis.</p>
+<div class="save-area">
+<button id="saveScenarioButton" class="save-button" disabled>Save Simulated Scenario</button>
+<span id="saveMessage">Waiting for a completed analysis...</span>
+</div>
+</section>
+
+<section class="panel">
+<h2>Market Chart</h2>
+<iframe id="chart" class="chart-frame" title="TradingView Market Chart" src="https://s.tradingview.com/widgetembed/?symbol=BINANCE%3ABTCUSDT&interval=15&theme=dark&style=1&locale=en&hide_side_toolbar=0&allow_symbol_change=1" allowfullscreen></iframe>
+</section>
+
+<section class="panel">
+<h2>Analysis Explanation</h2>
+<p id="explanation" class="note">Market analysis will appear here after data loads.</p>
+</section>
+
+<section class="panel">
+<h2>Important Notice</h2>
+<p class="note">QM PROFITER provides educational technical market analysis. Indicator agreement measures indicator alignment, not the probability of winning. Market conditions can change quickly. No analysis guarantees future price movements.</p>
+</section>
+
+<div class="footer">QM PROFITER | Educational Market Analysis</div>
+</div>
+
+<script>
+// Supabase authentication
+const SUPABASE_URL = "https://wuvzojlpegfqwsfhoobc.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_VnpF9r4AtZmiNLdO8SzBvg_WCb-PF2t";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+async function getValidAccessToken(){
+    let { data, error } = await supabaseClient.auth.getSession();
+
+    if(error) throw new Error("Could not check login session.");
+
+    if(!data.session){
+        const refreshed = await supabaseClient.auth.refreshSession();
+        data = refreshed.data;
+        error = refreshed.error;
+    }
+
+    if(error || !data.session){
+        window.location.href = "login.html";
+        throw new Error("Please sign in first.");
+    }
+
+    return data.session.access_token;
+}
+
+async function checkAuthentication(){
+    await getValidAccessToken();
+}
+
+// Shared navigation preference
+const sidebar=document.getElementById("sidebar");
+const navToggle=document.getElementById("navToggle");
+
+function applyNavigationMode(){
+    const iconsOnly=localStorage.getItem("qmNavigationMode")==="icons";
+    sidebar.classList.toggle("icons-only",iconsOnly);
+    document.body.classList.toggle("icons-only",iconsOnly);
+    navToggle.textContent=iconsOnly?"☰ Show Labels":"☰ Icons Only";
+}
+
+navToggle.addEventListener("click",function(){
+    const currentlyIcons=sidebar.classList.contains("icons-only");
+    localStorage.setItem("qmNavigationMode",currentlyIcons?"labels":"icons");
+    applyNavigationMode();
+});
+applyNavigationMode();
+
+const coinSelect=document.getElementById("coin");
+const timeframeSelect=document.getElementById("timeframe");
+const searchInput=document.getElementById("coinSearch");
+const saveButton=document.getElementById("saveScenarioButton");
+
+const coinNames={
+"BTC-USD":"BTC","ETH-USD":"ETH","SOL-USD":"SOL",
+"BNB-USD":"BNB","XRP-USD":"XRP","DOGE-USD":"DOGE",
+"ADA-USD":"ADA","AVAX-USD":"AVAX","LINK-USD":"LINK","LTC-USD":"LTC"
+};
+
+let currentScenario=null;
+
+function show(id,value,colorClass=""){
+    const element=document.getElementById(id);
+    if(!element)return;
+    element.textContent=value;
+    if(colorClass)element.className=element.id==="direction"||element.id==="scenarioDirection"?"direction "+colorClass:colorClass;
+}
+
+function setConnection(message,color="#20d9a0"){
+    const element=document.getElementById("connectionText");
+    element.textContent=message;
+    element.style.color=color;
+}
+
+function money(value){
+    if(!Number.isFinite(value))return "--";
+    return "$"+value.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:6});
+}
+
+function average(values){
+    if(!values.length)return null;
+    return values.reduce((sum,value)=>sum+value,0)/values.length;
+}
+
+function calculateEMA(values,period){
+    if(values.length<period)return null;
+    const multiplier=2/(period+1);
+    let ema=average(values.slice(0,period));
+    for(let i=period;i<values.length;i++){
+        ema=(values[i]-ema)*multiplier+ema;
+    }
+    return ema;
+}
+
+function calculateRSI(values,period=14){
+    if(values.length<=period)return null;
+    let gains=0,losses=0;
+    for(let i=values.length-period;i<values.length;i++){
+        const change=values[i]-values[i-1];
+        if(change>0)gains+=change;
+        else losses+=Math.abs(change);
+    }
+    const averageGain=gains/period;
+    const averageLoss=losses/period;
+    if(averageLoss===0)return 100;
+    if(averageGain===0)return 0;
+    const rs=averageGain/averageLoss;
+    return 100-(100/(1+rs));
+}
+
+function timeframeName(seconds){
+    const names={60:"1 Minute",300:"5 Minutes",900:"15 Minutes",1800:"30 Minutes",3600:"1 Hour",14400:"4 Hours",86400:"1 Day"};
+    return names[seconds]||"Selected";
+}
+
+function resetScenario(message){
+    currentScenario=null;
+    saveButton.disabled=true;
+    show("scenarioDirection","WAIT — NO CLEAR SCENARIO","yellow");
+    show("scenarioEntry","--");
+    show("scenarioSL","--","red");
+    show("scenarioTP1","--","green");
+    show("scenarioTP2","--","green");
+    show("scenarioTP3","--","green");
+    show("scenarioRR","--");
+    show("scenarioReason",message);
+    document.getElementById("saveMessage").textContent="No scenario available to save.";
+}
+
+function updateChart(){
+    const product=coinSelect.value;
+    const symbol=product.replace("-USD","USDT");
+    const intervalMap={60:"1",300:"5",900:"15",1800:"30",3600:"60",14400:"240",86400:"D"};
+    const interval=intervalMap[Number(timeframeSelect.value)];
+    const chartURL="https://s.tradingview.com/widgetembed/?"+
+        "symbol=BINANCE%3A"+symbol+
+        "&interval="+interval+"&theme=dark&style=1&locale=en"+
+        "&hide_side_toolbar=0&allow_symbol_change=1";
+    document.getElementById("chart").src=chartURL;
+}
+
+async function analyzeMarket(){
+    const product=coinSelect.value;
+    const granularity=Number(timeframeSelect.value);
+    currentScenario=null;
+    saveButton.disabled=true;
+    document.getElementById("saveMessage").textContent="Waiting for analysis...";
+    setConnection("Loading market data...","#ffc65c");
+    show("autoSignal","Waiting...");
+    show("agreement","--");
+    show("agreementLabel","--");
+    show("signalTimeframe",timeframeName(granularity));
+    show("lastUpdated",new Date().toLocaleTimeString());
+
+    try{
+        if(granularity===14400){
+            throw new Error("The selected 4-hour interval is not supported by this data source. Try 1 hour or 1 day.");
+        }
+
+        const end=new Date();
+        const start=new Date(end.getTime()-granularity*300*1000);
+        const url="https://api.exchange.coinbase.com/products/"+product+
+            "/candles?granularity="+granularity+
+            "&start="+encodeURIComponent(start.toISOString())+
+            "&end="+encodeURIComponent(end.toISOString());
+
+        const response=await fetch(url,{cache:"no-store"});
+        if(!response.ok)throw new Error("Market API returned "+response.status);
+
+        const candles=await response.json();
+        if(!Array.isArray(candles)||candles.length<60)throw new Error("Not enough candle data received.");
+
+        const sortedCandles=candles.slice().sort((a,b)=>a[0]-b[0]);
+        const closes=sortedCandles.map(candle=>Number(candle[4])).filter(Number.isFinite);
+        if(closes.length<60)throw new Error("Not enough valid prices.");
+
+        const current=closes[closes.length-1];
+        const ema20=calculateEMA(closes,20);
+        const ema50=calculateEMA(closes,50);
+        const rsiValue=calculateRSI(closes,14);
+        const ema12=calculateEMA(closes,12);
+        const ema26=calculateEMA(closes,26);
+
+        if(![current,ema20,ema50,rsiValue,ema12,ema26].every(Number.isFinite)){
+            throw new Error("Indicator calculation failed.");
+        }
+
+        const macdValue=ema12-ema26;
+        const previous=closes[closes.length-2];
+        const momentum=current-previous;
+        const recentCandles=sortedCandles.slice(-20);
+        const support=Math.min(...recentCandles.map(candle=>Number(candle[1])));
+        const resistance=Math.max(...recentCandles.map(candle=>Number(candle[2])));
+
+        let bullishPoints=0,bearishPoints=0;
+        if(ema20>ema50)bullishPoints++;else if(ema20<ema50)bearishPoints++;
+        if(current>ema20)bullishPoints++;else if(current<ema20)bearishPoints++;
+        if(rsiValue>55&&rsiValue<70)bullishPoints++;else if(rsiValue<45&&rsiValue>30)bearishPoints++;
+        if(macdValue>0)bullishPoints++;else if(macdValue<0)bearishPoints++;
+        if(momentum>0)bullishPoints++;else if(momentum<0)bearishPoints++;
+
+        const strongestSide=Math.max(bullishPoints,bearishPoints);
+        const agreement=Math.round(strongestSide/5*100);
+        let agreementLabel="Weak indicator alignment";
+        if(agreement>=80)agreementLabel="Strong indicator alignment";
+        else if(agreement>=60)agreementLabel="Moderate indicator alignment";
+
+        let trend="SIDEWAYS",trendClass="yellow";
+        if(bullishPoints>=4&&bullishPoints>bearishPoints){trend="BULLISH";trendClass="green";}
+        else if(bearishPoints>=4&&bearishPoints>bullishPoints){trend="BEARISH";trendClass="red";}
+
+        let automaticAnalysis="NEUTRAL — CONDITIONS UNCLEAR";
+        let explanation="The indicators do not currently show sufficient directional agreement. This is an educational assessment, not a prediction.";
+
+        if(trend==="BULLISH"){
+            automaticAnalysis="BULLISH CONDITIONS";
+            explanation="Several indicators currently lean bullish. This does not guarantee that the market will rise.";
+        }
+        if(trend==="BEARISH"){
+            automaticAnalysis="BEARISH CONDITIONS";
+            explanation="Several indicators currently lean bearish. This does not guarantee that the market will fall.";
+        }
+
+        show("price",money(current));
+        show("trend",trend,trendClass);
+        show("rsi",rsiValue.toFixed(2));
+        show("ema20",money(ema20));
+        show("ema50",money(ema50));
+        show("macd",macdValue.toFixed(6));
+        show("momentum",(momentum>=0?"+":"")+momentum.toFixed(6),momentum>=0?"green":"red");
+        show("support",money(support));
+        show("resistance",money(resistance));
+        show("autoSignal",automaticAnalysis,trendClass);
+        show("agreement",agreement+"%");
+        show("agreementLabel",agreementLabel);
+        show("signalTimeframe",timeframeName(granularity));
+
+        const direction=document.getElementById("direction");
+        direction.textContent=trend;
+        direction.className="direction "+trendClass;
+        show("explanation",explanation);
+
+        if(trend==="BULLISH"||trend==="BEARISH"){
+            const isBullish=trend==="BULLISH";
+            const distance=Math.max(current*0.003,(resistance-support)*0.25);
+            const entry=current;
+            const stop=isBullish?entry-distance:entry+distance;
+            const tp1=isBullish?entry+distance:entry-distance;
+            const tp2=isBullish?entry+distance*2:entry-distance*2;
+            const tp3=isBullish?entry+distance*3:entry-distance*3;
+
+            show("scenarioDirection",isBullish?"SIMULATED LONG SCENARIO":"SIMULATED SHORT SCENARIO",isBullish?"green":"red");
+            show("scenarioEntry",money(entry));
+            show("scenarioSL",money(stop),"red");
+            show("scenarioTP1",money(tp1),"green");
+            show("scenarioTP2",money(tp2),"green");
+            show("scenarioTP3",money(tp3),"green");
+            show("scenarioRR","1 : 1");
+            show("scenarioReason","Hypothetical paper-trading illustration only. It has not been validated as a profitable strategy.");
+
+            currentScenario={
+                symbol:product,
+                direction:isBullish?"LONG":"SHORT",
+                entry:entry,
+                stopLoss:stop,
+                takeProfit:tp1
+            };
+
+            saveButton.disabled=false;
+            document.getElementById("saveMessage").textContent="A simulated scenario is ready to save.";
+        }else{
+            resetScenario("The indicators do not show sufficient directional agreement. No scenario has been generated.");
+        }
+
+        setConnection("Market data updated successfully for "+coinNames[product]+".","#20d9a0");
+
+    }catch(error){
+        console.error("QM PROFITER:",error);
+        setConnection("Market data unavailable: "+error.message,"#ff6177");
+        show("direction","DATA UNAVAILABLE","red");
+        ["price","trend","rsi","ema20","ema50","macd","momentum","support","resistance"].forEach(id=>show(id,"--"));
+        show("autoSignal","Waiting for data");
+        show("agreement","--");
+        show("agreementLabel","--");
+        show("explanation","Market data could not be loaded. Check your internet connection and try again.");
+        resetScenario("Market data is unavailable. Scenario values have been reset.");
+    }
+}
+
+// FIXED: Include the Supabase access token in the save request
+async function saveScenario(){
+    if(!currentScenario){
+        document.getElementById("saveMessage").textContent="No scenario is ready to save.";
+        return;
+    }
+
+    saveButton.disabled=true;
+    document.getElementById("saveMessage").textContent="Saving simulated scenario...";
+
+    try{
+        const accessToken=await getValidAccessToken();
+
+        const response=await fetch("http://localhost:3000/api/paper-trades",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+accessToken
+            },
+            body:JSON.stringify(currentScenario)
+        });
+
+        const result=await response.json();
+
+        if(!response.ok){
+            throw new Error(result.error||"Could not save scenario.");
+        }
+
+        document.getElementById("saveMessage").textContent="Saved successfully! Open Paper Trading History to view it.";
+
+    }catch(error){
+        console.error("Save scenario:",error);
+        document.getElementById("saveMessage").textContent="Save failed: "+error.message;
+        saveButton.disabled=false;
+    }
+}
+
+searchInput.addEventListener("input",function(){
+    const search=this.value.trim().toUpperCase();
+    for(const option of coinSelect.options){
+        const symbol=option.value.replace("-USD","");
+        option.hidden=!symbol.includes(search)&&!option.text.toUpperCase().includes(search);
+    }
+});
+
+coinSelect.addEventListener("change",function(){updateChart();analyzeMarket();});
+timeframeSelect.addEventListener("change",function(){updateChart();analyzeMarket();});
+document.getElementById("refreshButton").addEventListener("click",analyzeMarket);
+saveButton.addEventListener("click",saveScenario);
+
+// Check login before starting the page
+async function startSignalsPage(){
+    try{
+        await checkAuthentication();
+        updateChart();
+        analyzeMarket();
+        setInterval(analyzeMarket,60000);
+    }catch(error){
+        console.error("Signals authentication:",error);
+    }
+}
+
+startSignalsPage();
+</script>
+
+</body>
+</html>

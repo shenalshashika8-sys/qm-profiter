@@ -1,0 +1,1021 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QM PROFITER - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .dashboard-section {
+            margin-top: 25px;
+        }
+
+        .dashboard-section h2 {
+            margin-bottom: 15px;
+        }
+
+        .performance-grid,
+        .monitor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .performance-card,
+        .monitor-card {
+            background: #111c2e;
+            border: 1px solid #26354d;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .performance-card p,
+        .monitor-card p {
+            color: #9eacc2;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .performance-card h2 {
+            font-size: 25px;
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .performance-card small,
+        .monitor-card small {
+            display: block;
+            margin-top: 8px;
+            color: #8191a9;
+        }
+
+        .monitor-value {
+            font-size: 17px;
+            font-weight: bold;
+            color: #f0b94d;
+        }
+
+        .monitor-dot {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #f0b94d;
+            margin-right: 7px;
+        }
+
+        .monitor-dot.online {
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+        }
+
+        .monitor-dot.offline {
+            background: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+        }
+
+        .monitor-dot.warning {
+            background: #f0b94d;
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .quick-link {
+            display: block;
+            text-decoration: none;
+            background: #111c2e;
+            border: 1px solid #26354d;
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            transition: 0.2s;
+        }
+
+        .quick-link:hover {
+            border-color: #3185ff;
+            transform: translateY(-2px);
+        }
+
+        .quick-link p {
+            color: #9eacc2;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .connection-status {
+            font-size: 13px;
+            margin-top: 8px;
+            color: #f0b94d;
+        }
+
+        .dashboard-note {
+            color: #9eacc2;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .monitor-footer {
+            color: #8191a9;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        /* SIDEBAR NAVIGATION */
+
+        .sidebar {
+            flex-shrink: 0;
+            transition: width 0.25s ease, padding 0.25s ease;
+        }
+
+        .nav-toggle {
+            width: 100%;
+            background: #18263b;
+            color: #00e5a0;
+            border: 1px solid #30415a;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-bottom: 22px;
+        }
+
+        .nav-toggle:hover {
+            background: #123a35;
+        }
+
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            min-height: 48px;
+        }
+
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .nav-label {
+            white-space: nowrap;
+        }
+
+        /* LOGOUT BUTTON */
+
+        .logout-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            min-height: 48px;
+            padding: 12px;
+            margin-top: 12px;
+            border: 1px solid #54303a;
+            border-radius: 8px;
+            background: #251923;
+            color: #ff7777;
+            font-size: 14px;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #42202a;
+            border-color: #ef4444;
+        }
+
+        .logout-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .logout-btn .nav-icon {
+            stroke: currentColor;
+        }
+
+        /* ICONS ONLY MODE */
+
+        .sidebar.icons-only {
+            width: 88px;
+            padding: 25px 12px;
+        }
+
+        .sidebar.icons-only .logo {
+            font-size: 12px;
+            letter-spacing: 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar.icons-only nav {
+            gap: 12px;
+        }
+
+        .sidebar.icons-only nav a {
+            justify-content: center;
+            padding: 13px 8px;
+        }
+
+        .sidebar.icons-only .nav-label {
+            display: none;
+        }
+
+        .sidebar.icons-only .logout-btn {
+            justify-content: center;
+            padding: 13px 8px;
+        }
+
+        .sidebar.icons-only .nav-toggle {
+            font-size: 11px;
+            padding: 9px 3px;
+        }
+
+        .sidebar.icons-only .sidebar-footer {
+            text-align: center;
+            font-size: 9px;
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 1000px) {
+            .market-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .sidebar nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .sidebar-footer {
+                margin-top: 25px;
+            }
+
+            .main-content {
+                padding: 18px;
+            }
+
+            .market-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .sidebar.icons-only {
+                width: 100%;
+                padding: 20px;
+            }
+
+            .sidebar.icons-only nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .sidebar.icons-only .sidebar-footer {
+                margin-top: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <aside class="sidebar" id="sidebar">
+
+        <button class="nav-toggle" id="navToggle" type="button">
+            ☰ Icons Only
+        </button>
+
+        <h2 class="logo">QM PROFITER</h2>
+
+        <nav>
+
+            <a class="active" href="index.html" title="Home">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M3 10.5L12 3l9 7.5"></path>
+                    <path d="M5 9.5V21h14V9.5"></path>
+                    <path d="M9 21v-7h6v7"></path>
+                </svg>
+                <span class="nav-label">Home</span>
+            </a>
+
+            <a href="analyzer.html" title="Analyzer">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M3 3v18h18"></path>
+                    <path d="M7 14l4-4 4 3 6-7"></path>
+                </svg>
+                <span class="nav-label">Analyzer</span>
+            </a>
+
+            <a href="signals.html" title="Signals">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M3 12h4l3-8 4 16 3-8h4"></path>
+                </svg>
+                <span class="nav-label">Signals</span>
+            </a>
+
+            <a href="chart.html" title="Charts">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M4 4v16"></path>
+                    <path d="M10 7v10"></path>
+                    <path d="M16 3v18"></path>
+                    <path d="M22 6v12"></path>
+                    <path d="M2 9h4"></path>
+                    <path d="M8 12h4"></path>
+                    <path d="M14 8h4"></path>
+                    <path d="M20 14h3"></path>
+                </svg>
+                <span class="nav-label">Charts</span>
+            </a>
+
+            <a href="calculator.html" title="Calculator">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                    <path d="M8 6h8"></path>
+                    <path d="M8 11h2"></path>
+                    <path d="M14 11h2"></path>
+                    <path d="M8 15h2"></path>
+                    <path d="M14 15h2"></path>
+                    <path d="M8 19h2"></path>
+                    <path d="M14 19h2"></path>
+                </svg>
+                <span class="nav-label">Calculator</span>
+            </a>
+
+            <a href="history.html" title="Paper Trading History">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 7v5l3 2"></path>
+                    <path d="M3 4v5h5"></path>
+                </svg>
+                <span class="nav-label">Paper Trading History</span>
+            </a>
+
+            <!-- LOGOUT BUTTON -->
+
+            <button class="logout-btn" id="logoutBtn" type="button">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M10 17l5-5-5-5"></path>
+                    <path d="M15 12H3"></path>
+                    <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path>
+                </svg>
+                <span class="nav-label">Logout</span>
+            </button>
+
+        </nav>
+
+        <div class="sidebar-footer">
+            <p>AI TRADING PLATFORM</p>
+            <small>Powered by Shenal Shashika</small>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <h1>Dashboard</h1>
+                <p>Welcome to your trading workspace.</p>
+
+                <div class="connection-status" id="backendStatus">
+                    Checking backend connection...
+                </div>
+            </div>
+
+            <div class="status" id="systemStatus">
+                ● CHECKING SYSTEM
+            </div>
+
+        </header>
+
+        <!-- LIVE MARKET DATA -->
+
+        <section class="market-cards">
+
+            <div class="market-card">
+                <p>Bitcoin (BTC)</p>
+                <h2 id="btc-price">Loading...</h2>
+                <span>Live market data</span>
+            </div>
+
+            <div class="market-card">
+                <p>Ethereum (ETH)</p>
+                <h2 id="eth-price">Loading...</h2>
+                <span>Live market data</span>
+            </div>
+
+            <div class="market-card">
+                <p>Trading Signals</p>
+                <h2>Analyzer</h2>
+                <span>Educational analysis</span>
+            </div>
+
+            <div class="market-card">
+                <p>Risk Management</p>
+                <h2>Calculator</h2>
+                <span>Trading tools</span>
+            </div>
+
+        </section>
+
+        <!-- SYSTEM MONITOR -->
+
+        <section class="dashboard-section">
+
+            <h2>System Monitor</h2>
+
+            <div class="monitor-grid">
+
+                <div class="monitor-card">
+                    <p>Backend Connection</p>
+                    <div class="monitor-value">
+                        <span class="monitor-dot warning" id="backendDot"></span>
+                        <span id="backendMonitor">Checking...</span>
+                    </div>
+                    <small>Node.js server status</small>
+                </div>
+
+                <div class="monitor-card">
+                    <p>Market Data</p>
+                    <div class="monitor-value">
+                        <span class="monitor-dot warning" id="marketDot"></span>
+                        <span id="marketMonitor">Checking...</span>
+                    </div>
+                    <small>BTC and ETH price availability</small>
+                </div>
+
+                <div class="monitor-card">
+                    <p>Statistics API</p>
+                    <div class="monitor-value">
+                        <span class="monitor-dot warning" id="statsDot"></span>
+                        <span id="statsMonitor">Checking...</span>
+                    </div>
+                    <small>Paper trading statistics</small>
+                </div>
+
+                <div class="monitor-card">
+                    <p>Last Checked</p>
+                    <div class="monitor-value" id="lastChecked">
+                        Waiting...
+                    </div>
+                    <small>Automatic system monitoring</small>
+                </div>
+
+            </div>
+
+            <p class="monitor-footer">
+                System checks refresh automatically every 15 seconds.
+            </p>
+
+        </section>
+
+        <!-- PAPER TRADING PERFORMANCE -->
+
+        <section class="dashboard-section">
+
+            <h2>Paper Trading Performance</h2>
+
+            <div class="performance-grid">
+
+                <div class="performance-card">
+                    <p>Total Simulated Trades</p>
+                    <h2 id="totalTrades">--</h2>
+                    <small>All recorded scenarios</small>
+                </div>
+
+                <div class="performance-card">
+                    <p>Completed Trades</p>
+                    <h2 id="completedTrades">--</h2>
+                    <small>Recorded outcomes</small>
+                </div>
+
+                <div class="performance-card">
+                    <p>Win Rate</p>
+                    <h2 id="winRate">--</h2>
+                    <small>Based on completed simulations</small>
+                </div>
+
+                <div class="performance-card">
+                    <p>Simulated P&amp;L</p>
+                    <h2 id="simulatedPnL">--</h2>
+                    <small>Combined recorded outcomes</small>
+                </div>
+
+            </div>
+
+            <p class="dashboard-note">
+                Performance figures are based on simulated paper trades.
+                They do not represent real trading profits.
+            </p>
+
+        </section>
+
+        <!-- MARKET OVERVIEW -->
+
+        <section class="content-card dashboard-section">
+
+            <h2>Market Overview</h2>
+
+            <p>Your professional trading workspace is ready.</p>
+
+            <div class="chart-placeholder">
+                CHART AREA
+            </div>
+
+        </section>
+
+        <!-- QUICK ACCESS -->
+
+        <section class="dashboard-section">
+
+            <h2>Quick Access</h2>
+
+            <div class="quick-links">
+
+                <a href="analyzer.html" class="quick-link">
+                    <h3>Market Analyzer</h3>
+                    <p>Explore market indicators and chart analysis.</p>
+                </a>
+
+                <a href="signals.html" class="quick-link">
+                    <h3>Signals Center</h3>
+                    <p>Review educational market scenarios.</p>
+                </a>
+
+                <a href="history.html" class="quick-link">
+                    <h3>Paper Trading History</h3>
+                    <p>Review simulated trades and performance.</p>
+                </a>
+
+                <a href="calculator.html" class="quick-link">
+                    <h3>Trading Calculator</h3>
+                    <p>Explore position sizing and risk calculations.</p>
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- SUPABASE LIBRARY -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- EXISTING MARKET DATA SCRIPT -->
+
+<script src="script.js"></script>
+
+<script>
+
+    // SUPABASE INITIALIZATION
+
+    const SUPABASE_URL =
+        "https://wuvzojlpegfqwsfhoobc.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+        "sb_publishable_VnpF9r4AtZmiNLdO8SzBvg_WCb-PF2t";
+
+    const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+    // AUTHENTICATION CHECK
+
+    async function checkAuthentication() {
+
+        try {
+
+            const { data, error } =
+                await supabaseClient.auth.getSession();
+
+            if (error) {
+                throw error;
+            }
+
+            if (!data.session) {
+
+                window.location.replace("login.html");
+
+                return false;
+            }
+
+            return true;
+
+        } catch (error) {
+
+            console.error(
+                "Authentication error:",
+                error.message
+            );
+
+            window.location.replace("login.html");
+
+            return false;
+        }
+    }
+
+
+    // LOGOUT FUNCTION
+
+    const logoutButton =
+        document.getElementById("logoutBtn");
+
+    logoutButton.addEventListener("click", async function () {
+
+        logoutButton.disabled = true;
+        logoutButton.querySelector(".nav-label").textContent =
+            "Signing out...";
+
+        try {
+
+            const { error } =
+                await supabaseClient.auth.signOut();
+
+            if (error) {
+                throw error;
+            }
+
+            window.location.replace("login.html");
+
+        } catch (error) {
+
+            console.error("Logout error:", error);
+
+            alert("Logout failed: " + error.message);
+
+            logoutButton.disabled = false;
+
+            logoutButton.querySelector(".nav-label").textContent =
+                "Logout";
+        }
+
+    });
+
+
+    // SIDEBAR ICON TOGGLE
+
+    const sidebar = document.getElementById("sidebar");
+    const navToggle = document.getElementById("navToggle");
+
+    function updateNavigationMode(iconOnly) {
+
+        sidebar.classList.toggle("icons-only", iconOnly);
+
+        navToggle.textContent = iconOnly
+            ? "☰ Show Labels"
+            : "☰ Icons Only";
+
+        navToggle.title = iconOnly
+            ? "Show navigation labels"
+            : "Show icons only";
+
+        try {
+
+            localStorage.setItem(
+                "qmNavigationMode",
+                iconOnly ? "icons" : "full"
+            );
+
+        } catch (error) {
+
+            console.warn(
+                "Navigation preference could not be saved."
+            );
+
+        }
+    }
+
+
+    // LOAD SAVED PREFERENCE
+
+    let savedNavigationMode = "full";
+
+    try {
+
+        savedNavigationMode =
+            localStorage.getItem("qmNavigationMode") || "full";
+
+    } catch (error) {
+
+        console.warn(
+            "Navigation preference could not be loaded."
+        );
+
+    }
+
+    updateNavigationMode(savedNavigationMode === "icons");
+
+
+    // TOGGLE BUTTON
+
+    navToggle.addEventListener("click", function () {
+
+        const currentlyIconsOnly =
+            sidebar.classList.contains("icons-only");
+
+        updateNavigationMode(!currentlyIconsOnly);
+
+    });
+
+
+    // SYSTEM MONITOR
+
+    const API_URL = "http://localhost:3000";
+
+    function setMonitor(id, dotId, message, state) {
+
+        document.getElementById(id).textContent = message;
+
+        const dot = document.getElementById(dotId);
+
+        dot.className = "monitor-dot " + state;
+
+    }
+
+
+    // DASHBOARD STATISTICS
+
+    async function checkSystem() {
+
+        const backendStatus =
+            document.getElementById("backendStatus");
+
+        const systemStatus =
+            document.getElementById("systemStatus");
+
+        let backendOnline = false;
+        let statsOnline = false;
+
+
+        // CHECK BACKEND CONNECTION
+
+        try {
+
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                throw new Error("Backend unavailable");
+            }
+
+            backendOnline = true;
+
+            setMonitor(
+                "backendMonitor",
+                "backendDot",
+                "ONLINE",
+                "online"
+            );
+
+            backendStatus.textContent =
+                "Backend connected successfully.";
+
+        } catch (error) {
+
+            setMonitor(
+                "backendMonitor",
+                "backendDot",
+                "OFFLINE",
+                "offline"
+            );
+
+            backendStatus.textContent =
+                "Backend connection unavailable.";
+
+        }
+
+
+        // CHECK STATISTICS API
+
+        if (backendOnline) {
+
+            try {
+
+                const { data: sessionData, error: sessionError } =
+                    await supabaseClient.auth.getSession();
+
+                if (sessionError) {
+                    throw sessionError;
+                }
+
+                if (!sessionData.session) {
+
+                    window.location.replace("login.html");
+
+                    return;
+                }
+
+
+                // SEND ACCESS TOKEN TO BACKEND
+
+                const response = await fetch(
+                    API_URL + "/api/paper-trades/stats",
+                    {
+                        headers: {
+                            "Authorization":
+                                `Bearer ${sessionData.session.access_token}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Statistics unavailable: HTTP " +
+                        response.status
+                    );
+
+                }
+
+
+                // READ STATISTICS
+
+                const stats = await response.json();
+
+                statsOnline = true;
+
+                setMonitor(
+                    "statsMonitor",
+                    "statsDot",
+                    "AVAILABLE",
+                    "online"
+                );
+
+
+                // UPDATE PERFORMANCE CARDS
+
+                document.getElementById("totalTrades").textContent =
+                    stats.totalTrades ?? 0;
+
+                document.getElementById("completedTrades").textContent =
+                    stats.completedTrades ?? 0;
+
+                document.getElementById("winRate").textContent =
+                    Number(stats.winRate ?? 0).toFixed(2) + "%";
+
+
+                // UPDATE SIMULATED PROFIT AND LOSS
+
+                const pnl = Number(stats.simulatedPnL ?? 0);
+
+                const pnlElement =
+                    document.getElementById("simulatedPnL");
+
+                pnlElement.textContent =
+                    (pnl >= 0 ? "+" : "-") +
+                    "$" + Math.abs(pnl).toFixed(2);
+
+                pnlElement.style.color =
+                    pnl > 0 ? "#22c55e" :
+                    pnl < 0 ? "#ef4444" : "#ffffff";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Statistics error:",
+                    error.message
+                );
+
+                setMonitor(
+                    "statsMonitor",
+                    "statsDot",
+                    "UNAVAILABLE",
+                    "offline"
+                );
+
+                document.getElementById("totalTrades").textContent = "--";
+                document.getElementById("completedTrades").textContent = "--";
+                document.getElementById("winRate").textContent = "--";
+                document.getElementById("simulatedPnL").textContent = "--";
+
+            }
+
+        } else {
+
+            setMonitor(
+                "statsMonitor",
+                "statsDot",
+                "UNAVAILABLE",
+                "offline"
+            );
+
+            document.getElementById("totalTrades").textContent = "--";
+            document.getElementById("completedTrades").textContent = "--";
+            document.getElementById("winRate").textContent = "--";
+            document.getElementById("simulatedPnL").textContent = "--";
+
+        }
+
+
+        // CHECK MARKET PRICES
+
+        const btc =
+            document.getElementById("btc-price").textContent.trim();
+
+        const eth =
+            document.getElementById("eth-price").textContent.trim();
+
+        const marketAvailable =
+            btc !== "Loading..." &&
+            eth !== "Loading..." &&
+            btc !== "--" &&
+            eth !== "--" &&
+            btc !== "Unavailable" &&
+            eth !== "Unavailable";
+
+        if (marketAvailable) {
+
+            setMonitor(
+                "marketMonitor",
+                "marketDot",
+                "DATA LOADED",
+                "online"
+            );
+
+        } else {
+
+            setMonitor(
+                "marketMonitor",
+                "marketDot",
+                "WAITING",
+                "warning"
+            );
+
+        }
+
+
+        // OVERALL SYSTEM STATUS
+
+        if (backendOnline && statsOnline) {
+
+            systemStatus.textContent = "● SYSTEM ONLINE";
+
+        } else {
+
+            systemStatus.textContent = "● CHECK CONNECTION";
+
+        }
+
+        document.getElementById("lastChecked").textContent =
+            new Date().toLocaleTimeString();
+
+    }
+
+
+    // START APPLICATION AFTER AUTHENTICATION
+
+    async function startApplication() {
+
+        const authenticated = await checkAuthentication();
+
+        if (!authenticated) {
+            return;
+        }
+
+        await checkSystem();
+
+        // AUTOMATIC REFRESH
+
+        setInterval(checkSystem, 15000);
+
+    }
+
+    startApplication();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,209 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #080d18;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+}
+
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background: #101827;
+    padding: 30px 20px;
+    border-right: 1px solid #243044;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    color: #00e5a0;
+    font-size: 23px;
+    letter-spacing: 2px;
+    margin-bottom: 55px;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar nav a {
+    color: #9ba9bd;
+    text-decoration: none;
+    padding: 15px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+    background: #123a35;
+    color: #00e5a0;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    color: #8492a6;
+    font-size: 11px;
+    line-height: 2;
+}
+
+.main-content {
+    flex: 1;
+    padding: 35px;
+    min-width: 0;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+    gap: 15px;
+}
+
+.topbar h1 {
+    font-size: 30px;
+    color: white;
+    text-align: left;
+    margin: 0;
+}
+
+.topbar p {
+    color: #8290a5;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.status {
+    color: #00e5a0;
+    background: #10332d;
+    padding: 12px 18px;
+    border-radius: 20px;
+    font-size: 11px;
+}
+
+.market-cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.market-card,
+.content-card {
+    background: #111b2b;
+    border: 1px solid #243044;
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.market-card p {
+    color: #8290a5;
+    text-align: left;
+    margin: 0 0 18px;
+}
+
+.market-card h2 {
+    color: #00e5a0;
+    text-align: left;
+    font-size: 23px;
+    margin: 0 0 12px;
+}
+
+.market-card span {
+    color: #718198;
+    font-size: 12px;
+}
+
+.content-card {
+    margin-bottom: 25px;
+}
+
+.content-card h2 {
+    text-align: left;
+    margin: 0 0 12px;
+    color: white;
+}
+
+.content-card p {
+    text-align: left;
+    color: #8290a5;
+    margin: 0 0 20px;
+}
+
+.chart-placeholder {
+    height: 300px;
+    background: #0a1220;
+    border: 1px dashed #30415a;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #64748b;
+    letter-spacing: 3px;
+}
+
+button {
+    background: #00c995;
+    color: #06130f;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #00e5a0;
+}
+
+@media (max-width: 1000px) {
+    .market-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 650px) {
+    .dashboard {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .sidebar nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .sidebar-footer {
+        margin-top: 25px;
+    }
+
+    .main-content {
+        padding: 18px;
+    }
+
+    .market-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
