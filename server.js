@@ -12,8 +12,7 @@ require("dotenv").config();
 // ------------------------------
 
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-    console.error("Missing Supabase environment variables in .env");
-    process.exit(1);
+    throw new Error("Missing Supabase environment variables.");
 }
 
 const supabase = require("./auth");
@@ -519,17 +518,33 @@ app.use((error, req, res, next) => {
         });
     }
 
-    next(error);
+    console.error("Server error:", error);
+
+    if (res.headersSent) {
+        return next(error);
+    }
+
+    res.status(500).json({
+        error: "Internal server error."
+    });
 });
 
 // ------------------------------
-// START SERVER
+// EXPORT EXPRESS APP FOR VERCEL
 // ------------------------------
 
-const PORT = process.env.PORT || 3000;
+module.exports = app;
 
-app.listen(PORT, () => {
-    console.log(
-        `QM PROFITER backend running at http://localhost:${PORT}`
-    );
-});
+// ------------------------------
+// START SERVER LOCALLY
+// ------------------------------
+
+if (require.main === module) {
+    const PORT = process.env.PORT || 3000;
+
+    app.listen(PORT, () => {
+        console.log(
+            `QM PROFITER backend running at http://localhost:${PORT}`
+        );
+    });
+}
