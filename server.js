@@ -23,7 +23,9 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 
-const activityFile = path.join(__dirname, "activity-log.json");
+const activityFile = process.env.VERCEL
+    ? path.join("/tmp", "activity-log.json")
+    : path.join(__dirname, "activity-log.json");
 
 // ------------------------------
 // AUTHENTICATION
