@@ -9,24 +9,117 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+:root {
+    --black: #080808;
+    --panel: rgba(19, 19, 19, 0.88);
+    --yellow: #ffd400;
+    --red: #ff3030;
+    --white: #f5f5f5;
+    --muted: #aaa9a5;
+    --border: rgba(255, 212, 0, 0.24);
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+html {
+    min-height: 100%;
+    scroll-behavior: smooth;
+}
+
 body {
-    background: #080d18;
-    color: #ffffff;
+    background: var(--black);
+    color: var(--white);
     font-family: Arial, sans-serif;
     min-height: 100vh;
+    position: relative;
+    isolation: isolate;
+    overflow-x: hidden;
 }
+
+/* =====================================
+   ANIMATED BACKGROUND - ALL USERS
+===================================== */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: -45%;
+    z-index: 0;
+    pointer-events: none;
+
+    background:
+        radial-gradient(ellipse at 15% 20%,
+            rgba(255, 212, 0, 0.34), transparent 30%),
+        radial-gradient(ellipse at 85% 25%,
+            rgba(255, 35, 35, 0.30), transparent 32%),
+        radial-gradient(ellipse at 50% 80%,
+            rgba(255, 160, 0, 0.20), transparent 35%),
+        radial-gradient(ellipse at 90% 90%,
+            rgba(170, 0, 0, 0.23), transparent 30%);
+
+    filter: blur(65px);
+    animation: rockGlow 13s ease-in-out infinite alternate;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+
+    background-image:
+        radial-gradient(circle, rgba(255, 212, 0, 0.8) 1px, transparent 2px),
+        radial-gradient(circle, rgba(255, 50, 30, 0.7) 1px, transparent 2px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.4) 1px, transparent 2px);
+
+    background-size: 160px 160px, 230px 230px, 300px 300px;
+    background-position: 0 0, 70px 50px, 120px 100px;
+
+    animation: rockParticles 28s linear infinite;
+}
+
+@keyframes rockGlow {
+    0% {
+        transform: translate(-7%, -5%) rotate(0deg) scale(1);
+    }
+
+    50% {
+        transform: translate(7%, 5%) rotate(10deg) scale(1.15);
+    }
+
+    100% {
+        transform: translate(-5%, 8%) rotate(-10deg) scale(1.08);
+    }
+}
+
+@keyframes rockParticles {
+    from {
+        background-position: 0 0, 70px 50px, 120px 100px;
+    }
+
+    to {
+        background-position: 300px 300px, -150px 350px, 400px -200px;
+    }
+}
+
+/* Keep all page content above animation */
 
 .container {
     max-width: 1250px;
     margin: auto;
     padding: 30px;
+    position: relative;
+    z-index: 1;
 }
+
+/* =====================================
+   MAIN LAYOUT
+===================================== */
 
 .header {
     display: flex;
@@ -38,50 +131,97 @@ body {
 }
 
 .header h1 {
-    font-size: 28px;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--yellow);
+    text-shadow: 0 0 15px rgba(255, 212, 0, 0.35);
 }
 
 .header p {
-    color: #8d9bb3;
+    color: var(--muted);
     margin-top: 8px;
+    font-size: 13px;
+    letter-spacing: 1px;
 }
 
 .back-btn {
-    background: #18253a;
-    color: white;
-    border: 1px solid #293b57;
-    padding: 11px 18px;
-    border-radius: 8px;
+    background: rgba(255, 212, 0, 0.08);
+    color: var(--yellow);
+    border: 1px solid rgba(255, 212, 0, 0.45);
+    padding: 12px 19px;
+    border-radius: 7px;
     text-decoration: none;
+    font-weight: bold;
+    transition: 0.25s;
 }
 
+.back-btn:hover {
+    background: var(--yellow);
+    color: #080808;
+    box-shadow: 0 0 18px rgba(255, 212, 0, 0.35);
+}
+
+/* =====================================
+   SECTIONS
+===================================== */
+
 .section {
-    background: #101827;
-    border: 1px solid #1d2b40;
-    border-radius: 14px;
-    padding: 24px;
+    background: var(--panel);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 25px;
     margin-bottom: 25px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 75px;
+    height: 3px;
+    background: var(--yellow);
+    box-shadow: 0 0 12px var(--yellow);
 }
 
 .section h2 {
     font-size: 20px;
     margin-bottom: 20px;
+    color: var(--white);
+    letter-spacing: 0.5px;
 }
 
 .admin-section {
     display: none;
-    border-color: #6650c8;
+    border-color: rgba(255, 48, 48, 0.55);
+}
+
+.admin-section::before {
+    background: var(--red);
+    box-shadow: 0 0 12px var(--red);
 }
 
 .admin-tag {
     display: inline-block;
-    background: #33275d;
-    color: #c5b6ff;
+    background: rgba(255, 48, 48, 0.15);
+    color: #ff7777;
+    border: 1px solid rgba(255, 48, 48, 0.5);
     padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 11px;
+    border-radius: 4px;
+    font-size: 10px;
     margin-left: 8px;
+    letter-spacing: 1px;
 }
+
+/* =====================================
+   FORM
+===================================== */
 
 .form-grid {
     display: grid;
@@ -100,8 +240,10 @@ body {
 }
 
 .field label {
-    color: #aab8ce;
-    font-size: 13px;
+    color: var(--yellow);
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
 }
 
 .field input,
@@ -109,12 +251,25 @@ body {
 .field textarea {
     width: 100%;
     padding: 13px;
-    border-radius: 8px;
-    border: 1px solid #2a3a53;
-    background: #080f1c;
+    border-radius: 6px;
+    border: 1px solid #39352a;
+    background: rgba(5, 5, 5, 0.92);
     color: white;
     outline: none;
     font-size: 14px;
+    transition: 0.25s;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    border-color: var(--yellow);
+    box-shadow: 0 0 12px rgba(255, 212, 0, 0.16);
+}
+
+.field select option {
+    background: #111;
+    color: white;
 }
 
 .field textarea {
@@ -122,45 +277,65 @@ body {
     resize: vertical;
 }
 
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
-    border-color: #8065ff;
-}
+/* =====================================
+   BUTTONS
+===================================== */
 
 .primary-btn {
-    background: #7655ed;
-    color: white;
+    background: linear-gradient(100deg, #ffd400, #ff9900);
+    color: #080808;
     border: none;
     padding: 13px 22px;
-    border-radius: 8px;
-    font-weight: bold;
+    border-radius: 6px;
+    font-weight: 900;
     cursor: pointer;
     margin-top: 18px;
+    transition: 0.25s;
 }
 
-.secondary-btn {
-    background: #26364e;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 7px;
-    cursor: pointer;
-}
-
-.delete-btn {
-    background: #7d2938;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 7px;
-    cursor: pointer;
+.primary-btn:hover {
+    box-shadow: 0 0 20px rgba(255, 212, 0, 0.45);
+    transform: translateY(-2px);
 }
 
 .primary-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
 }
+
+.secondary-btn {
+    background: #252525;
+    color: var(--yellow);
+    border: 1px solid #625018;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.secondary-btn:hover {
+    background: #3a3015;
+}
+
+.delete-btn {
+    background: rgba(255, 48, 48, 0.14);
+    color: #ff7777;
+    border: 1px solid rgba(255, 48, 48, 0.5);
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.delete-btn:hover {
+    background: var(--red);
+    color: white;
+}
+
+/* =====================================
+   FILTER BUTTONS
+===================================== */
 
 .filter-row {
     display: flex;
@@ -170,19 +345,31 @@ body {
 }
 
 .filter-btn {
-    padding: 9px 15px;
-    background: #18253a;
-    border: 1px solid #293b57;
-    color: #aab8ce;
-    border-radius: 7px;
+    padding: 9px 16px;
+    background: #171717;
+    border: 1px solid #393939;
+    color: #bdbdbd;
+    border-radius: 6px;
     cursor: pointer;
+    transition: 0.2s;
+    font-weight: bold;
+}
+
+.filter-btn:hover {
+    border-color: var(--yellow);
+    color: var(--yellow);
 }
 
 .filter-btn.active {
-    background: #35276b;
-    border-color: #8065ff;
-    color: white;
+    background: var(--yellow);
+    border-color: var(--yellow);
+    color: #080808;
+    box-shadow: 0 0 15px rgba(255, 212, 0, 0.22);
 }
+
+/* =====================================
+   SIGNAL CARDS
+===================================== */
 
 .signal-grid {
     display: grid;
@@ -191,10 +378,32 @@ body {
 }
 
 .signal-card {
-    background: #0b1422;
-    border: 1px solid #24344b;
-    border-radius: 12px;
+    background: rgba(12, 12, 12, 0.90);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 212, 0, 0.28);
+    border-radius: 10px;
     padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: 0.25s;
+}
+
+.signal-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--yellow);
+    box-shadow: 0 0 12px rgba(255, 212, 0, 0.4);
+}
+
+.signal-card:hover {
+    border-color: rgba(255, 212, 0, 0.7);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 
 .signal-top {
@@ -208,53 +417,67 @@ body {
 
 .signal-top h3 {
     font-size: 21px;
+    color: var(--yellow);
+    font-weight: 900;
 }
 
 .direction {
-    font-size: 12px;
-    font-weight: bold;
-    padding: 6px 10px;
-    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 6px 11px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
 }
 
 .buy {
-    background: #123d32;
-    color: #4ce0a1;
+    background: rgba(255, 212, 0, 0.13);
+    color: var(--yellow);
+    border: 1px solid rgba(255, 212, 0, 0.5);
 }
 
 .sell {
-    background: #4b2029;
-    color: #ff8292;
+    background: rgba(255, 48, 48, 0.13);
+    color: #ff6666;
+    border: 1px solid rgba(255, 48, 48, 0.5);
 }
 
 .status {
-    font-size: 11px;
+    font-size: 10px;
+    font-weight: bold;
     padding: 6px 9px;
-    border-radius: 5px;
-    background: #26364e;
-    color: #c7d4e7;
+    border-radius: 4px;
+    background: #292929;
+    color: #ddd;
+    letter-spacing: 0.5px;
 }
 
 .status.ACTIVE {
-    background: #123d32;
-    color: #4ce0a1;
+    background: rgba(255, 212, 0, 0.13);
+    color: var(--yellow);
+    border: 1px solid rgba(255, 212, 0, 0.4);
 }
 
 .status.COMPLETED {
-    background: #26365a;
-    color: #a9c5ff;
+    background: rgba(255, 255, 255, 0.10);
+    color: white;
+    border: 1px solid #777;
 }
 
 .status.CANCELLED {
-    background: #4b2029;
-    color: #ff8292;
+    background: rgba(255, 48, 48, 0.13);
+    color: #ff7777;
+    border: 1px solid rgba(255, 48, 48, 0.4);
 }
 
 .signal-meta {
-    color: #91a1ba;
-    font-size: 13px;
+    color: #aaa;
+    font-size: 12px;
     margin-bottom: 16px;
 }
+
+/* =====================================
+   PRICE GRID
+===================================== */
 
 .price-grid {
     display: grid;
@@ -263,16 +486,19 @@ body {
 }
 
 .price-item {
-    background: #142034;
+    background: rgba(30, 30, 30, 0.9);
+    border: 1px solid #303030;
     padding: 12px;
-    border-radius: 7px;
+    border-radius: 6px;
 }
 
 .price-item small {
     display: block;
-    color: #91a1ba;
-    font-size: 11px;
+    color: #aaa;
+    font-size: 10px;
     margin-bottom: 7px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
 }
 
 .price-item strong {
@@ -281,32 +507,46 @@ body {
 }
 
 .entry strong {
-    color: #ffffff;
+    color: white;
+}
+
+.sl {
+    border-color: rgba(255, 48, 48, 0.35);
 }
 
 .sl strong {
-    color: #ff7585;
+    color: #ff5555;
+}
+
+.tp {
+    border-color: rgba(255, 212, 0, 0.25);
 }
 
 .tp strong {
-    color: #4ce0a1;
+    color: var(--yellow);
 }
+
+/* =====================================
+   COMMENTARY
+===================================== */
 
 .commentary {
     margin-top: 18px;
     padding: 15px;
-    border-radius: 8px;
-    background: #121e30;
+    border-radius: 7px;
+    background: rgba(30, 25, 12, 0.72);
+    border: 1px solid rgba(255, 212, 0, 0.17);
 }
 
 .commentary h4 {
-    font-size: 13px;
+    font-size: 12px;
     margin-bottom: 9px;
-    color: #b9a8ff;
+    color: var(--yellow);
+    letter-spacing: 0.7px;
 }
 
 .commentary p {
-    color: #bdc9da;
+    color: #ccc;
     font-size: 13px;
     line-height: 1.7;
     white-space: pre-wrap;
@@ -320,8 +560,8 @@ body {
     align-items: center;
     flex-wrap: wrap;
     margin-top: 18px;
-    color: #71839e;
-    font-size: 11px;
+    color: #888;
+    font-size: 10px;
 }
 
 .admin-actions {
@@ -329,20 +569,25 @@ body {
     gap: 8px;
 }
 
+/* =====================================
+   EMPTY / LOADING / MESSAGES
+===================================== */
+
 .empty-state {
     text-align: center;
-    color: #8292aa;
+    color: #aaa;
     padding: 45px 15px;
-    background: #0b1422;
-    border-radius: 10px;
+    background: rgba(15, 15, 15, 0.88);
+    border: 1px solid #333;
+    border-radius: 9px;
 }
 
 .notice {
-    background: #17243a;
-    border: 1px solid #304664;
-    color: #b9c9df;
+    background: #171717;
+    border: 1px solid #444;
+    color: #ccc;
     padding: 14px;
-    border-radius: 8px;
+    border-radius: 7px;
     font-size: 12px;
     line-height: 1.6;
     margin-bottom: 20px;
@@ -352,22 +597,44 @@ body {
     display: none;
     margin-top: 15px;
     padding: 12px;
-    border-radius: 7px;
+    border-radius: 6px;
     font-size: 13px;
     line-height: 1.5;
 }
 
 .message.success {
     display: block;
-    background: #123d32;
-    color: #70e6b6;
+    background: rgba(255, 212, 0, 0.12);
+    border: 1px solid rgba(255, 212, 0, 0.4);
+    color: var(--yellow);
 }
 
 .message.error {
     display: block;
-    background: #4b2029;
-    color: #ff9aa6;
+    background: rgba(255, 48, 48, 0.12);
+    border: 1px solid rgba(255, 48, 48, 0.4);
+    color: #ff9999;
 }
+
+/* =====================================
+   FOOTER
+===================================== */
+
+footer {
+    text-align: center;
+    color: #888;
+    font-size: 11px;
+    padding: 18px;
+    letter-spacing: 1px;
+}
+
+footer span {
+    color: var(--yellow);
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
 
 @media(max-width: 750px) {
     .container {
@@ -399,6 +666,25 @@ body {
     .header h1 {
         font-size: 23px;
     }
+
+    .section {
+        padding: 18px;
+    }
+}
+
+/* Respect reduced-motion settings */
+
+@media (prefers-reduced-motion: reduce) {
+    body::before,
+    body::after {
+        animation: none;
+    }
+
+    .signal-card,
+    .back-btn,
+    .primary-btn {
+        transition: none;
+    }
 }
 </style>
 </head>
@@ -409,19 +695,12 @@ body {
 
     <header class="header">
         <div>
-            <h1>⭐ VIP Signals</h1>
-            <p>QM PROFITER · Educational Scenario Center</p>
+            <h1>⚡ VIP Signals</h1>
+            <p>QM PROFITER · VIP SCENARIO CENTER</p>
         </div>
 
         <a href="index.html" class="back-btn">← Dashboard</a>
     </header>
-
-    <div class="notice">
-        <strong>Educational notice:</strong>
-        These are illustrative scenarios for learning and paper study only.
-        They are not verified predictions, financial advice, or instructions
-        to place real-money trades.
-    </div>
 
     <section class="section admin-section" id="adminSection">
 
@@ -537,8 +816,8 @@ body {
 
     </section>
 
-    <footer style="text-align:center;color:#60718b;font-size:11px;padding:15px;">
-        QM PROFITER · Powered by Shenal Shashika
+    <footer>
+        QM PROFITER · <span>Powered by Shenal Shashika</span>
     </footer>
 
 </div>
