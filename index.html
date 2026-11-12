@@ -2,304 +2,661 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QM PROFITER - Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QM PROFITER - Dashboard</title>
+<link rel="stylesheet" href="style.css">
 
-    <style>
-        .dashboard-section {
-            margin-top: 25px;
-        }
+<style>
 
-        .dashboard-section h2 {
-            margin-bottom: 15px;
-        }
+/* =====================================
+   DASHBOARD GENERAL
+===================================== */
 
-        .performance-grid,
-        .monitor-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-        }
+.dashboard-section {
+    margin-top: 25px;
+}
 
-        .performance-card,
-        .monitor-card {
-            background: #111c2e;
-            border: 1px solid #26354d;
-            border-radius: 12px;
-            padding: 20px;
-        }
+.dashboard-section h2 {
+    margin-bottom: 15px;
+}
 
-        .performance-card p,
-        .monitor-card p {
-            color: #9eacc2;
-            font-size: 13px;
-            margin-bottom: 12px;
-        }
+.performance-grid,
+.monitor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
 
-        .performance-card h2 {
-            font-size: 25px;
-            margin: 0;
-            color: #ffffff;
-        }
+.performance-card,
+.monitor-card {
+    background: #111c2e;
+    border: 1px solid #26354d;
+    border-radius: 12px;
+    padding: 20px;
+}
 
-        .performance-card small,
-        .monitor-card small {
-            display: block;
-            margin-top: 8px;
-            color: #8191a9;
-        }
+.performance-card p,
+.monitor-card p {
+    color: #9eacc2;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
 
-        .monitor-value {
-            font-size: 17px;
-            font-weight: bold;
-            color: #f0b94d;
-        }
+.performance-card h2 {
+    font-size: 25px;
+    margin: 0;
+    color: #ffffff;
+}
 
-        .monitor-dot {
-            display: inline-block;
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: #f0b94d;
-            margin-right: 7px;
-        }
+.performance-card small,
+.monitor-card small {
+    display: block;
+    margin-top: 8px;
+    color: #8191a9;
+}
 
-        .monitor-dot.online {
-            background: #22c55e;
-            box-shadow: 0 0 8px #22c55e;
-        }
+.monitor-value {
+    font-size: 17px;
+    font-weight: bold;
+    color: #f0b94d;
+}
 
-        .monitor-dot.offline {
-            background: #ef4444;
-            box-shadow: 0 0 8px #ef4444;
-        }
+.monitor-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #f0b94d;
+    margin-right: 7px;
+}
 
-        .monitor-dot.warning {
-            background: #f0b94d;
-        }
+.monitor-dot.online {
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+}
 
-        .quick-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-        }
+.monitor-dot.offline {
+    background: #ef4444;
+    box-shadow: 0 0 8px #ef4444;
+}
 
-        .quick-link {
-            display: block;
-            text-decoration: none;
-            background: #111c2e;
-            border: 1px solid #26354d;
-            padding: 20px;
-            border-radius: 12px;
-            color: white;
-            transition: 0.2s;
-        }
+.monitor-dot.warning {
+    background: #f0b94d;
+}
 
-        .quick-link:hover {
-            border-color: #3185ff;
-            transform: translateY(-2px);
-        }
+/* QUICK LINKS */
 
-        .quick-link p {
-            color: #9eacc2;
-            font-size: 13px;
-            margin-top: 8px;
-        }
+.quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
 
-        .connection-status {
-            font-size: 13px;
-            margin-top: 8px;
-            color: #f0b94d;
-        }
+.quick-link {
+    display: block;
+    text-decoration: none;
+    background: #111c2e;
+    border: 1px solid #26354d;
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    transition: 0.2s;
+}
 
-        .dashboard-note {
-            color: #9eacc2;
-            font-size: 13px;
-            margin-top: 12px;
-        }
+.quick-link:hover {
+    border-color: #3185ff;
+    transform: translateY(-2px);
+}
 
-        .monitor-footer {
-            color: #8191a9;
-            font-size: 12px;
-            margin-top: 15px;
-        }
+.quick-link p {
+    color: #9eacc2;
+    font-size: 13px;
+    margin-top: 8px;
+}
 
-        /* SIDEBAR NAVIGATION */
+.connection-status {
+    font-size: 13px;
+    margin-top: 8px;
+    color: #f0b94d;
+}
 
-        .sidebar {
-            flex-shrink: 0;
-            transition: width 0.25s ease, padding 0.25s ease;
-        }
+.dashboard-note {
+    color: #9eacc2;
+    font-size: 13px;
+    margin-top: 12px;
+}
 
-        .nav-toggle {
-            width: 100%;
-            background: #18263b;
-            color: #00e5a0;
-            border: 1px solid #30415a;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-bottom: 22px;
-        }
+.monitor-footer {
+    color: #8191a9;
+    font-size: 12px;
+    margin-top: 15px;
+}
 
-        .nav-toggle:hover {
-            background: #123a35;
-        }
+/* =====================================
+   SIDEBAR NAVIGATION
+===================================== */
 
-        .sidebar nav a {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-            min-height: 48px;
-        }
+.sidebar {
+    flex-shrink: 0;
+    transition: width 0.25s ease, padding 0.25s ease;
+}
 
-        .nav-icon {
-            width: 22px;
-            height: 22px;
-            flex-shrink: 0;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
+.nav-toggle {
+    width: 100%;
+    background: #18263b;
+    color: #00e5a0;
+    border: 1px solid #30415a;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-bottom: 22px;
+}
 
-        .nav-label {
-            white-space: nowrap;
-        }
+.nav-toggle:hover {
+    background: #123a35;
+}
 
-        /* LOGOUT BUTTON */
+.sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-height: 48px;
+}
 
-        .logout-btn {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 13px;
-            min-height: 48px;
-            padding: 12px;
-            margin-top: 12px;
-            border: 1px solid #54303a;
-            border-radius: 8px;
-            background: #251923;
-            color: #ff7777;
-            font-size: 14px;
-            text-align: left;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+.nav-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
 
-        .logout-btn:hover {
-            background: #42202a;
-            border-color: #ef4444;
-        }
+.nav-label {
+    white-space: nowrap;
+}
 
-        .logout-btn:disabled {
-            opacity: 0.6;
-            cursor: wait;
-        }
+/* LOGOUT */
 
-        .logout-btn .nav-icon {
-            stroke: currentColor;
-        }
+.logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-height: 48px;
+    padding: 12px;
+    margin-top: 12px;
+    border: 1px solid #54303a;
+    border-radius: 8px;
+    background: #251923;
+    color: #ff7777;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
-        /* ICONS ONLY MODE */
+.logout-btn:hover {
+    background: #42202a;
+    border-color: #ef4444;
+}
 
-        .sidebar.icons-only {
-            width: 88px;
-            padding: 25px 12px;
-        }
+.logout-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
 
-        .sidebar.icons-only .logo {
-            font-size: 12px;
-            letter-spacing: 0;
-            text-align: center;
-            margin-bottom: 30px;
-        }
+.logout-btn .nav-icon {
+    stroke: currentColor;
+}
 
-        .sidebar.icons-only nav {
-            gap: 12px;
-        }
+/* ICONS ONLY */
 
-        .sidebar.icons-only nav a {
-            justify-content: center;
-            padding: 13px 8px;
-        }
+.sidebar.icons-only {
+    width: 88px;
+    padding: 25px 12px;
+}
 
-        .sidebar.icons-only .nav-label {
-            display: none;
-        }
+.sidebar.icons-only .logo {
+    font-size: 12px;
+    letter-spacing: 0;
+    text-align: center;
+    margin-bottom: 30px;
+}
 
-        .sidebar.icons-only .logout-btn {
-            justify-content: center;
-            padding: 13px 8px;
-        }
+.sidebar.icons-only nav {
+    gap: 12px;
+}
 
-        .sidebar.icons-only .nav-toggle {
-            font-size: 11px;
-            padding: 9px 3px;
-        }
+.sidebar.icons-only nav a {
+    justify-content: center;
+    padding: 13px 8px;
+}
 
-        .sidebar.icons-only .sidebar-footer {
-            text-align: center;
-            font-size: 9px;
-            overflow-wrap: anywhere;
-        }
+.sidebar.icons-only .nav-label {
+    display: none;
+}
 
-        @media (max-width: 1000px) {
-            .market-cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+.sidebar.icons-only .logout-btn {
+    justify-content: center;
+    padding: 13px 8px;
+}
 
-        @media (max-width: 650px) {
-            .dashboard {
-                flex-direction: column;
-            }
+.sidebar.icons-only .nav-toggle {
+    font-size: 11px;
+    padding: 9px 3px;
+}
 
-            .sidebar {
-                width: 100%;
-            }
+.sidebar.icons-only .sidebar-footer {
+    text-align: center;
+    font-size: 9px;
+    overflow-wrap: anywhere;
+}
 
-            .sidebar nav {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
+/* TABLET */
 
-            .sidebar-footer {
-                margin-top: 25px;
-            }
+@media (max-width: 1000px) {
+    .market-cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
 
-            .main-content {
-                padding: 18px;
-            }
+/* =====================================
+   MOBILE DESIGN
+===================================== */
 
-            .market-cards {
-                grid-template-columns: 1fr;
-            }
+@media (max-width: 768px) {
 
-            .topbar {
-                align-items: flex-start;
-                flex-direction: column;
-            }
+    html,
+    body {
+        width: 100%;
+        min-height: 100%;
+        overflow-x: hidden;
+    }
 
-            .sidebar.icons-only {
-                width: 100%;
-                padding: 20px;
-            }
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
 
-            .sidebar.icons-only nav {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
+    .dashboard {
+        display: block !important;
+        width: 100%;
+        min-height: 100vh;
+    }
 
-            .sidebar.icons-only .sidebar-footer {
-                margin-top: 25px;
-            }
-        }
-    </style>
+    /* MOBILE BOTTOM NAVIGATION */
+
+    .sidebar,
+    .sidebar.icons-only {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+
+        width: 100% !important;
+        height: 72px !important;
+        min-height: 72px !important;
+
+        padding: 6px 3px calc(6px + env(safe-area-inset-bottom)) !important;
+        margin: 0 !important;
+
+        background: #0c1525 !important;
+        border-top: 1px solid #26354d;
+
+        z-index: 99999;
+
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sidebar .logo,
+    .sidebar .nav-toggle,
+    .sidebar .sidebar-footer {
+        display: none !important;
+    }
+
+    .sidebar nav,
+    .sidebar.icons-only nav {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+
+        width: 100% !important;
+        height: 100%;
+        gap: 1px !important;
+        margin: 0 !important;
+    }
+
+    .sidebar nav a,
+    .sidebar.icons-only nav a,
+    .sidebar .logout-btn,
+    .sidebar.icons-only .logout-btn {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        max-width: none !important;
+
+        width: auto !important;
+        height: 54px !important;
+        min-height: 54px !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+
+        gap: 4px !important;
+        padding: 4px 1px !important;
+        margin: 0 !important;
+
+        border: none !important;
+        border-radius: 8px;
+        background: transparent;
+
+        color: #91a2bb;
+        text-align: center;
+        font-size: 9px;
+    }
+
+    .sidebar nav a.active {
+        background: #142c35 !important;
+        color: #00e5a0 !important;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar .logout-btn:hover {
+        background: #142c35 !important;
+        color: #00e5a0 !important;
+        transform: none !important;
+    }
+
+    .sidebar .logout-btn {
+        color: #ff7777;
+    }
+
+    .sidebar .nav-icon {
+        width: 20px !important;
+        height: 20px !important;
+        margin: 0 !important;
+    }
+
+    .sidebar .nav-label,
+    .sidebar.icons-only .nav-label {
+        display: block !important;
+        width: 100%;
+        max-width: 100%;
+        font-size: 8px !important;
+        line-height: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* MAIN CONTENT */
+
+    .main-content {
+        display: block;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+
+        margin: 0 !important;
+        padding: 17px 12px 105px !important;
+    }
+
+    /* HEADER */
+
+    .topbar {
+        display: flex;
+        flex-direction: row !important;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .topbar h1 {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+
+    .topbar p {
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .status {
+        font-size: 10px;
+        padding: 7px 9px;
+        border-radius: 20px;
+    }
+
+    .connection-status {
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    /* IMPORTANT CARD GRID FIX */
+
+    .market-cards,
+    .monitor-grid,
+    .performance-grid,
+    .quick-links {
+        display: grid !important;
+
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+
+        grid-auto-flow: row !important;
+        grid-auto-columns: auto !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+
+        gap: 10px !important;
+        align-items: stretch;
+    }
+
+    .market-cards > *,
+    .monitor-grid > *,
+    .performance-grid > *,
+    .quick-links > * {
+        display: block;
+        grid-column: auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* MARKET CARDS */
+
+    .market-card {
+        padding: 14px 10px !important;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .market-card p {
+        font-size: 11px;
+    }
+
+    .market-card h2 {
+        font-size: 17px;
+        overflow-wrap: anywhere;
+    }
+
+    .market-card span {
+        font-size: 10px;
+    }
+
+    /* SYSTEM MONITOR */
+
+    .monitor-card {
+        padding: 13px 10px !important;
+        border-radius: 11px;
+        overflow-wrap: anywhere;
+    }
+
+    .monitor-card p {
+        font-size: 10px;
+        line-height: 1.5;
+        margin-bottom: 8px;
+    }
+
+    .monitor-value {
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .monitor-card small {
+        font-size: 9px;
+        line-height: 1.4;
+    }
+
+    .monitor-dot {
+        width: 7px;
+        height: 7px;
+        margin-right: 4px;
+    }
+
+    .monitor-footer {
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    /* PERFORMANCE */
+
+    .performance-card {
+        padding: 14px 10px !important;
+        border-radius: 11px;
+        overflow-wrap: anywhere;
+    }
+
+    .performance-card p {
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .performance-card h2 {
+        font-size: 19px;
+        overflow-wrap: anywhere;
+    }
+
+    .performance-card small {
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    .dashboard-note {
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    /* MARKET OVERVIEW */
+
+    .content-card {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        padding: 14px;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .content-card h2 {
+        font-size: 17px;
+    }
+
+    .content-card p {
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    .chart-placeholder {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* QUICK ACCESS */
+
+    .quick-link {
+        padding: 13px 10px !important;
+        border-radius: 11px;
+        overflow-wrap: anywhere;
+    }
+
+    .quick-link h3 {
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .quick-link p {
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .dashboard-section {
+        margin-top: 22px;
+        min-width: 0;
+    }
+
+    .dashboard-section h2 {
+        font-size: 17px;
+        margin-bottom: 12px;
+    }
+
+    button,
+    a {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* VERY SMALL PHONES */
+
+@media (max-width: 360px) {
+
+    .main-content {
+        padding-left: 9px !important;
+        padding-right: 9px !important;
+    }
+
+    .sidebar .nav-label {
+        font-size: 7px !important;
+    }
+
+    .sidebar .nav-icon {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .market-card h2 {
+        font-size: 15px;
+    }
+
+    .performance-card h2 {
+        font-size: 17px;
+    }
+}
+
+</style>
 </head>
 
 <body>
@@ -374,10 +731,18 @@
                     <path d="M12 7v5l3 2"></path>
                     <path d="M3 4v5h5"></path>
                 </svg>
-                <span class="nav-label">Paper Trading History</span>
+                <span class="nav-label">History</span>
             </a>
 
-            <!-- LOGOUT BUTTON -->
+            <!-- NEW VIP SIGNALS NAVIGATION -->
+
+            <a href="vip-signals.html" title="VIP Signals">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z"></path>
+                    <path d="M19 15l1.2 2.8L23 19l-2.8 1.2L19 23l-1.2-2.8L15 19l2.8-1.2L19 15z"></path>
+                </svg>
+                <span class="nav-label">VIP Signals</span>
+            </a>
 
             <button class="logout-btn" id="logoutBtn" type="button">
                 <svg class="nav-icon" viewBox="0 0 24 24">
@@ -570,6 +935,13 @@
                     <p>Review educational market scenarios.</p>
                 </a>
 
+                <!-- NEW VIP SIGNALS QUICK ACCESS -->
+
+                <a href="vip-signals.html" class="quick-link">
+                    <h3>⭐ VIP Signals</h3>
+                    <p>View published educational scenarios and detailed signal commentary.</p>
+                </a>
+
                 <a href="history.html" class="quick-link">
                     <h3>Paper Trading History</h3>
                     <p>Review simulated trades and performance.</p>
@@ -598,332 +970,317 @@
 
 <script>
 
-    // SUPABASE INITIALIZATION
+/* SUPABASE INITIALIZATION */
 
-    const SUPABASE_URL =
-        "https://wuvzojlpegfqwsfhoobc.supabase.co";
+const SUPABASE_URL =
+    "https://wuvzojlpegfqwsfhoobc.supabase.co";
 
-    const SUPABASE_ANON_KEY =
-        "sb_publishable_VnpF9r4AtZmiNLdO8SzBvg_WCb-PF2t";
+const SUPABASE_ANON_KEY =
+    "sb_publishable_VnpF9r4AtZmiNLdO8SzBvg_WCb-PF2t";
 
-    const supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-    );
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
 
 
-    // AUTHENTICATION CHECK
+/* AUTHENTICATION CHECK */
 
-    async function checkAuthentication() {
+async function checkAuthentication() {
 
-        try {
+    try {
 
-            const { data, error } =
-                await supabaseClient.auth.getSession();
+        const { data, error } =
+            await supabaseClient.auth.getSession();
 
-            if (error) {
-                throw error;
-            }
+        if (error) {
+            throw error;
+        }
 
-            if (!data.session) {
-
-                window.location.replace("login.html");
-
-                return false;
-            }
-
-            return true;
-
-        } catch (error) {
-
-            console.error(
-                "Authentication error:",
-                error.message
-            );
+        if (!data.session) {
 
             window.location.replace("login.html");
 
             return false;
         }
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Authentication error:",
+            error.message
+        );
+
+        window.location.replace("login.html");
+
+        return false;
     }
+}
 
 
-    // LOGOUT FUNCTION
+/* LOGOUT FUNCTION */
 
-    const logoutButton =
-        document.getElementById("logoutBtn");
+const logoutButton =
+    document.getElementById("logoutBtn");
 
-    logoutButton.addEventListener("click", async function () {
+logoutButton.addEventListener("click", async function () {
 
-        logoutButton.disabled = true;
-        logoutButton.querySelector(".nav-label").textContent =
-            "Signing out...";
+    logoutButton.disabled = true;
 
-        try {
-
-            const { error } =
-                await supabaseClient.auth.signOut();
-
-            if (error) {
-                throw error;
-            }
-
-            window.location.replace("login.html");
-
-        } catch (error) {
-
-            console.error("Logout error:", error);
-
-            alert("Logout failed: " + error.message);
-
-            logoutButton.disabled = false;
-
-            logoutButton.querySelector(".nav-label").textContent =
-                "Logout";
-        }
-
-    });
-
-
-    // SIDEBAR ICON TOGGLE
-
-    const sidebar = document.getElementById("sidebar");
-    const navToggle = document.getElementById("navToggle");
-
-    function updateNavigationMode(iconOnly) {
-
-        sidebar.classList.toggle("icons-only", iconOnly);
-
-        navToggle.textContent = iconOnly
-            ? "☰ Show Labels"
-            : "☰ Icons Only";
-
-        navToggle.title = iconOnly
-            ? "Show navigation labels"
-            : "Show icons only";
-
-        try {
-
-            localStorage.setItem(
-                "qmNavigationMode",
-                iconOnly ? "icons" : "full"
-            );
-
-        } catch (error) {
-
-            console.warn(
-                "Navigation preference could not be saved."
-            );
-
-        }
-    }
-
-
-    // LOAD SAVED PREFERENCE
-
-    let savedNavigationMode = "full";
+    logoutButton.querySelector(".nav-label").textContent =
+        "Signing out...";
 
     try {
 
-        savedNavigationMode =
-            localStorage.getItem("qmNavigationMode") || "full";
+        const { error } =
+            await supabaseClient.auth.signOut();
+
+        if (error) {
+            throw error;
+        }
+
+        window.location.replace("login.html");
+
+    } catch (error) {
+
+        console.error("Logout error:", error);
+
+        alert("Logout failed: " + error.message);
+
+        logoutButton.disabled = false;
+
+        logoutButton.querySelector(".nav-label").textContent =
+            "Logout";
+    }
+
+});
+
+
+/* SIDEBAR ICON TOGGLE */
+
+const sidebar = document.getElementById("sidebar");
+const navToggle = document.getElementById("navToggle");
+
+function updateNavigationMode(iconOnly) {
+
+    sidebar.classList.toggle("icons-only", iconOnly);
+
+    navToggle.textContent = iconOnly
+        ? "☰ Show Labels"
+        : "☰ Icons Only";
+
+    navToggle.title = iconOnly
+        ? "Show navigation labels"
+        : "Show icons only";
+
+    try {
+
+        localStorage.setItem(
+            "qmNavigationMode",
+            iconOnly ? "icons" : "full"
+        );
 
     } catch (error) {
 
         console.warn(
-            "Navigation preference could not be loaded."
+            "Navigation preference could not be saved."
         );
 
     }
-
-    updateNavigationMode(savedNavigationMode === "icons");
-
-
-    // TOGGLE BUTTON
-
-    navToggle.addEventListener("click", function () {
-
-        const currentlyIconsOnly =
-            sidebar.classList.contains("icons-only");
-
-        updateNavigationMode(!currentlyIconsOnly);
-
-    });
+}
 
 
-    // SYSTEM MONITOR
+/* LOAD SAVED PREFERENCE */
 
-    const API_URL = "https://qm-profiter.vercel.app";
+let savedNavigationMode = "full";
 
-    function setMonitor(id, dotId, message, state) {
+try {
 
-        document.getElementById(id).textContent = message;
+    savedNavigationMode =
+        localStorage.getItem("qmNavigationMode") || "full";
 
-        const dot = document.getElementById(dotId);
+} catch (error) {
 
-        dot.className = "monitor-dot " + state;
+    console.warn(
+        "Navigation preference could not be loaded."
+    );
+
+}
+
+updateNavigationMode(savedNavigationMode === "icons");
+
+
+/* TOGGLE BUTTON */
+
+navToggle.addEventListener("click", function () {
+
+    const currentlyIconsOnly =
+        sidebar.classList.contains("icons-only");
+
+    updateNavigationMode(!currentlyIconsOnly);
+
+});
+
+
+/* SYSTEM MONITOR */
+
+const API_URL = "https://qm-profiter.vercel.app";
+
+function setMonitor(id, dotId, message, state) {
+
+    document.getElementById(id).textContent = message;
+
+    const dot = document.getElementById(dotId);
+
+    dot.className = "monitor-dot " + state;
+
+}
+
+
+/* DASHBOARD STATISTICS */
+
+async function checkSystem() {
+
+    const backendStatus =
+        document.getElementById("backendStatus");
+
+    const systemStatus =
+        document.getElementById("systemStatus");
+
+    let backendOnline = false;
+    let statsOnline = false;
+
+
+    /* CHECK BACKEND CONNECTION */
+
+    try {
+
+        const response = await fetch(API_URL);
+
+        if (!response.ok) {
+            throw new Error("Backend unavailable");
+        }
+
+        backendOnline = true;
+
+        setMonitor(
+            "backendMonitor",
+            "backendDot",
+            "ONLINE",
+            "online"
+        );
+
+        backendStatus.textContent =
+            "Backend connected successfully.";
+
+    } catch (error) {
+
+        setMonitor(
+            "backendMonitor",
+            "backendDot",
+            "OFFLINE",
+            "offline"
+        );
+
+        backendStatus.textContent =
+            "Backend connection unavailable.";
 
     }
 
 
-    // DASHBOARD STATISTICS
+    /* CHECK STATISTICS API */
 
-    async function checkSystem() {
-
-        const backendStatus =
-            document.getElementById("backendStatus");
-
-        const systemStatus =
-            document.getElementById("systemStatus");
-
-        let backendOnline = false;
-        let statsOnline = false;
-
-
-        // CHECK BACKEND CONNECTION
+    if (backendOnline) {
 
         try {
 
-            const response = await fetch(API_URL);
+            const { data: sessionData, error: sessionError } =
+                await supabaseClient.auth.getSession();
 
-            if (!response.ok) {
-                throw new Error("Backend unavailable");
+            if (sessionError) {
+                throw sessionError;
             }
 
-            backendOnline = true;
+            if (!sessionData.session) {
+
+                window.location.replace("login.html");
+
+                return;
+            }
+
+
+            /* SEND ACCESS TOKEN TO BACKEND */
+
+            const response = await fetch(
+                API_URL + "/api/paper-trades/stats",
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${sessionData.session.access_token}`
+                    }
+                }
+            );
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Statistics unavailable: HTTP " +
+                    response.status
+                );
+
+            }
+
+
+            /* READ STATISTICS */
+
+            const stats = await response.json();
+
+            statsOnline = true;
 
             setMonitor(
-                "backendMonitor",
-                "backendDot",
-                "ONLINE",
+                "statsMonitor",
+                "statsDot",
+                "AVAILABLE",
                 "online"
             );
 
-            backendStatus.textContent =
-                "Backend connected successfully.";
+
+            /* UPDATE PERFORMANCE CARDS */
+
+            document.getElementById("totalTrades").textContent =
+                stats.totalTrades ?? 0;
+
+            document.getElementById("completedTrades").textContent =
+                stats.completedTrades ?? 0;
+
+            document.getElementById("winRate").textContent =
+                Number(stats.winRate ?? 0).toFixed(2) + "%";
+
+
+            /* UPDATE SIMULATED PROFIT AND LOSS */
+
+            const pnl = Number(stats.simulatedPnL ?? 0);
+
+            const pnlElement =
+                document.getElementById("simulatedPnL");
+
+            pnlElement.textContent =
+                (pnl >= 0 ? "+" : "-") +
+                "$" + Math.abs(pnl).toFixed(2);
+
+            pnlElement.style.color =
+                pnl > 0 ? "#22c55e" :
+                pnl < 0 ? "#ef4444" : "#ffffff";
+
 
         } catch (error) {
 
-            setMonitor(
-                "backendMonitor",
-                "backendDot",
-                "OFFLINE",
-                "offline"
+            console.error(
+                "Statistics error:",
+                error.message
             );
-
-            backendStatus.textContent =
-                "Backend connection unavailable.";
-
-        }
-
-
-        // CHECK STATISTICS API
-
-        if (backendOnline) {
-
-            try {
-
-                const { data: sessionData, error: sessionError } =
-                    await supabaseClient.auth.getSession();
-
-                if (sessionError) {
-                    throw sessionError;
-                }
-
-                if (!sessionData.session) {
-
-                    window.location.replace("login.html");
-
-                    return;
-                }
-
-
-                // SEND ACCESS TOKEN TO BACKEND
-
-                const response = await fetch(
-                    API_URL + "/api/paper-trades/stats",
-                    {
-                        headers: {
-                            "Authorization":
-                                `Bearer ${sessionData.session.access_token}`
-                        }
-                    }
-                );
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        "Statistics unavailable: HTTP " +
-                        response.status
-                    );
-
-                }
-
-
-                // READ STATISTICS
-
-                const stats = await response.json();
-
-                statsOnline = true;
-
-                setMonitor(
-                    "statsMonitor",
-                    "statsDot",
-                    "AVAILABLE",
-                    "online"
-                );
-
-
-                // UPDATE PERFORMANCE CARDS
-
-                document.getElementById("totalTrades").textContent =
-                    stats.totalTrades ?? 0;
-
-                document.getElementById("completedTrades").textContent =
-                    stats.completedTrades ?? 0;
-
-                document.getElementById("winRate").textContent =
-                    Number(stats.winRate ?? 0).toFixed(2) + "%";
-
-
-                // UPDATE SIMULATED PROFIT AND LOSS
-
-                const pnl = Number(stats.simulatedPnL ?? 0);
-
-                const pnlElement =
-                    document.getElementById("simulatedPnL");
-
-                pnlElement.textContent =
-                    (pnl >= 0 ? "+" : "-") +
-                    "$" + Math.abs(pnl).toFixed(2);
-
-                pnlElement.style.color =
-                    pnl > 0 ? "#22c55e" :
-                    pnl < 0 ? "#ef4444" : "#ffffff";
-
-
-            } catch (error) {
-
-                console.error(
-                    "Statistics error:",
-                    error.message
-                );
-
-                setMonitor(
-                    "statsMonitor",
-                    "statsDot",
-                    "UNAVAILABLE",
-                    "offline"
-                );
-
-                document.getElementById("totalTrades").textContent = "--";
-                document.getElementById("completedTrades").textContent = "--";
-                document.getElementById("winRate").textContent = "--";
-                document.getElementById("simulatedPnL").textContent = "--";
-
-            }
-
-        } else {
 
             setMonitor(
                 "statsMonitor",
@@ -939,81 +1296,97 @@
 
         }
 
+    } else {
 
-        // CHECK MARKET PRICES
+        setMonitor(
+            "statsMonitor",
+            "statsDot",
+            "UNAVAILABLE",
+            "offline"
+        );
 
-        const btc =
-            document.getElementById("btc-price").textContent.trim();
-
-        const eth =
-            document.getElementById("eth-price").textContent.trim();
-
-        const marketAvailable =
-            btc !== "Loading..." &&
-            eth !== "Loading..." &&
-            btc !== "--" &&
-            eth !== "--" &&
-            btc !== "Unavailable" &&
-            eth !== "Unavailable";
-
-        if (marketAvailable) {
-
-            setMonitor(
-                "marketMonitor",
-                "marketDot",
-                "DATA LOADED",
-                "online"
-            );
-
-        } else {
-
-            setMonitor(
-                "marketMonitor",
-                "marketDot",
-                "WAITING",
-                "warning"
-            );
-
-        }
-
-
-        // OVERALL SYSTEM STATUS
-
-        if (backendOnline && statsOnline) {
-
-            systemStatus.textContent = "● SYSTEM ONLINE";
-
-        } else {
-
-            systemStatus.textContent = "● CHECK CONNECTION";
-
-        }
-
-        document.getElementById("lastChecked").textContent =
-            new Date().toLocaleTimeString();
+        document.getElementById("totalTrades").textContent = "--";
+        document.getElementById("completedTrades").textContent = "--";
+        document.getElementById("winRate").textContent = "--";
+        document.getElementById("simulatedPnL").textContent = "--";
 
     }
 
 
-    // START APPLICATION AFTER AUTHENTICATION
+    /* CHECK MARKET PRICES */
 
-    async function startApplication() {
+    const btc =
+        document.getElementById("btc-price").textContent.trim();
 
-        const authenticated = await checkAuthentication();
+    const eth =
+        document.getElementById("eth-price").textContent.trim();
 
-        if (!authenticated) {
-            return;
-        }
+    const marketAvailable =
+        btc !== "Loading..." &&
+        eth !== "Loading..." &&
+        btc !== "--" &&
+        eth !== "--" &&
+        btc !== "Unavailable" &&
+        eth !== "Unavailable";
 
-        await checkSystem();
+    if (marketAvailable) {
 
-        // AUTOMATIC REFRESH
+        setMonitor(
+            "marketMonitor",
+            "marketDot",
+            "DATA LOADED",
+            "online"
+        );
 
-        setInterval(checkSystem, 15000);
+    } else {
+
+        setMonitor(
+            "marketMonitor",
+            "marketDot",
+            "WAITING",
+            "warning"
+        );
 
     }
 
-    startApplication();
+
+    /* OVERALL SYSTEM STATUS */
+
+    if (backendOnline && statsOnline) {
+
+        systemStatus.textContent = "● SYSTEM ONLINE";
+
+    } else {
+
+        systemStatus.textContent = "● CHECK CONNECTION";
+
+    }
+
+    document.getElementById("lastChecked").textContent =
+        new Date().toLocaleTimeString();
+
+}
+
+
+/* START APPLICATION AFTER AUTHENTICATION */
+
+async function startApplication() {
+
+    const authenticated = await checkAuthentication();
+
+    if (!authenticated) {
+        return;
+    }
+
+    await checkSystem();
+
+    /* AUTOMATIC REFRESH */
+
+    setInterval(checkSystem, 15000);
+
+}
+
+startApplication();
 
 </script>
 
