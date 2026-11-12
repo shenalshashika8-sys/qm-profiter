@@ -207,3 +207,120 @@ button:hover {
         flex-direction: column;
     }
 }
+
+/* =====================================
+   QM PROFITER - CONSISTENT TOP NAVIGATION
+   Apply across ALL pages on mobile
+===================================== */
+
+@media (max-width: 768px) {
+
+    .dashboard {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .sidebar,
+    .sidebar.icons-only {
+        position: relative !important;
+        top: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+
+        width: 100% !important;
+        height: auto !important;
+        min-height: 65px !important;
+
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+
+        padding: 8px !important;
+        margin: 0 !important;
+
+        background: #101827 !important;
+        border-right: none !important;
+        border-bottom: 1px solid #26354d !important;
+
+        z-index: 1000;
+    }
+
+    .sidebar .logo,
+    .sidebar .nav-toggle,
+    .sidebar .sidebar-footer {
+        display: none !important;
+    }
+
+    .sidebar nav,
+    .sidebar.icons-only nav {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+
+        width: 100% !important;
+        gap: 3px !important;
+        margin: 0 !important;
+
+        overflow-x: auto !important;
+        scrollbar-width: none;
+    }
+
+    .sidebar nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sidebar nav a,
+    .sidebar.icons-only nav a,
+    .sidebar .logout-btn,
+    .sidebar.icons-only .logout-btn {
+        flex: 1 0 auto !important;
+
+        width: auto !important;
+        min-width: 55px !important;
+        max-width: none !important;
+        height: 52px !important;
+        min-height: 52px !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+
+        gap: 4px !important;
+        padding: 5px !important;
+        margin: 0 !important;
+
+        border: none !important;
+        background: transparent !important;
+        color: #91a2bb !important;
+
+        text-align: center !important;
+        font-size: 9px !important;
+    }
+
+    .sidebar nav a.active {
+        background: #123a35 !important;
+        color: #00e5a0 !important;
+    }
+
+    .sidebar .nav-icon {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .sidebar .nav-label,
+    .sidebar.icons-only .nav-label {
+        display: block !important;
+        font-size: 8px !important;
+        white-space: nowrap !important;
+    }
+
+    .main-content {
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 18px 12px !important;
+    }
+}

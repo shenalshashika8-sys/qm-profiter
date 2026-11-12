@@ -1,0 +1,931 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QM PROFITER - VIP Signals</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #080d18;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1250px;
+    margin: auto;
+    padding: 30px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    font-size: 28px;
+}
+
+.header p {
+    color: #8d9bb3;
+    margin-top: 8px;
+}
+
+.back-btn {
+    background: #18253a;
+    color: white;
+    border: 1px solid #293b57;
+    padding: 11px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.section {
+    background: #101827;
+    border: 1px solid #1d2b40;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 25px;
+}
+
+.section h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.admin-section {
+    display: none;
+    border-color: #6650c8;
+}
+
+.admin-tag {
+    display: inline-block;
+    background: #33275d;
+    color: #c5b6ff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    margin-left: 8px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field.full {
+    grid-column: 1 / -1;
+}
+
+.field label {
+    color: #aab8ce;
+    font-size: 13px;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    padding: 13px;
+    border-radius: 8px;
+    border: 1px solid #2a3a53;
+    background: #080f1c;
+    color: white;
+    outline: none;
+    font-size: 14px;
+}
+
+.field textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    border-color: #8065ff;
+}
+
+.primary-btn {
+    background: #7655ed;
+    color: white;
+    border: none;
+    padding: 13px 22px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 18px;
+}
+
+.secondary-btn {
+    background: #26364e;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background: #7d2938;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.primary-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.filter-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.filter-btn {
+    padding: 9px 15px;
+    background: #18253a;
+    border: 1px solid #293b57;
+    color: #aab8ce;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.filter-btn.active {
+    background: #35276b;
+    border-color: #8065ff;
+    color: white;
+}
+
+.signal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.signal-card {
+    background: #0b1422;
+    border: 1px solid #24344b;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.signal-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.signal-top h3 {
+    font-size: 21px;
+}
+
+.direction {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 6px 10px;
+    border-radius: 5px;
+}
+
+.buy {
+    background: #123d32;
+    color: #4ce0a1;
+}
+
+.sell {
+    background: #4b2029;
+    color: #ff8292;
+}
+
+.status {
+    font-size: 11px;
+    padding: 6px 9px;
+    border-radius: 5px;
+    background: #26364e;
+    color: #c7d4e7;
+}
+
+.status.ACTIVE {
+    background: #123d32;
+    color: #4ce0a1;
+}
+
+.status.COMPLETED {
+    background: #26365a;
+    color: #a9c5ff;
+}
+
+.status.CANCELLED {
+    background: #4b2029;
+    color: #ff8292;
+}
+
+.signal-meta {
+    color: #91a1ba;
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+
+.price-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.price-item {
+    background: #142034;
+    padding: 12px;
+    border-radius: 7px;
+}
+
+.price-item small {
+    display: block;
+    color: #91a1ba;
+    font-size: 11px;
+    margin-bottom: 7px;
+}
+
+.price-item strong {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.entry strong {
+    color: #ffffff;
+}
+
+.sl strong {
+    color: #ff7585;
+}
+
+.tp strong {
+    color: #4ce0a1;
+}
+
+.commentary {
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 8px;
+    background: #121e30;
+}
+
+.commentary h4 {
+    font-size: 13px;
+    margin-bottom: 9px;
+    color: #b9a8ff;
+}
+
+.commentary p {
+    color: #bdc9da;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    color: #71839e;
+    font-size: 11px;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.empty-state {
+    text-align: center;
+    color: #8292aa;
+    padding: 45px 15px;
+    background: #0b1422;
+    border-radius: 10px;
+}
+
+.notice {
+    background: #17243a;
+    border: 1px solid #304664;
+    color: #b9c9df;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.message {
+    display: none;
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 7px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.message.success {
+    display: block;
+    background: #123d32;
+    color: #70e6b6;
+}
+
+.message.error {
+    display: block;
+    background: #4b2029;
+    color: #ff9aa6;
+}
+
+@media(max-width: 750px) {
+    .container {
+        padding: 18px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .signal-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width: 480px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .field.full {
+        grid-column: auto;
+    }
+
+    .price-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .header h1 {
+        font-size: 23px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <div>
+            <h1>⭐ VIP Signals</h1>
+            <p>QM PROFITER · Educational Scenario Center</p>
+        </div>
+
+        <a href="index.html" class="back-btn">← Dashboard</a>
+    </header>
+
+    <div class="notice">
+        <strong>Educational notice:</strong>
+        These are illustrative scenarios for learning and paper study only.
+        They are not verified predictions, financial advice, or instructions
+        to place real-money trades.
+    </div>
+
+    <section class="section admin-section" id="adminSection">
+
+        <h2>
+            Admin Control Panel
+            <span class="admin-tag">HOST ACCESS</span>
+        </h2>
+
+        <form id="signalForm">
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label>Coin / Asset</label>
+                    <input id="coin" type="text" placeholder="BTC/USDT" required>
+                </div>
+
+                <div class="field">
+                    <label>Direction</label>
+                    <select id="direction" required>
+                        <option value="BUY">BUY Scenario</option>
+                        <option value="SELL">SELL Scenario</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Timeframe</label>
+                    <select id="timeframe" required>
+                        <option value="1m">1 Minute</option>
+                        <option value="5m">5 Minutes</option>
+                        <option value="15m">15 Minutes</option>
+                        <option value="30m">30 Minutes</option>
+                        <option value="1h">1 Hour</option>
+                        <option value="4h">4 Hours</option>
+                        <option value="1D">1 Day</option>
+                        <option value="1W">1 Week</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Entry Reference</label>
+                    <input id="entry" type="number" step="any" min="0" required>
+                </div>
+
+                <div class="field">
+                    <label>Stop Loss Reference</label>
+                    <input id="stopLoss" type="number" step="any" min="0" required>
+                </div>
+
+                <div class="field">
+                    <label>TP1 Reference</label>
+                    <input id="tp1" type="number" step="any" min="0" required>
+                </div>
+
+                <div class="field">
+                    <label>TP2 Reference</label>
+                    <input id="tp2" type="number" step="any" min="0" required>
+                </div>
+
+                <div class="field">
+                    <label>TP3 Reference</label>
+                    <input id="tp3" type="number" step="any" min="0" required>
+                </div>
+
+                <div class="field">
+                    <label>Scenario Status</label>
+                    <select id="status" required>
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="CANCELLED">CANCELLED</option>
+                    </select>
+                </div>
+
+                <div class="field full">
+                    <label>Detailed Commentary / Analysis</label>
+                    <textarea id="commentary"
+                        placeholder="Explain the educational scenario, market context, technical observations, and important limitations..."
+                        maxlength="5000"></textarea>
+                </div>
+
+            </div>
+
+            <button type="submit" class="primary-btn" id="saveBtn">
+                Publish VIP Scenario
+            </button>
+
+            <button type="button" class="secondary-btn" id="cancelEditBtn"
+                style="display:none;" onclick="resetForm()">
+                Cancel Edit
+            </button>
+
+            <div id="adminMessage" class="message"></div>
+
+        </form>
+    </section>
+
+    <section class="section">
+
+        <h2>Published VIP Scenarios</h2>
+
+        <div class="filter-row">
+            <button class="filter-btn active" data-filter="ALL">All</button>
+            <button class="filter-btn" data-filter="ACTIVE">Active</button>
+            <button class="filter-btn" data-filter="COMPLETED">Completed</button>
+            <button class="filter-btn" data-filter="CANCELLED">Cancelled</button>
+        </div>
+
+        <div id="loading" class="empty-state">
+            Loading VIP scenarios...
+        </div>
+
+        <div id="signalGrid" class="signal-grid"></div>
+
+    </section>
+
+    <footer style="text-align:center;color:#60718b;font-size:11px;padding:15px;">
+        QM PROFITER · Powered by Shenal Shashika
+    </footer>
+
+</div>
+
+<script>
+const SUPABASE_URL = "https://wuvzojlpegfqwsfhoobc.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"sb_publishable_VnpF9r4AtZmiNLdO8SzBvg_WCb-PF2t";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+const HOST_EMAIL = "jathushara54@gmail.com";
+
+let currentUser = null;
+let isAdmin = false;
+let allSignals = [];
+let currentFilter = "ALL";
+let editingId = null;
+
+const form = document.getElementById("signalForm");
+const signalGrid = document.getElementById("signalGrid");
+const loading = document.getElementById("loading");
+const adminSection = document.getElementById("adminSection");
+const saveBtn = document.getElementById("saveBtn");
+const adminMessage = document.getElementById("adminMessage");
+
+function showMessage(message, type) {
+    adminMessage.textContent = message;
+    adminMessage.className = "message " + type;
+}
+
+function clearMessage() {
+    adminMessage.textContent = "";
+    adminMessage.className = "message";
+}
+
+function resetForm() {
+    form.reset();
+    editingId = null;
+    saveBtn.textContent = "Publish VIP Scenario";
+    document.getElementById("cancelEditBtn").style.display = "none";
+    clearMessage();
+}
+
+function makeElement(tag, className, text) {
+    const element = document.createElement(tag);
+
+    if (className) {
+        element.className = className;
+    }
+
+    if (text !== undefined) {
+        element.textContent = text;
+    }
+
+    return element;
+}
+
+async function initializePage() {
+    try {
+        const { data, error } = await supabaseClient.auth.getSession();
+
+        if (error) throw error;
+
+        const session = data.session;
+
+        if (!session) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        currentUser = session.user;
+
+        isAdmin = (
+            currentUser.email || ""
+        ).toLowerCase() === HOST_EMAIL.toLowerCase();
+
+        if (isAdmin) {
+            adminSection.style.display = "block";
+        }
+
+        await loadSignals();
+
+    } catch (error) {
+        loading.textContent = "Unable to initialize page: " + error.message;
+    }
+}
+
+async function loadSignals() {
+    loading.style.display = "block";
+    loading.textContent = "Loading VIP scenarios...";
+    signalGrid.replaceChildren();
+
+    const { data, error } = await supabaseClient
+        .from("vip_signals")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    loading.style.display = "none";
+
+    if (error) {
+        signalGrid.appendChild(
+            makeElement(
+                "div",
+                "empty-state",
+                "Unable to load scenarios: " + error.message
+            )
+        );
+        return;
+    }
+
+    allSignals = data || [];
+    renderSignals();
+}
+
+function renderSignals() {
+    signalGrid.replaceChildren();
+
+    const filtered = allSignals.filter(signal => {
+        return currentFilter === "ALL" ||
+            signal.status === currentFilter;
+    });
+
+    if (filtered.length === 0) {
+        signalGrid.appendChild(
+            makeElement(
+                "div",
+                "empty-state",
+                "No scenarios available in this category yet."
+            )
+        );
+        return;
+    }
+
+    filtered.forEach(signal => {
+        signalGrid.appendChild(createSignalCard(signal));
+    });
+}
+
+function createSignalCard(signal) {
+    const card = makeElement("article", "signal-card");
+
+    const top = makeElement("div", "signal-top");
+
+    const title = makeElement("h3", "", signal.coin);
+
+    const direction = makeElement(
+        "span",
+        "direction " + (signal.direction === "BUY" ? "buy" : "sell"),
+        signal.direction
+    );
+
+    const status = makeElement(
+        "span",
+        "status " + signal.status,
+        signal.status
+    );
+
+    top.append(title, direction, status);
+    card.appendChild(top);
+
+    const meta = makeElement(
+        "div",
+        "signal-meta",
+        "Timeframe: " + signal.timeframe
+    );
+
+    card.appendChild(meta);
+
+    const priceGrid = makeElement("div", "price-grid");
+
+    const prices = [
+        ["ENTRY", signal.entry, "entry"],
+        ["STOP LOSS", signal.stop_loss, "sl"],
+        ["TP1", signal.tp1, "tp"],
+        ["TP2", signal.tp2, "tp"],
+        ["TP3", signal.tp3, "tp"]
+    ];
+
+    prices.forEach(item => {
+        const box = makeElement("div", "price-item " + item[2]);
+
+        box.appendChild(makeElement("small", "", item[0]));
+
+        box.appendChild(
+            makeElement("strong", "", String(item[1]))
+        );
+
+        priceGrid.appendChild(box);
+    });
+
+    card.appendChild(priceGrid);
+
+    const commentary = makeElement("div", "commentary");
+
+    commentary.appendChild(
+        makeElement("h4", "", "HOST COMMENTARY")
+    );
+
+    commentary.appendChild(
+        makeElement(
+            "p",
+            "",
+            signal.commentary || "No additional commentary provided."
+        )
+    );
+
+    card.appendChild(commentary);
+
+    const footer = makeElement("div", "card-footer");
+
+    const date = signal.created_at
+        ? new Date(signal.created_at).toLocaleString()
+        : "Date unavailable";
+
+    footer.appendChild(
+        makeElement("span", "", date)
+    );
+
+    if (isAdmin) {
+        const actions = makeElement("div", "admin-actions");
+
+        const editBtn = makeElement("button", "secondary-btn", "Edit");
+        editBtn.type = "button";
+        editBtn.addEventListener("click", () => editSignal(signal));
+
+        const deleteBtn = makeElement("button", "delete-btn", "Delete");
+        deleteBtn.type = "button";
+        deleteBtn.addEventListener("click", () => deleteSignal(signal.id));
+
+        actions.append(editBtn, deleteBtn);
+        footer.appendChild(actions);
+    }
+
+    card.appendChild(footer);
+
+    return card;
+}
+
+form.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    if (!isAdmin) {
+        showMessage("You do not have host permission.", "error");
+        return;
+    }
+
+    const values = {
+        coin: document.getElementById("coin").value.trim().toUpperCase(),
+        direction: document.getElementById("direction").value,
+        timeframe: document.getElementById("timeframe").value,
+        entry: Number(document.getElementById("entry").value),
+        stop_loss: Number(document.getElementById("stopLoss").value),
+        tp1: Number(document.getElementById("tp1").value),
+        tp2: Number(document.getElementById("tp2").value),
+        tp3: Number(document.getElementById("tp3").value),
+        status: document.getElementById("status").value,
+        commentary: document.getElementById("commentary").value.trim()
+    };
+
+    const numericValues = [
+        values.entry,
+        values.stop_loss,
+        values.tp1,
+        values.tp2,
+        values.tp3
+    ];
+
+    if (
+        !values.coin ||
+        numericValues.some(value => !Number.isFinite(value) || value <= 0)
+    ) {
+        showMessage("Enter an asset and valid positive reference values.", "error");
+        return;
+    }
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = editingId ? "Updating..." : "Publishing...";
+
+    try {
+        let result;
+
+        if (editingId) {
+            result = await supabaseClient
+                .from("vip_signals")
+                .update({
+                    ...values,
+                    updated_at: new Date().toISOString()
+                })
+                .eq("id", editingId);
+        } else {
+            result = await supabaseClient
+                .from("vip_signals")
+                .insert([values]);
+        }
+
+        if (result.error) throw result.error;
+
+        showMessage(
+            editingId
+                ? "Scenario updated successfully."
+                : "Scenario published successfully.",
+            "success"
+        );
+
+        resetForm();
+        await loadSignals();
+
+    } catch (error) {
+        showMessage("Database error: " + error.message, "error");
+    } finally {
+        saveBtn.disabled = false;
+
+        if (!editingId) {
+            saveBtn.textContent = "Publish VIP Scenario";
+        }
+    }
+});
+
+function editSignal(signal) {
+    if (!isAdmin) return;
+
+    editingId = signal.id;
+
+    document.getElementById("coin").value = signal.coin;
+    document.getElementById("direction").value = signal.direction;
+    document.getElementById("timeframe").value = signal.timeframe;
+    document.getElementById("entry").value = signal.entry;
+    document.getElementById("stopLoss").value = signal.stop_loss;
+    document.getElementById("tp1").value = signal.tp1;
+    document.getElementById("tp2").value = signal.tp2;
+    document.getElementById("tp3").value = signal.tp3;
+    document.getElementById("status").value = signal.status;
+    document.getElementById("commentary").value = signal.commentary || "";
+
+    saveBtn.textContent = "Update Scenario";
+    document.getElementById("cancelEditBtn").style.display = "inline-block";
+
+    clearMessage();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+async function deleteSignal(id) {
+    if (!isAdmin) return;
+
+    const confirmed = window.confirm(
+        "Are you sure you want to delete this VIP scenario?"
+    );
+
+    if (!confirmed) return;
+
+    const { error } = await supabaseClient
+        .from("vip_signals")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        alert("Unable to delete scenario: " + error.message);
+        return;
+    }
+
+    await loadSignals();
+}
+
+document.querySelectorAll(".filter-btn").forEach(button => {
+    button.addEventListener("click", function() {
+        document.querySelectorAll(".filter-btn").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        this.classList.add("active");
+        currentFilter = this.dataset.filter;
+
+        renderSignals();
+    });
+});
+
+initializePage();
+</script>
+
+</body>
+</html>
