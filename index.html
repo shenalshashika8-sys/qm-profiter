@@ -8,17 +8,10 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-
-/* =====================================
-   DASHBOARD GENERAL
-===================================== */
+/* DASHBOARD */
 
 .dashboard-section {
     margin-top: 25px;
-}
-
-.dashboard-section h2 {
-    margin-bottom: 15px;
 }
 
 .performance-grid,
@@ -46,7 +39,7 @@
 .performance-card h2 {
     font-size: 25px;
     margin: 0;
-    color: #ffffff;
+    color: #fff;
 }
 
 .performance-card small,
@@ -133,9 +126,7 @@
     margin-top: 15px;
 }
 
-/* =====================================
-   SIDEBAR NAVIGATION
-===================================== */
+/* SIDEBAR */
 
 .sidebar {
     flex-shrink: 0;
@@ -178,6 +169,21 @@
 
 .nav-label {
     white-space: nowrap;
+}
+
+/* VIP NAVIGATION */
+
+.vip-nav {
+    color: #f3c969 !important;
+}
+
+.vip-nav .nav-icon {
+    stroke: #f3c969;
+}
+
+.vip-nav:hover {
+    background: #302817 !important;
+    color: #ffdc83 !important;
 }
 
 /* LOGOUT */
@@ -266,9 +272,7 @@
     }
 }
 
-/* =====================================
-   MOBILE DESIGN
-===================================== */
+/* MOBILE NAVIGATION */
 
 @media (max-width: 768px) {
 
@@ -291,7 +295,7 @@
         min-height: 100vh;
     }
 
-    /* MOBILE BOTTOM NAVIGATION */
+    /* FIXED BOTTOM NAVIGATION */
 
     .sidebar,
     .sidebar.icons-only {
@@ -302,15 +306,16 @@
         right: 0 !important;
 
         width: 100% !important;
-        height: 72px !important;
-        min-height: 72px !important;
+        height: calc(76px + env(safe-area-inset-bottom)) !important;
+        min-height: 76px !important;
 
-        padding: 6px 3px calc(6px + env(safe-area-inset-bottom)) !important;
+        padding: 5px 4px env(safe-area-inset-bottom) !important;
         margin: 0 !important;
 
         background: #0c1525 !important;
         border-top: 1px solid #26354d;
 
+        box-shadow: 0 -8px 25px rgba(0,0,0,0.35);
         z-index: 99999;
 
         display: flex !important;
@@ -335,8 +340,15 @@
 
         width: 100% !important;
         height: 100%;
-        gap: 1px !important;
+        gap: 2px !important;
         margin: 0 !important;
+    }
+
+    /* HIDE HISTORY FROM BOTTOM BAR.
+       HISTORY REMAINS AVAILABLE IN QUICK ACCESS. */
+
+    .sidebar nav .history-nav {
+        display: none !important;
     }
 
     .sidebar nav a,
@@ -348,20 +360,20 @@
         max-width: none !important;
 
         width: auto !important;
-        height: 54px !important;
-        min-height: 54px !important;
+        height: 58px !important;
+        min-height: 58px !important;
 
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
         align-items: center !important;
 
-        gap: 4px !important;
+        gap: 5px !important;
         padding: 4px 1px !important;
         margin: 0 !important;
 
         border: none !important;
-        border-radius: 8px;
+        border-radius: 10px !important;
         background: transparent;
 
         color: #91a2bb;
@@ -381,13 +393,40 @@
         transform: none !important;
     }
 
+    /* VIP GOLD STYLE */
+
+    .sidebar nav a.vip-nav {
+        color: #f3c969 !important;
+        background: rgba(243,201,105,0.08) !important;
+    }
+
+    .sidebar nav a.vip-nav .nav-icon {
+        stroke: #f3c969 !important;
+        filter: drop-shadow(0 0 4px rgba(243,201,105,0.4));
+    }
+
+    .sidebar nav a.vip-nav.active {
+        background: rgba(243,201,105,0.16) !important;
+        border: 1px solid rgba(243,201,105,0.3) !important;
+    }
+
+    /* LOGOUT RED STYLE */
+
     .sidebar .logout-btn {
-        color: #ff7777;
+        color: #ff7777 !important;
+    }
+
+    .sidebar .logout-btn .nav-icon {
+        stroke: #ff7777 !important;
+    }
+
+    .sidebar .logout-btn:active {
+        background: rgba(239,68,68,0.12) !important;
     }
 
     .sidebar .nav-icon {
-        width: 20px !important;
-        height: 20px !important;
+        width: 21px !important;
+        height: 21px !important;
         margin: 0 !important;
     }
 
@@ -450,16 +489,14 @@
         line-height: 1.5;
     }
 
-    /* IMPORTANT CARD GRID FIX */
+    /* CARD GRIDS */
 
     .market-cards,
     .monitor-grid,
     .performance-grid,
     .quick-links {
         display: grid !important;
-
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-
         grid-auto-flow: row !important;
         grid-auto-columns: auto !important;
 
@@ -655,7 +692,6 @@
         font-size: 17px;
     }
 }
-
 </style>
 </head>
 
@@ -725,7 +761,9 @@
                 <span class="nav-label">Calculator</span>
             </a>
 
-            <a href="history.html" title="Paper Trading History">
+            <!-- HISTORY: DESKTOP SIDEBAR + MOBILE QUICK ACCESS -->
+
+            <a class="history-nav" href="history.html" title="Paper Trading History">
                 <svg class="nav-icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="9"></circle>
                     <path d="M12 7v5l3 2"></path>
@@ -734,15 +772,17 @@
                 <span class="nav-label">History</span>
             </a>
 
-            <!-- NEW VIP SIGNALS NAVIGATION -->
+            <!-- VIP SIGNALS -->
 
-            <a href="vip-signals.html" title="VIP Signals">
+            <a class="vip-nav" href="vip-signals.html" title="VIP Signals">
                 <svg class="nav-icon" viewBox="0 0 24 24">
                     <path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z"></path>
                     <path d="M19 15l1.2 2.8L23 19l-2.8 1.2L19 23l-1.2-2.8L15 19l2.8-1.2L19 15z"></path>
                 </svg>
-                <span class="nav-label">VIP Signals</span>
+                <span class="nav-label">VIP Signal</span>
             </a>
+
+            <!-- LOGOUT -->
 
             <button class="logout-btn" id="logoutBtn" type="button">
                 <svg class="nav-icon" viewBox="0 0 24 24">
@@ -843,7 +883,7 @@
                         <span class="monitor-dot warning" id="statsDot"></span>
                         <span id="statsMonitor">Checking...</span>
                     </div>
-                    <small>Paper trading statistics</small>
+                    <small>Trading statistics</small>
                 </div>
 
                 <div class="monitor-card">
@@ -862,11 +902,11 @@
 
         </section>
 
-        <!-- PAPER TRADING PERFORMANCE -->
+        <!-- TRADING PERFORMANCE -->
 
         <section class="dashboard-section">
 
-            <h2>Paper Trading Performance</h2>
+            <h2>Trading Performance</h2>
 
             <div class="performance-grid">
 
@@ -896,10 +936,7 @@
 
             </div>
 
-            <p class="dashboard-note">
-                Performance figures are based on simulated paper trades.
-                They do not represent real trading profits.
-            </p>
+    
 
         </section>
 
@@ -935,16 +972,14 @@
                     <p>Review educational market scenarios.</p>
                 </a>
 
-                <!-- NEW VIP SIGNALS QUICK ACCESS -->
-
                 <a href="vip-signals.html" class="quick-link">
                     <h3>⭐ VIP Signals</h3>
                     <p>View published educational scenarios and detailed signal commentary.</p>
                 </a>
 
                 <a href="history.html" class="quick-link">
-                    <h3>Paper Trading History</h3>
-                    <p>Review simulated trades and performance.</p>
+                    <h3>Trading History</h3>
+                    <p>Review trades and performance.</p>
                 </a>
 
                 <a href="calculator.html" class="quick-link">

@@ -94,14 +94,14 @@ select:focus,input:focus{border-color:var(--blue)}
     <a href="history.html" class="nav-link">◷ Paper Trading History</a>
     <a href="vip.html" class="nav-link">★ VIP Signals</a>
     <a href="#" class="nav-link" id="logoutBtn">⇥ Logout</a>
-    <div class="sidebar-footer">QM PROFITER<br>Educational Analysis Platform<br>Powered by Shenal Shashika</div>
+    <div class="sidebar-footer">QM PROFITER<br>Powered by Shenal Shashika</div>
 </aside>
 
 <main class="main-content">
 <header class="topbar">
     <div class="page-heading">
         <h1>Market Analyzer</h1>
-        <p>Technical analysis and educational Elliott Wave study</p>
+        <p>Technical analysis and Elliott Wave</p>
     </div>
     <div class="status-indicator">● ANALYZER</div>
 </header>
@@ -185,7 +185,7 @@ select:focus,input:focus{border-color:var(--blue)}
         <div class="analysis-item"><div class="label">RISK / REWARD (TP2)</div><div class="value" id="signalRR">--</div></div>
     </div>
     <div class="ew-explanation"><strong>Signal Explanation</strong><p id="signalExplanation">Waiting for market data.</p></div>
-    <p class="note">Educational paper-study output only. These calculations are not financial advice, predictions or instructions to place real orders.</p>
+
 </section>
 
 <section class="panel">
@@ -210,7 +210,7 @@ select:focus,input:focus{border-color:var(--blue)}
     <div class="ew-table-wrap"><table class="ew-table"><thead><tr><th>Candidate</th><th>Direction</th><th>Rule Score</th><th>Status</th><th>Failed Rules</th></tr></thead><tbody id="ewAlternativeResults"><tr><td colspan="5">No alternative counts analyzed yet.</td></tr></tbody></table></div>
     <h3 style="margin-top:22px">Fibonacci Levels</h3>
     <div class="ew-table-wrap"><table class="ew-table"><thead><tr><th>Level</th><th>Price</th></tr></thead><tbody id="ewFibonacci"><tr><td colspan="2">No Fibonacci levels calculated yet.</td></tr></tbody></table></div>
-    <p class="note">Elliott Wave counts are heuristic educational interpretations of historical price data, not predictions or guaranteed trading signals.</p>
+    
 </section>
 
 <section class="panel">
@@ -241,7 +241,7 @@ select:focus,input:focus{border-color:var(--blue)}
     <textarea id="screenshotPrompt" rows="8" style="display:none;width:100%;margin-top:15px;background:#0b1421;color:white;border:1px solid var(--border);border-radius:8px;padding:12px" placeholder="Generated analysis prompt"></textarea>
 </section>
 
-<p class="note" style="text-align:center;padding:15px">QM PROFITER is an educational analysis and paper-trading platform. It does not guarantee market outcomes.</p>
+<p class="note" style="text-align:center;padding:15px">Enjoy Your Trading Journey</p>
 </main>
 </div>
 
@@ -1234,10 +1234,6 @@ async function initializeAnalyzer(){
     loadTradingViewChart();
     await checkAnalyzerAuthentication();
     await loadTechnicalAnalysis();
-
-    setText("analysisMessage",
-        "Market data refreshed. Technical indicators are educational tools, not guaranteed predictions.");
-}
 
 document.addEventListener("DOMContentLoaded",function(){
     initializeAnalyzer();
