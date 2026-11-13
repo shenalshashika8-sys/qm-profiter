@@ -174,6 +174,7 @@
 /* VIP NAVIGATION */
 
 .vip-nav {
+    position: relative;
     color: #f3c969 !important;
 }
 
@@ -184,6 +185,57 @@
 .vip-nav:hover {
     background: #302817 !important;
     color: #ffdc83 !important;
+}
+
+/* ACTIVE VIP SIGNAL INDICATOR */
+
+.vip-nav.has-active-signal {
+    color: #22e58b !important;
+    background: rgba(34, 229, 139, 0.10) !important;
+    border: 1px solid rgba(34, 229, 139, 0.35);
+    box-shadow: 0 0 12px rgba(34, 229, 139, 0.18);
+}
+
+.vip-nav.has-active-signal .nav-icon {
+    stroke: #22e58b !important;
+    filter: drop-shadow(0 0 5px rgba(34, 229, 139, 0.65));
+}
+
+.vip-active-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #22e58b;
+    box-shadow: 0 0 9px #22e58b;
+    flex-shrink: 0;
+    animation: vipPulse 1.5s infinite;
+}
+
+.vip-active-dot[hidden],
+.vip-signal-count[hidden] {
+    display: none !important;
+}
+
+@keyframes vipPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+/* VIP ACTIVE SIGNAL COUNT */
+
+.vip-signal-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    border-radius: 20px;
+    background: #22e58b;
+    color: #07140e;
+    font-size: 11px;
+    font-weight: bold;
+    box-shadow: 0 0 8px rgba(34, 229, 139, 0.45);
 }
 
 /* LOGOUT */
@@ -295,8 +347,6 @@
         min-height: 100vh;
     }
 
-    /* FIXED BOTTOM NAVIGATION */
-
     .sidebar,
     .sidebar.icons-only {
         position: fixed !important;
@@ -304,20 +354,15 @@
         bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
-
         width: 100% !important;
         height: calc(76px + env(safe-area-inset-bottom)) !important;
         min-height: 76px !important;
-
         padding: 5px 4px env(safe-area-inset-bottom) !important;
         margin: 0 !important;
-
         background: #0c1525 !important;
         border-top: 1px solid #26354d;
-
         box-shadow: 0 -8px 25px rgba(0,0,0,0.35);
         z-index: 99999;
-
         display: flex !important;
         flex-direction: row !important;
         align-items: center;
@@ -337,15 +382,11 @@
         flex-wrap: nowrap !important;
         justify-content: space-around !important;
         align-items: center !important;
-
         width: 100% !important;
         height: 100%;
         gap: 2px !important;
         margin: 0 !important;
     }
-
-    /* HIDE HISTORY FROM BOTTOM BAR.
-       HISTORY REMAINS AVAILABLE IN QUICK ACCESS. */
 
     .sidebar nav .history-nav {
         display: none !important;
@@ -358,24 +399,19 @@
         flex: 1 1 0 !important;
         min-width: 0 !important;
         max-width: none !important;
-
         width: auto !important;
         height: 58px !important;
         min-height: 58px !important;
-
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
         align-items: center !important;
-
         gap: 5px !important;
         padding: 4px 1px !important;
         margin: 0 !important;
-
         border: none !important;
         border-radius: 10px !important;
         background: transparent;
-
         color: #91a2bb;
         text-align: center;
         font-size: 9px;
@@ -410,6 +446,29 @@
         border: 1px solid rgba(243,201,105,0.3) !important;
     }
 
+    /* ACTIVE VIP ON MOBILE */
+
+    .sidebar nav a.vip-nav.has-active-signal {
+        color: #22e58b !important;
+        background: rgba(34,229,139,0.13) !important;
+        border: 1px solid rgba(34,229,139,0.35) !important;
+        box-shadow: 0 0 10px rgba(34,229,139,0.18);
+    }
+
+    .sidebar nav a.vip-nav.has-active-signal .nav-icon {
+        stroke: #22e58b !important;
+        filter: drop-shadow(0 0 5px rgba(34,229,139,0.65));
+    }
+
+    .sidebar nav a.vip-nav .vip-signal-count {
+        position: absolute;
+        top: 3px;
+        right: 12%;
+        min-width: 15px;
+        height: 15px;
+        font-size: 9px;
+    }
+
     /* LOGOUT RED STYLE */
 
     .sidebar .logout-btn {
@@ -442,19 +501,14 @@
         text-overflow: ellipsis;
     }
 
-    /* MAIN CONTENT */
-
     .main-content {
         display: block;
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
-
         margin: 0 !important;
         padding: 17px 12px 105px !important;
     }
-
-    /* HEADER */
 
     .topbar {
         display: flex;
@@ -463,7 +517,6 @@
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 10px;
-
         width: 100%;
         margin-bottom: 20px;
     }
@@ -489,8 +542,6 @@
         line-height: 1.5;
     }
 
-    /* CARD GRIDS */
-
     .market-cards,
     .monitor-grid,
     .performance-grid,
@@ -499,11 +550,9 @@
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         grid-auto-flow: row !important;
         grid-auto-columns: auto !important;
-
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
-
         gap: 10px !important;
         align-items: stretch;
     }
@@ -520,8 +569,6 @@
         margin: 0 !important;
         box-sizing: border-box !important;
     }
-
-    /* MARKET CARDS */
 
     .market-card {
         padding: 14px 10px !important;
@@ -541,8 +588,6 @@
     .market-card span {
         font-size: 10px;
     }
-
-    /* SYSTEM MONITOR */
 
     .monitor-card {
         padding: 13px 10px !important;
@@ -577,8 +622,6 @@
         line-height: 1.5;
     }
 
-    /* PERFORMANCE */
-
     .performance-card {
         padding: 14px 10px !important;
         border-radius: 11px;
@@ -605,8 +648,6 @@
         line-height: 1.6;
     }
 
-    /* MARKET OVERVIEW */
-
     .content-card {
         width: 100%;
         max-width: 100%;
@@ -631,8 +672,6 @@
         box-sizing: border-box;
         overflow: hidden;
     }
-
-    /* QUICK ACCESS */
 
     .quick-link {
         padding: 13px 10px !important;
@@ -761,32 +800,34 @@
                 <span class="nav-label">Calculator</span>
             </a>
 
-<!-- PROFIT CARDS -->
+            <!-- PROFIT CARDS -->
 
-<a href="profit-cards.html" title="Profit Cards">
-    <svg class="nav-icon" viewBox="0 0 24 24">
-        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-        <path d="M21 15l-5-5L5 21"></path>
-        <path d="M14 14l2-2 5 5"></path>
-    </svg>
-    <span class="nav-label">Profit Cards</span>
-</a>
-<!-- ADMIN PANEL - ADMIN ONLY -->
+            <a href="profit-cards.html" title="Profit Cards">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <path d="M21 15l-5-5L5 21"></path>
+                    <path d="M14 14l2-2 5 5"></path>
+                </svg>
+                <span class="nav-label">Profit Cards</span>
+            </a>
 
-<a id="adminPanelNav"
-   href="admin-subscriptions.html"
-   title="Admin Panel"
-   style="display:none;">
+            <!-- ADMIN PANEL - ADMIN ONLY -->
 
-    <svg class="nav-icon" viewBox="0 0 24 24">
-        <path d="M12 3l8 4v5c0 5-3.5 8-8 10-4.5-2-8-5-8-10V7z"></path>
-        <path d="M9 12l2 2 4-4"></path>
-    </svg>
+            <a id="adminPanelNav"
+               href="admin-subscriptions.html"
+               title="Admin Panel"
+               style="display:none;">
 
-    <span class="nav-label">Admin Panel</span>
-</a>
-            <!-- HISTORY: DESKTOP SIDEBAR + MOBILE QUICK ACCESS -->
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M12 3l8 4v5c0 5-3.5 8-8 10-4.5-2-8-5-8-10V7z"></path>
+                    <path d="M9 12l2 2 4-4"></path>
+                </svg>
+
+                <span class="nav-label">Admin Panel</span>
+            </a>
+
+            <!-- HISTORY -->
 
             <a class="history-nav" href="history.html" title="Paper Trading History">
                 <svg class="nav-icon" viewBox="0 0 24 24">
@@ -799,12 +840,21 @@
 
             <!-- VIP SIGNALS -->
 
-            <a class="vip-nav" href="vip-signals.html" title="VIP Signals">
+            <a class="vip-nav" id="vipNavLink" href="vip-signals.html" title="VIP Signals">
+
                 <svg class="nav-icon" viewBox="0 0 24 24">
                     <path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z"></path>
                     <path d="M19 15l1.2 2.8L23 19l-2.8 1.2L19 23l-1.2-2.8L15 19l2.8-1.2L19 15z"></path>
                 </svg>
+
                 <span class="nav-label">VIP Signal</span>
+
+                <span id="vipSignalCount" class="vip-signal-count" hidden>0</span>
+
+                <span id="vipActiveDot"
+                      class="vip-active-dot"
+                      aria-label="Active VIP signal"
+                      hidden></span>
             </a>
 
             <!-- LOGOUT -->
@@ -961,8 +1011,6 @@
 
             </div>
 
-    
-
         </section>
 
         <!-- MARKET OVERVIEW -->
@@ -1044,8 +1092,53 @@ const supabaseClient = window.supabase.createClient(
 );
 
 
-/* AUTHENTICATION CHECK */
+/* VIP ACTIVE SIGNAL CHECK AND COUNT */
 
+async function checkVIPActiveSignals() {
+
+    const vipNav = document.getElementById("vipNavLink");
+    const vipDot = document.getElementById("vipActiveDot");
+    const vipCount = document.getElementById("vipSignalCount");
+
+    if (!vipNav || !vipDot || !vipCount) return;
+
+    try {
+
+        const { count, error } = await supabaseClient
+            .from("vip_signals")
+            .select("id", { count: "exact", head: true })
+            .eq("status", "ACTIVE");
+
+        if (error) {
+            throw error;
+        }
+
+        const activeCount = count || 0;
+        const hasActiveSignals = activeCount > 0;
+
+        vipNav.classList.toggle(
+            "has-active-signal",
+            hasActiveSignals
+        );
+
+        vipDot.hidden = !hasActiveSignals;
+
+        vipCount.textContent = activeCount;
+        vipCount.hidden = !hasActiveSignals;
+
+        vipNav.title = hasActiveSignals
+            ? `${activeCount} active VIP signal(s)`
+            : "VIP Signals";
+
+    } catch (error) {
+
+        console.error("VIP signal check failed:", error);
+
+    }
+}
+
+
+/* AUTHENTICATION CHECK */
 
 async function checkAuthentication() {
 
@@ -1119,6 +1212,7 @@ async function checkAuthentication() {
         return false;
     }
 }
+
 
 /* LOGOUT FUNCTION */
 
@@ -1499,11 +1593,20 @@ async function startApplication() {
 
     await checkSystem();
 
-    /* AUTOMATIC REFRESH EVERY 15 SECONDS */
+    /* INITIAL VIP SIGNAL CHECK */
+
+    await checkVIPActiveSignals();
+
+    /* AUTOMATIC SYSTEM REFRESH */
 
     setInterval(checkSystem, 15000);
 
+    /* AUTOMATIC VIP SIGNAL REFRESH */
+
+    setInterval(checkVIPActiveSignals, 10000);
+
 }
+
 
 /* START DASHBOARD */
 
