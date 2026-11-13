@@ -1,0 +1,823 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QM PROFITER - Subscription Management</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#080d18;
+    color:#e8edf7;
+    padding:25px;
+}
+
+.container{max-width:1350px;margin:auto}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+    margin-bottom:25px;
+}
+
+h1{color:#ffd400;font-size:27px}
+.subtitle{color:#94a3b8;margin-top:8px}
+
+.back-btn{
+    background:#1e293b;
+    color:white;
+    padding:12px 18px;
+    border-radius:8px;
+    text-decoration:none;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.stat{
+    background:#101827;
+    border:1px solid #263449;
+    padding:20px;
+    border-radius:12px;
+}
+
+.stat h3{color:#94a3b8;font-size:13px}
+.stat p{font-size:28px;font-weight:bold;margin-top:10px}
+
+.panel{
+    background:#101827;
+    border:1px solid #263449;
+    padding:20px;
+    border-radius:12px;
+}
+
+.panel h2{font-size:19px;margin-bottom:18px}
+
+.search{
+    width:100%;
+    padding:13px;
+    background:#080d18;
+    border:1px solid #334155;
+    border-radius:8px;
+    color:white;
+    margin-bottom:18px;
+}
+
+.table-wrap{overflow-x:auto}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:1050px;
+}
+
+th,td{
+    text-align:left;
+    padding:14px 12px;
+    border-bottom:1px solid #263449;
+    font-size:14px;
+}
+
+th{color:#94a3b8}
+
+.email{
+    font-weight:bold;
+    color:#e8edf7;
+    overflow-wrap:anywhere;
+}
+
+.status{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.active{background:#064e3b;color:#6ee7b7}
+.expired{background:#7f1d1d;color:#fecaca}
+.unpaid{background:#78350f;color:#fde68a}
+.paused{background:#713f12;color:#fde68a}
+
+.countdown{
+    font-weight:bold;
+    color:#22d3a0;
+    font-size:13px;
+    white-space:nowrap;
+}
+
+.countdown.warning{color:#fbbf24}
+.countdown.danger{color:#f87171}
+.countdown.stopped{color:#f87171}
+
+.expiry-date{
+    color:#94a3b8;
+    font-size:12px;
+    line-height:1.6;
+}
+
+.action-btn{
+    border:0;
+    border-radius:6px;
+    padding:9px 12px;
+    font-weight:bold;
+    cursor:pointer;
+    margin:3px;
+    white-space:nowrap;
+}
+
+.activate-btn{
+    background:#ffd400;
+    color:#080808;
+}
+
+.pause-btn{
+    background:#7f1d1d;
+    color:#fecaca;
+}
+
+.resume-btn{
+    background:#065f46;
+    color:#a7f3d0;
+}
+
+.action-btn:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+.message{
+    color:#94a3b8;
+    margin-top:15px;
+    font-size:14px;
+    overflow-wrap:anywhere;
+}
+
+.empty{text-align:center;padding:35px;color:#94a3b8}
+
+.note{
+    background:#0b1b2b;
+    border:1px solid #263449;
+    border-radius:9px;
+    padding:13px;
+    color:#94a3b8;
+    font-size:12px;
+    line-height:1.7;
+    margin-bottom:18px;
+}
+
+@media(max-width:600px){
+    body{padding:14px}
+    h1{font-size:22px}
+    .panel{padding:13px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div>
+            <h1>Subscription Management</h1>
+            <p class="subtitle">QM PROFITER Admin Dashboard</p>
+        </div>
+
+        <a href="index.html" class="back-btn">← Dashboard</a>
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <h3>Total Users</h3>
+            <p id="totalUsers">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Active Subscriptions</h3>
+            <p id="activeUsers">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Paused Users</h3>
+            <p id="pausedUsers">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Expired / Not Activated</h3>
+            <p id="expiredUsers">0</p>
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Registered Users</h2>
+
+        <div class="note">
+            Every activation starts a 30-day subscription.
+            The countdown continues while access is paused.
+            Renewals add another 30 days to the existing expiry date,
+            or start a new 30 days if the subscription has expired.
+        </div>
+
+        <input
+            type="text"
+            class="search"
+            id="searchInput"
+            placeholder="Search users by email..."
+        >
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>User Email</th>
+                        <th>Time Remaining</th>
+                        <th>Expiry Date</th>
+                        <th>Status</th>
+                        <th>Subscription</th>
+                        <th>Access Control</th>
+                    </tr>
+                </thead>
+
+                <tbody id="usersTable">
+                    <tr>
+                        <td colspan="6" class="empty">
+                            Loading users...
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <p id="message" class="message"></p>
+
+    </div>
+
+</div>
+
+<script>
+
+/* SUPABASE CONFIGURATION */
+
+const SUPABASE_URL =
+    "https://wuvzojlpegfqwsfhoobc.supabase.co";
+
+const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1dnpvamxwZWdmcXdzZmhvb2JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0MTUwMzcsImV4cCI6MjEwOTk5MTAzN30.aL3ijARNugegh-Cge0GXt4QM10RqVM7iFz9AlNgReuQ";
+
+const ADMIN_EMAIL = "jathushara54@gmail.com";
+
+const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+let users = [];
+
+let countdownInterval = null;
+
+
+/* ADMIN AUTHENTICATION */
+
+async function checkAdmin(){
+
+    const {data,error} = await db.auth.getSession();
+
+    if(error || !data.session){
+
+        document.body.innerHTML =
+            "<h2 style='color:white;text-align:center;margin-top:100px'>Please log in first.</h2>";
+
+        return false;
+    }
+
+    const email = data.session.user.email;
+
+    if(email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()){
+
+        document.body.innerHTML =
+            "<h2 style='color:#ef4444;text-align:center;margin-top:100px'>Access Denied - Admin Only</h2>";
+
+        return false;
+    }
+
+    return true;
+}
+
+
+/* LOAD USERS */
+
+async function loadUsers(){
+
+    const table = document.getElementById("usersTable");
+    const message = document.getElementById("message");
+
+    table.innerHTML =
+        "<tr><td colspan='6' class='empty'>Loading users...</td></tr>";
+
+    message.textContent = "";
+
+    const {data,error} =
+        await db.rpc("admin_list_subscriptions");
+
+    if(error){
+
+        console.error(error);
+
+        table.innerHTML =
+            "<tr><td colspan='6' class='empty'>Unable to load users.</td></tr>";
+
+        message.textContent = error.message;
+
+        return;
+    }
+
+    users = data || [];
+
+    updateStats();
+    filterUsers();
+}
+
+
+/* SUBSCRIPTION TIME REMAINING */
+
+function getRemainingTime(expiryDate){
+
+    if(!expiryDate){
+        return null;
+    }
+
+    const difference =
+        new Date(expiryDate).getTime() - Date.now();
+
+    if(!Number.isFinite(difference) || difference <= 0){
+        return null;
+    }
+
+    const totalSeconds =
+        Math.floor(difference / 1000);
+
+    const days =
+        Math.floor(totalSeconds / 86400);
+
+    const hours =
+        Math.floor((totalSeconds % 86400) / 3600);
+
+    const minutes =
+        Math.floor((totalSeconds % 3600) / 60);
+
+    const seconds =
+        totalSeconds % 60;
+
+    return {
+        difference,
+        days,
+        hours,
+        minutes,
+        seconds
+    };
+}
+
+
+/* FORMAT COUNTDOWN */
+
+function formatCountdown(expiryDate){
+
+    if(!expiryDate){
+        return "Not activated";
+    }
+
+    const remaining = getRemainingTime(expiryDate);
+
+    if(!remaining){
+        return "EXPIRED";
+    }
+
+    return (
+        remaining.days + "d " +
+        String(remaining.hours).padStart(2,"0") + "h " +
+        String(remaining.minutes).padStart(2,"0") + "m " +
+        String(remaining.seconds).padStart(2,"0") + "s"
+    );
+}
+
+
+/* UPDATE LIVE COUNTDOWNS */
+
+function updateCountdowns(){
+
+    document.querySelectorAll("[data-expiry]").forEach(element => {
+
+        const expiry = element.dataset.expiry;
+
+        const remaining = getRemainingTime(expiry);
+
+        element.textContent = formatCountdown(expiry);
+
+        element.classList.remove(
+            "warning",
+            "danger",
+            "stopped"
+        );
+
+        if(!remaining){
+
+            element.classList.add("danger");
+
+        }else if(remaining.days <= 3){
+
+            element.classList.add("danger");
+
+        }else if(remaining.days <= 7){
+
+            element.classList.add("warning");
+
+        }
+
+    });
+
+    updateStats();
+}
+
+
+/* UPDATE STATISTICS */
+
+function updateStats(){
+
+    const now = Date.now();
+
+    const active = users.filter(user =>
+        !user.is_paused &&
+        user.expires_at &&
+        new Date(user.expires_at).getTime() > now
+    ).length;
+
+    const paused = users.filter(user =>
+        user.is_paused === true
+    ).length;
+
+    document.getElementById("totalUsers").textContent =
+        users.length;
+
+    document.getElementById("activeUsers").textContent =
+        active;
+
+    document.getElementById("pausedUsers").textContent =
+        paused;
+
+    document.getElementById("expiredUsers").textContent =
+        users.length - active - paused;
+}
+
+
+/* DISPLAY USERS */
+
+function renderUsers(list){
+
+    const table = document.getElementById("usersTable");
+
+    table.innerHTML = "";
+
+    if(!list.length){
+
+        table.innerHTML =
+            "<tr><td colspan='6' class='empty'>No registered users found.</td></tr>";
+
+        return;
+    }
+
+    list.forEach(user => {
+
+        const expiry = user.expires_at
+            ? new Date(user.expires_at)
+            : null;
+
+        const subscriptionActive =
+            expiry && expiry.getTime() > Date.now();
+
+        const isPaused = user.is_paused === true;
+
+        let statusText;
+        let statusClass;
+
+        if(isPaused){
+
+            statusText = "PAUSED";
+            statusClass = "paused";
+
+        }else if(subscriptionActive){
+
+            statusText = "ACTIVE";
+            statusClass = "active";
+
+        }else if(expiry){
+
+            statusText = "EXPIRED";
+            statusClass = "expired";
+
+        }else{
+
+            statusText = "NOT ACTIVATED";
+            statusClass = "unpaid";
+
+        }
+
+        const row = document.createElement("tr");
+
+
+        /* EMAIL */
+
+        const emailCell = document.createElement("td");
+
+        emailCell.className = "email";
+        emailCell.textContent = user.email || "Unknown";
+
+
+        /* LIVE COUNTDOWN */
+
+        const countdownCell = document.createElement("td");
+
+        const countdown = document.createElement("span");
+
+        countdown.className = "countdown";
+
+        if(user.expires_at){
+
+            countdown.dataset.expiry = user.expires_at;
+
+            countdown.textContent =
+                formatCountdown(user.expires_at);
+
+        }else{
+
+            countdown.textContent = "Not activated";
+            countdown.classList.add("stopped");
+
+        }
+
+        countdownCell.appendChild(countdown);
+
+
+        /* EXPIRY DATE */
+
+        const expiryCell = document.createElement("td");
+
+        expiryCell.className = "expiry-date";
+
+        expiryCell.textContent = expiry
+            ? expiry.toLocaleString()
+            : "Not activated";
+
+
+        /* STATUS */
+
+        const statusCell = document.createElement("td");
+
+        const badge = document.createElement("span");
+
+        badge.className = "status " + statusClass;
+        badge.textContent = statusText;
+
+        statusCell.appendChild(badge);
+
+
+        /* SUBSCRIPTION ACTION */
+
+        const subscriptionCell = document.createElement("td");
+
+        const renewButton = document.createElement("button");
+
+        renewButton.className = "action-btn activate-btn";
+
+        renewButton.textContent = subscriptionActive
+            ? "Renew 30 Days"
+            : "Activate 30 Days";
+
+        renewButton.onclick = () =>
+            activateUser(user.user_id,renewButton);
+
+        subscriptionCell.appendChild(renewButton);
+
+
+        /* PAUSE / RESUME */
+
+        const accessCell = document.createElement("td");
+
+        const accessButton = document.createElement("button");
+
+        accessButton.className = isPaused
+            ? "action-btn resume-btn"
+            : "action-btn pause-btn";
+
+        if(!expiry){
+
+            accessButton.textContent = "Activate First";
+            accessButton.disabled = true;
+
+        }else if(isPaused && !subscriptionActive){
+
+            accessButton.textContent = "Renew First";
+            accessButton.disabled = true;
+
+        }else{
+
+            accessButton.textContent = isPaused
+                ? "Resume Access"
+                : "Pause Access";
+
+            accessButton.onclick = () =>
+                toggleUserAccess(
+                    user.user_id,
+                    !isPaused,
+                    accessButton
+                );
+        }
+
+        accessCell.appendChild(accessButton);
+
+
+        row.appendChild(emailCell);
+        row.appendChild(countdownCell);
+        row.appendChild(expiryCell);
+        row.appendChild(statusCell);
+        row.appendChild(subscriptionCell);
+        row.appendChild(accessCell);
+
+        table.appendChild(row);
+
+    });
+
+    updateCountdowns();
+}
+
+
+/* ACTIVATE OR RENEW SUBSCRIPTION */
+
+async function activateUser(userId,button){
+
+    const confirmed = confirm(
+        "Confirm that payment has been received. Activate or renew this user's subscription for 30 days?"
+    );
+
+    if(!confirmed) return;
+
+    button.disabled = true;
+    button.textContent = "Processing...";
+
+    try{
+
+        const {error} = await db.rpc(
+            "admin_set_subscription",
+            {
+                target_user_id:userId,
+                days_to_add:30
+            }
+        );
+
+        if(error) throw error;
+
+        alert("Subscription activated or renewed successfully!");
+
+        await loadUsers();
+
+    }catch(error){
+
+        alert("Subscription update failed: " + error.message);
+
+        button.disabled = false;
+        button.textContent = "Try Again";
+
+    }
+}
+
+
+/* PAUSE OR RESUME USER ACCESS */
+
+async function toggleUserAccess(userId,pausedState,button){
+
+    const action = pausedState ? "PAUSE" : "RESUME";
+
+    const confirmed = confirm(
+        "Are you sure you want to " + action +
+        " this user's access? The 30-day countdown will continue."
+    );
+
+    if(!confirmed) return;
+
+    button.disabled = true;
+    button.textContent = "Processing...";
+
+    try{
+
+        const {error} = await db.rpc(
+            "admin_set_user_paused",
+            {
+                target_user_id:userId,
+                paused_state:pausedState
+            }
+        );
+
+        if(error) throw error;
+
+        alert(
+            pausedState
+                ? "User access has been marked as PAUSED."
+                : "User access has been marked as RESUMED."
+        );
+
+        await loadUsers();
+
+    }catch(error){
+
+        console.error("Access control error:",error);
+
+        alert("Access update failed: " + error.message);
+
+        button.disabled = false;
+
+        button.textContent = pausedState
+            ? "Pause Access"
+            : "Resume Access";
+
+    }
+}
+
+
+/* SEARCH USERS */
+
+function filterUsers(){
+
+    const query = document.getElementById("searchInput")
+        .value.toLowerCase();
+
+    const filtered = users.filter(user =>
+        (user.email || "").toLowerCase().includes(query)
+    );
+
+    renderUsers(filtered);
+}
+
+
+/* SEARCH LISTENER */
+
+document.getElementById("searchInput")
+    .addEventListener("input",filterUsers);
+
+
+/* START ADMIN DASHBOARD */
+
+(async function(){
+
+    try{
+
+        const allowed = await checkAdmin();
+
+        if(allowed){
+
+            await loadUsers();
+
+            countdownInterval = setInterval(
+                updateCountdowns,
+                1000
+            );
+
+        }
+
+    }catch(error){
+
+        console.error("Dashboard error:",error);
+
+        const message = document.getElementById("message");
+
+        if(message){
+            message.textContent = error.message;
+        }
+
+    }
+
+})();
+
+</script>
+
+</body>
+</html>

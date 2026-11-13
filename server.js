@@ -16,8 +16,9 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
 }
 
 const supabase = require("./auth");
-
 const app = express();
+
+const ADMIN_EMAIL = "jathushara54@gmail.com";
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
@@ -27,7 +28,7 @@ const activityFile = process.env.VERCEL
     : path.join(__dirname, "activity-log.json");
 
 // ------------------------------
-// AUTHENTICATION
+// AUTHENTICATION + SUBSCRIPTION
 // ------------------------------
 
 async function authenticateUser(req, res, next) {
@@ -58,9 +59,6 @@ async function authenticateUser(req, res, next) {
 
         req.user = data.user;
 
-        // Use the signed-in user's token.
-        // Supabase RLS will enforce data ownership.
-
         req.userSupabase = createClient(
             process.env.SUPABASE_URL,
             process.env.SUPABASE_ANON_KEY,
@@ -77,13 +75,71 @@ async function authenticateUser(req, res, next) {
             }
         );
 
+        // ADMIN BYPASS
+
+        if (
+            req.user.email?.toLowerCase() ===
+            ADMIN_EMAIL.toLowerCase()
+        ) {
+            return next();
+        }
+
+        // CHECK SUBSCRIPTION
+
+        const { data: subscription, error: subscriptionError } =
+            await req.userSupabase
+                .from("user_subscriptions")
+                .select("expires_at, is_paused")
+                .eq("user_id", req.user.id)
+                .maybeSingle();
+
+        if (subscriptionError) {
+            console.error(
+                "Subscription verification error:",
+                subscriptionError
+            );
+
+            return res.status(503).json({
+                error: "Unable to verify your subscription. Please try again.",
+                code: "SUBSCRIPTION_CHECK_FAILED"
+            });
+        }
+
+        if (!subscription) {
+            return res.status(403).json({
+                error: "Your subscription has not been activated.",
+                code: "SUBSCRIPTION_REQUIRED"
+            });
+        }
+
+        if (subscription.is_paused === true) {
+            return res.status(403).json({
+                error: "Your account access is currently paused. Please contact the administrator.",
+                code: "SUBSCRIPTION_PAUSED"
+            });
+        }
+
+        const expiryTime = new Date(
+            subscription.expires_at
+        ).getTime();
+
+        if (
+            !Number.isFinite(expiryTime) ||
+            expiryTime <= Date.now()
+        ) {
+            return res.status(403).json({
+                error: "Your subscription has expired. Please contact the administrator for renewal.",
+                code: "SUBSCRIPTION_EXPIRED"
+            });
+        }
+
         next();
 
     } catch (error) {
         console.error("Authentication error:", error);
 
-        return res.status(401).json({
-            error: "Authentication failed."
+        return res.status(500).json({
+            error: "Authentication or subscription verification failed."
         });
     }
 }
@@ -164,21 +220,25 @@ app.get("/", (req, res) => {
 // MARKET ANALYSIS
 // ------------------------------
 
-app.post("/api/analyze", (req, res) => {
-    const { indicators } = req.body;
+app.post(
+    "/api/analyze",
+    authenticateUser,
+    (req, res) => {
+        const { indicators } = req.body;
 
-    if (!indicators) {
-        return res.status(400).json({
-            error: "Market indicators are required."
+        if (!indicators) {
+            return res.status(400).json({
+                error: "Market indicators are required."
+            });
+        }
+
+        res.json({
+            status: "received",
+            message: "Market data received successfully.",
+            indicators
         });
     }
-
-    res.json({
-        status: "received",
-        message: "Market data received successfully.",
-        indicators
-    });
-});
+);
 
 // ------------------------------
 // GET USER'S OWN PAPER TRADES
