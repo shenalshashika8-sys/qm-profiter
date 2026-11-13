@@ -7,1943 +7,1246 @@
 <title>QM PROFITER - Analyzer</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    background: #080d18;
-    color: #e8edf7;
-    font-family: Arial, sans-serif;
-}
-
-.dashboard {
-    display: flex;
-    min-height: 100vh;
-}
-
-.sidebar {
-    width: 250px;
-    flex-shrink: 0;
-    background: #101827;
-    padding: 30px 20px;
-    display: flex;
-    flex-direction: column;
-    transition: width 0.25s ease, padding 0.25s ease;
-}
-
-.logo {
-    color: #00e5a0;
-    font-size: 21px;
-    margin-bottom: 35px;
-    text-align: center;
-}
-
-.nav-toggle {
-    width: 100%;
-    background: #18263b;
-    color: #00e5a0;
-    border: 1px solid #30415a;
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 12px;
-    margin-bottom: 22px;
-}
-
-.nav-toggle:hover {
-    background: #123a35;
-}
-
-.sidebar nav {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.sidebar nav a {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    min-height: 48px;
-    color: #c5d0e0;
-    text-decoration: none;
-    padding: 13px;
-    border-radius: 8px;
-    transition: 0.2s;
-}
-
-.sidebar nav a:hover,
-.sidebar nav a.active {
-    background: #1b2d46;
-    color: #00e5a0;
-}
-
-.nav-icon {
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.nav-label {
-    white-space: nowrap;
-}
-
-.sidebar-footer {
-    margin-top: auto;
-    padding-top: 30px;
-    text-align: center;
-    color: #8191a9;
-    font-size: 11px;
-    line-height: 1.8;
-}
-
-.sidebar.icons-only {
-    width: 88px;
-    padding: 25px 12px;
-}
-
-.sidebar.icons-only .logo {
-    font-size: 12px;
-    letter-spacing: 0;
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.sidebar.icons-only nav {
-    gap: 12px;
-}
-
-.sidebar.icons-only nav a {
-    justify-content: center;
-    padding: 13px 8px;
-}
-
-.sidebar.icons-only .nav-label {
-    display: none;
-}
-
-.sidebar.icons-only .nav-toggle {
-    font-size: 11px;
-    padding: 9px 3px;
-}
-
-.sidebar.icons-only .sidebar-footer {
-    text-align: center;
-    font-size: 9px;
-    overflow-wrap: anywhere;
-}
-
-.main-content {
-    flex: 1;
-    min-width: 0;
-    padding: 25px;
-}
-
-.container {
-    max-width: 1450px;
-    margin: auto;
-}
-
-.header {
-    margin-bottom: 24px;
-}
-
-.header h1 {
-    font-size: 27px;
-    color: #ffffff;
-}
-
-.header p {
-    color: #8995aa;
-    margin-top: 7px;
-}
-
-.panel {
-    background: #111a2b;
-    border: 1px solid #24334c;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: center;
-}
-
-input, select, button, textarea {
-    background: #0b1424;
-    color: white;
-    border: 1px solid #33445f;
-    padding: 12px;
-    border-radius: 7px;
-    font-size: 14px;
-}
-
-input, select {
-    min-width: 150px;
-}
-
-button {
-    cursor: pointer;
-    background: #1769e0;
-    border: none;
-}
-
-button:hover {
-    background: #3282f2;
-}
-
-button:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-}
-
-.chart-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
-}
-
-.chart-heading h2 {
-    font-size: 19px;
-}
-
-#liveChart {
-    width: 100%;
-    height: 520px;
-    border: 0;
-    border-radius: 8px;
-    background: #080d18;
-}
-
-.metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    gap: 14px;
-}
-
-.metric {
-    background: #0b1424;
-    border: 1px solid #273852;
-    padding: 17px;
-    border-radius: 9px;
-    min-height: 90px;
-}
-
-.metric p {
-    color: #8c9ab0;
-    font-size: 13px;
-    margin-bottom: 12px;
-}
-
-.metric h3 {
-    font-size: 20px;
-    color: #ffffff;
-    overflow-wrap: anywhere;
-}
-
-.status {
-    color: #f3bd54;
-    font-size: 13px;
-    margin-top: 12px;
-}
-
-.green {
-    color: #28d995 !important;
-}
-
-.red {
-    color: #ff6475 !important;
-}
-
-.neutral {
-    color: #e8edf7 !important;
-}
-
-#imagePreview {
-    display: none;
-    max-width: 100%;
-    max-height: 450px;
-    margin-top: 15px;
-    border-radius: 8px;
-    border: 1px solid #33445f;
-}
-
-.note {
-    color: #8c9ab0;
-    font-size: 12px;
-    line-height: 1.6;
-    margin-top: 15px;
-}
-
-.ai-panel {
-    border-color: #176b61;
-    background: linear-gradient(145deg, #111d30, #101a2b);
-}
-
-.ai-heading {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-}
-
-.ai-heading h2 {
-    font-size: 21px;
-}
-
-.ai-tag {
-    background: #123c37;
-    color: #35e0b0;
-    border: 1px solid #176b61;
-    border-radius: 20px;
-    padding: 5px 10px;
-    font-size: 11px;
-}
-
-.upload-area {
-    border: 1px dashed #3c5875;
-    background: #0b1424;
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 18px;
-}
-
-.upload-area input {
-    width: 100%;
-    max-width: 100%;
-}
-
-.ai-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 18px;
-}
-
-.ai-primary {
-    background: #087f65;
-}
-
-.ai-primary:hover {
-    background: #0a9d7c;
-}
-
-.ai-secondary {
-    background: #263953;
-}
-
-.ai-secondary:hover {
-    background: #354d70;
-}
-
-.ai-status {
-    color: #f3bd54;
-    font-size: 13px;
-    margin-top: 15px;
-    line-height: 1.6;
-}
-
-.prompt-box {
-    width: 100%;
-    min-height: 230px;
-    resize: vertical;
-    margin-top: 15px;
-    line-height: 1.6;
-    font-size: 12px;
-    border: 1px solid #33445f;
-}
-
-.ai-steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    gap: 12px;
-    margin-top: 20px;
-}
-
-.ai-step {
-    background: #0b1424;
-    border: 1px solid #273852;
-    border-radius: 9px;
-    padding: 15px;
-}
-
-.ai-step h3 {
-    color: #00e5a0;
-    font-size: 14px;
-    margin-bottom: 8px;
-}
-
-.ai-step p {
-    color: #a4b1c5;
-    font-size: 12px;
-    line-height: 1.6;
-}
-
-.warning-note {
-    border-left: 3px solid #e6ae48;
-    background: #211d17;
-    padding: 12px;
-    color: #e5c58b;
-    font-size: 12px;
-    line-height: 1.7;
-    margin-top: 18px;
-}
-
-@media(max-width: 650px) {
-    .dashboard {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-        padding: 20px;
-    }
-
-    .sidebar nav {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-
-    .sidebar nav a {
-        flex: 1 1 auto;
-    }
-
-    .sidebar-footer {
-        margin-top: 25px;
-    }
-
-    .sidebar.icons-only {
-        width: 100%;
-        padding: 20px;
-    }
-
-    .sidebar.icons-only nav {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-
-    .sidebar.icons-only .sidebar-footer {
-        margin-top: 25px;
-    }
-
-    .main-content {
-        padding: 12px;
-    }
-
-    #liveChart {
-        height: 380px;
-    }
-
-    .controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    input, select, .controls button {
-        width: 100%;
-    }
-
-    .ai-buttons {
-        flex-direction: column;
-    }
-
-    .ai-buttons button {
-        width: 100%;
-    }
-}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080d18;--panel:#101827;--panel2:#151f30;--border:#263449;--text:#e8edf7;--muted:#8b9bb2;--green:#18c78b;--red:#ff5c70;--blue:#438cff;--yellow:#f5bd4f}
+body{background:var(--bg);color:var(--text);font-family:Arial,sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.dashboard{display:flex;min-height:100vh}
+.sidebar{width:250px;min-width:250px;background:#0d1523;border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column}
+.logo{font-size:23px;font-weight:800;letter-spacing:1px;color:white;margin-bottom:8px}
+.logo span{color:var(--green)}
+.sidebar-subtitle{color:var(--muted);font-size:11px;margin-bottom:35px}
+.nav-title{color:#687991;font-size:10px;font-weight:bold;letter-spacing:1.5px;margin:15px 10px}
+.nav-link{display:flex;align-items:center;gap:12px;padding:13px 12px;margin-bottom:6px;border-radius:9px;color:#9eacc0;text-decoration:none;font-size:13px;transition:.2s}
+.nav-link:hover,.nav-link.active{background:#17283a;color:white}
+.nav-link.active{border-left:3px solid var(--green)}
+.sidebar-footer{margin-top:auto;padding-top:25px;color:#65758c;font-size:10px;line-height:1.7}
+.main-content{flex:1;min-width:0;padding:25px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:25px}
+.page-heading h1{font-size:25px;margin-bottom:6px}
+.page-heading p{color:var(--muted);font-size:12px}
+.status-indicator{color:var(--green);font-size:11px;background:#102a25;padding:9px 13px;border-radius:20px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:20px;margin-bottom:20px}
+.panel-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.panel-header h2{font-size:16px}
+.panel-header p{color:var(--muted);font-size:11px;margin-top:5px}
+.control-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.control-group{display:flex;flex-direction:column;gap:7px;min-width:150px}
+.control-group label{color:var(--muted);font-size:11px}
+select,input[type="text"],input[type="number"]{background:#0b1421;border:1px solid var(--border);color:var(--text);padding:11px 12px;border-radius:8px;outline:none;min-width:0}
+select:focus,input:focus{border-color:var(--blue)}
+.primary-btn{background:var(--blue);color:white;border:none;padding:11px 17px;border-radius:8px;font-weight:bold}
+.primary-btn:disabled{opacity:.6;cursor:wait}
+.secondary-btn{background:#1b2a3e;color:var(--text);border:1px solid var(--border);padding:10px 15px;border-radius:8px}
+.danger-btn{background:#3a1922;color:var(--red);border:1px solid #65303c;padding:10px 15px;border-radius:8px}
+.timeframe-buttons{display:flex;flex-wrap:wrap;gap:7px;margin-top:17px}
+.timeframe-btn{background:#172235;color:#9eacc0;border:1px solid var(--border);padding:8px 12px;border-radius:7px;font-size:11px}
+.timeframe-btn.active{background:#173b34;border-color:var(--green);color:var(--green)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:20px}
+.stat-card{background:var(--panel);border:1px solid var(--border);padding:17px;border-radius:11px;min-width:0}
+.stat-label{color:var(--muted);font-size:11px;margin-bottom:10px}
+.stat-value{font-size:20px;font-weight:bold;overflow-wrap:anywhere}
+.stat-change{color:var(--muted);font-size:10px;margin-top:7px}
+.chart-container{width:100%;height:480px;overflow:hidden;border-radius:9px;background:#0b1421}
+.chart-container iframe{width:100%;height:100%;border:0}
+.analysis-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.analysis-item{background:#0c1625;border:1px solid var(--border);padding:14px;border-radius:9px}
+.analysis-item .label{color:var(--muted);font-size:11px;margin-bottom:8px}
+.analysis-item .value{font-size:17px;font-weight:bold;overflow-wrap:anywhere}
+.positive{color:var(--green)!important}
+.negative{color:var(--red)!important}
+.neutral{color:var(--yellow)!important}
+.ew-explanation{background:#0c1625;border:1px solid var(--border);padding:15px;border-radius:9px;margin:14px 0;line-height:1.6}
+.ew-explanation strong{display:block;margin-bottom:7px;color:var(--blue)}
+.ew-explanation p{color:#b8c5d8;font-size:12px}
+.ew-table-wrap{width:100%;overflow-x:auto;margin-top:13px}
+.ew-table{width:100%;border-collapse:collapse;min-width:600px;font-size:11px}
+.ew-table th,.ew-table td{padding:12px 10px;border-bottom:1px solid var(--border);text-align:left}
+.ew-table th{color:var(--muted);font-weight:bold;background:#111d2d}
+.ew-table td{color:#d5deeb}
+.ew-rule-pass,.ew-signal-buy{color:var(--green);font-weight:bold}
+.ew-rule-fail,.ew-signal-sell{color:var(--red);font-weight:bold}
+.ew-rule-skip,.ew-signal-neutral{color:var(--yellow);font-weight:bold}
+.note{color:var(--muted);font-size:11px;line-height:1.6;margin:8px 0}
+.paper-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.paper-result{background:#0c1625;border:1px solid var(--border);padding:15px;border-radius:9px;margin-top:15px;line-height:1.8;overflow-wrap:anywhere}
+.upload-area{border:1px dashed #40536c;border-radius:10px;padding:25px;text-align:center;background:#0c1625}
+.upload-area p{color:var(--muted);font-size:12px;margin:8px 0}
+.upload-preview{max-width:100%;max-height:350px;display:none;margin:15px auto 0;border-radius:9px}
+@media(max-width:1000px){.sidebar{width:210px;min-width:210px}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.dashboard{display:block;padding-bottom:65px}.sidebar{display:none}.main-content{padding:15px}.topbar{align-items:flex-start}.page-heading h1{font-size:21px}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.analysis-grid,.paper-grid{grid-template-columns:1fr}.chart-container{height:380px}.panel{padding:14px}}
 </style>
 </head>
 
 <body>
-
 <div class="dashboard">
-
-<aside class="sidebar" id="sidebar">
-
-    <button class="nav-toggle" id="navToggle" type="button">
-        ☰ Icons Only
-    </button>
-
-    <h2 class="logo">QM PROFITER</h2>
-
-    <nav>
-
-        <a href="index.html" title="Home">
-            <svg class="nav-icon" viewBox="0 0 24 24">
-                <path d="M3 10.5L12 3l9 7.5"></path>
-                <path d="M5 9.5V21h14V9.5"></path>
-                <path d="M9 21v-7h6v7"></path>
-            </svg>
-            <span class="nav-label">Home</span>
-        </a>
-
-        <a class="active" href="analyzer.html" title="Analyzer">
-            <svg class="nav-icon" viewBox="0 0 24 24">
-                <path d="M3 3v18h18"></path>
-                <path d="M7 14l4-4 4 3 6-7"></path>
-            </svg>
-            <span class="nav-label">Analyzer</span>
-        </a>
-
-        <a href="signals.html" title="Signals">
-            <svg class="nav-icon" viewBox="0 0 24 24">
-                <path d="M3 12h4l3-8 4 16 3-8h4"></path>
-            </svg>
-            <span class="nav-label">Signals</span>
-        </a>
-
-        <a href="chart.html" title="Charts">
-            <svg class="nav-icon" viewBox="0 0 24 24">
-                <path d="M4 4v16"></path>
-                <path d="M10 7v10"></path>
-                <path d="M16 3v18"></path>
-                <path d="M22 6v12"></path>
-                <path d="M2 9h4"></path>
-                <path d="M8 12h4"></path>
-                <path d="M14 8h4"></path>
-                <path d="M20 14h3"></path>
-            </svg>
-            <span class="nav-label">Charts</span>
-        </a>
-
-        <a href="calculator.html" title="Calculator">
-            <svg class="nav-icon" viewBox="0 0 24 24">
-                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
-                <path d="M8 6h8"></path>
-                <path d="M8 11h2"></path>
-                <path d="M14 11h2"></path>
-                <path d="M8 15h2"></path>
-                <path d="M14 15h2"></path>
-                <path d="M8 19h2"></path>
-                <path d="M14 19h2"></path>
-            </svg>
-            <span class="nav-label">Calculator</span>
-        </a>
-
-        <a href="history.html" title="Paper Trading History">
-            <svg class="nav-icon" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9"></circle>
-                <path d="M12 7v5l3 2"></path>
-                <path d="M3 4v5h5"></path>
-            </svg>
-            <span class="nav-label">Paper Trading History</span>
-        </a>
-
-    </nav>
-
-    <div class="sidebar-footer">
-        <p>AI TRADING PLATFORM</p>
-        <small>Powered by Shenal Shashika</small>
-    </div>
-
+<aside class="sidebar">
+    <div class="logo">QM <span>PROFITER</span></div>
+    <div class="sidebar-subtitle">INTELLIGENT MARKET ANALYSIS</div>
+    <div class="nav-title">MAIN MENU</div>
+    <a href="index.html" class="nav-link">⌂ Home</a>
+    <a href="analyzer.html" class="nav-link active">⌕ Analyzer</a>
+    <a href="signals.html" class="nav-link">↗ Signals</a>
+    <a href="charts.html" class="nav-link">▥ Charts</a>
+    <a href="calculator.html" class="nav-link">▦ Calculator</a>
+    <div class="nav-title">ACCOUNT</div>
+    <a href="history.html" class="nav-link">◷ Paper Trading History</a>
+    <a href="vip.html" class="nav-link">★ VIP Signals</a>
+    <a href="#" class="nav-link" id="logoutBtn">⇥ Logout</a>
+    <div class="sidebar-footer">QM PROFITER<br>Educational Analysis Platform<br>Powered by Shenal Shashika</div>
 </aside>
 
 <main class="main-content">
-
-<div class="container">
-
-    <div class="header">
-        <h1>QM PROFITER - ANALYZER</h1>
-        <p>Live market data and educational technical analysis</p>
+<header class="topbar">
+    <div class="page-heading">
+        <h1>Market Analyzer</h1>
+        <p>Technical analysis and educational Elliott Wave study</p>
     </div>
+    <div class="status-indicator">● ANALYZER</div>
+</header>
 
-    <div class="panel">
-        <div class="controls">
-
-            <input
-                type="text"
-                id="coinSearch"
-                placeholder="Search coin: BTC, ETH..."
-            >
-
-            <select id="coin">
-                <option value="BTC-USD" data-tv="BINANCE:BTCUSDT">BTC / USDT</option>
-                <option value="ETH-USD" data-tv="BINANCE:ETHUSDT">ETH / USDT</option>
-                <option value="SOL-USD" data-tv="BINANCE:SOLUSDT">SOL / USDT</option>
-                <option value="BNB-USD" data-tv="BINANCE:BNBUSDT">BNB / USDT</option>
-                <option value="XRP-USD" data-tv="BINANCE:XRPUSDT">XRP / USDT</option>
-                <option value="DOGE-USD" data-tv="BINANCE:DOGEUSDT">DOGE / USDT</option>
-                <option value="ADA-USD" data-tv="BINANCE:ADAUSDT">ADA / USDT</option>
-                <option value="AVAX-USD" data-tv="BINANCE:AVAXUSDT">AVAX / USDT</option>
-                <option value="LINK-USD" data-tv="BINANCE:LINKUSDT">LINK / USDT</option>
-                <option value="LTC-USD" data-tv="BINANCE:LTCUSDT">LTC / USDT</option>
+<section class="panel">
+    <div class="panel-header">
+        <div><h2>Market Selection</h2><p>Select a cryptocurrency and timeframe</p></div>
+    </div>
+    <div class="control-row">
+        <div class="control-group">
+            <label for="coinSearch">Search Coin</label>
+            <input type="text" id="coinSearch" placeholder="Search coin...">
+        </div>
+        <div class="control-group">
+            <label for="coinSelect">Cryptocurrency</label>
+            <select id="coinSelect">
+                <option value="BTC-USD">Bitcoin (BTC)</option>
+                <option value="ETH-USD">Ethereum (ETH)</option>
+                <option value="SOL-USD">Solana (SOL)</option>
+                <option value="BNB-USD">BNB</option>
+                <option value="XRP-USD">XRP</option>
+                <option value="DOGE-USD">Dogecoin (DOGE)</option>
+                <option value="ADA-USD">Cardano (ADA)</option>
+                <option value="AVAX-USD">Avalanche (AVAX)</option>
+                <option value="LINK-USD">Chainlink (LINK)</option>
+                <option value="LTC-USD">Litecoin (LTC)</option>
             </select>
-
-            <select id="timeframe">
-                <option value="1m">1 Minute</option>
-                <option value="5m">5 Minutes</option>
-                <option value="15m" selected>15 Minutes</option>
-                <option value="30m">30 Minutes</option>
-                <option value="1h">1 Hour</option>
-                <option value="4h">4 Hours</option>
-                <option value="1d">1 Day</option>
-                <option value="1w">1 Week</option>
-            </select>
-
-            <button id="refreshButton" type="button">
-                Refresh Analysis
-            </button>
-
         </div>
+        <button class="primary-btn" id="analyzeBtn" onclick="loadTechnicalAnalysis()">Analyze Market</button>
     </div>
-
-    <div class="panel">
-
-        <div class="chart-heading">
-            <h2>Live TradingView Chart</h2>
-            <span id="chartSymbol">BTC / USDT</span>
-        </div>
-
-        <iframe
-            id="liveChart"
-            title="TradingView Live Chart"
-            src="https://s.tradingview.com/widgetembed/?symbol=BINANCE%3ABTCUSDT&interval=15&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=111a2b&theme=dark&style=1&timezone=Etc%2FUTC&withdateranges=1&hideideas=1&hidevolume=0&locale=en"
-            allowfullscreen>
-        </iframe>
-
+    <div class="timeframe-buttons">
+        <button class="timeframe-btn" data-timeframe="1m">1m</button>
+        <button class="timeframe-btn active" data-timeframe="5m">5m</button>
+        <button class="timeframe-btn" data-timeframe="15m">15m</button>
+        <button class="timeframe-btn" data-timeframe="30m">30m</button>
+        <button class="timeframe-btn" data-timeframe="1h">1h</button>
+        <button class="timeframe-btn" data-timeframe="4h">4h</button>
+        <button class="timeframe-btn" data-timeframe="1d">1D</button>
+        <button class="timeframe-btn" data-timeframe="1w">1W</button>
     </div>
+</section>
 
-    <div class="panel">
-
-        <div class="chart-heading">
-            <h2>Technical Analysis</h2>
-            <span id="analysisStatus" class="status">
-                Waiting for market data...
-            </span>
-        </div>
-
-        <div class="metrics">
-
-            <div class="metric">
-                <p>Current Price</p>
-                <h3 id="qm-price">Loading...</h3>
-            </div>
-
-            <div class="metric">
-                <p>Market Trend</p>
-                <h3 id="qm-trend">Loading...</h3>
-            </div>
-
-            <div class="metric">
-                <p>RSI (14)</p>
-                <h3 id="qm-rsi">Loading...</h3>
-            </div>
-
-            <div class="metric">
-                <p>EMA 20</p>
-                <h3 id="qm-ema20">Loading...</h3>
-            </div>
-
-            <div class="metric">
-                <p>EMA 50</p>
-                <h3 id="qm-ema50">Loading...</h3>
-            </div>
-
-            <div class="metric">
-                <p>MACD</p>
-                <h3 id="qm-macd">Loading...</h3>
-            </div>
-
-            <div class="metric">
-                <p>Momentum</p>
-                <h3 id="qm-momentum">Loading...</h3>
-            </div>
-
-            <div class="metric">
-                <p>Support</p>
-                <h3 id="qm-support">Loading...</h3>
-            </div>
-
-            <div class="metric">
-                <p>Resistance</p>
-                <h3 id="qm-resistance">Loading...</h3>
-            </div>
-
-        </div>
-
-        <p class="note">
-            Technical indicators are mathematical measurements of historical
-            market data. They are educational information, not guaranteed
-            predictions or instructions to trade.
-        </p>
-
-    </div>
-
-    <!-- PAPER TRADE SIMULATOR -->
-
-    <div class="panel" id="paperTradePanel">
-
-        <div class="chart-heading">
-            <h2>Paper Trade Simulator</h2>
-            <span class="ai-tag">SIMULATION ONLY</span>
-        </div>
-
-        <p class="note">
-            Record a hypothetical trade for educational practice.
-            No real orders or money are involved.
-        </p>
-
-        <div class="controls" style="margin-top:18px;">
-
-            <input
-                type="text"
-                id="paperSymbol"
-                placeholder="Coin (e.g. BTC/USDT)"
-                required
-            >
-
-            <select id="paperDirection">
-                <option value="BUY">BUY</option>
-                <option value="SELL">SELL</option>
-            </select>
-
-            <input
-                type="number"
-                id="paperEntry"
-                placeholder="Entry price"
-                min="0"
-                step="any"
-                required
-            >
-
-            <input
-                type="number"
-                id="paperStopLoss"
-                placeholder="Stop Loss"
-                min="0"
-                step="any"
-                required
-            >
-
-            <input
-                type="number"
-                id="paperTakeProfit"
-                placeholder="Take Profit"
-                min="0"
-                step="any"
-                required
-            >
-
-            <button
-                type="button"
-                id="savePaperTrade"
-                class="ai-primary"
-            >
-                Save Simulated Trade
-            </button>
-
-        </div>
-
-        <p id="paperTradeStatus" class="ai-status">
-            Ready to record a simulated trade.
-        </p>
-
-    </div>
-
-    <!-- AI SCREENSHOT ANALYZER -->
-
-    <div class="panel ai-panel">
-
-        <div class="ai-heading">
-            <h2>AI Multi-Strategy Analyzer</h2>
-            <span class="ai-tag">FREE WORKFLOW</span>
-        </div>
-
-        <p class="note">
-            Upload a chart screenshot, prepare an analysis prompt,
-            and use ChatGPT to examine the image.
-        </p>
-
-        <div class="upload-area">
-
-            <h3>Upload Chart Screenshot</h3>
-
-            <p class="note">
-                Supported formats: PNG, JPG and WEBP.
-                Maximum file size: 10 MB.
-            </p>
-
-            <br>
-
-            <input
-                type="file"
-                id="chartUpload"
-                accept="image/png,image/jpeg,image/webp"
-            >
-
-            <img
-                id="imagePreview"
-                alt="Uploaded chart preview"
-            >
-
-            <div class="ai-buttons">
-
-                <button
-                    id="copyPromptButton"
-                    class="ai-primary"
-                    type="button"
-                    disabled
-                >
-                    Copy AI Analysis Prompt
-                </button>
-
-                <button
-                    id="openChatGPTButton"
-                    class="ai-secondary"
-                    type="button"
-                >
-                    Open ChatGPT
-                </button>
-
-                <button
-                    id="removeImageButton"
-                    class="ai-secondary"
-                    type="button"
-                    disabled
-                >
-                    Remove Image
-                </button>
-
-            </div>
-
-            <p id="imageStatus" class="ai-status">
-                Waiting for chart screenshot...
-            </p>
-
-        </div>
-
-        <div class="ai-steps">
-
-            <div class="ai-step">
-                <h3>01. Upload</h3>
-                <p>
-                    Select a chart screenshot from your computer.
-                </p>
-            </div>
-
-            <div class="ai-step">
-                <h3>02. Copy Prompt</h3>
-                <p>
-                    QM PROFITER prepares a detailed analysis
-                    instruction using your selected coin and timeframe.
-                </p>
-            </div>
-
-            <div class="ai-step">
-                <h3>03. ChatGPT</h3>
-                <p>
-                    Open ChatGPT, attach the same screenshot,
-                    and paste the copied prompt.
-                </p>
-            </div>
-
-        </div>
-
-        <div class="warning-note">
-            IMPORTANT: The screenshot is not automatically sent to ChatGPT.
-            You must upload it manually in the ChatGPT conversation.
-            The analysis is educational and must not be treated as
-            instructions for real-money trading.
-        </div>
-
-        <h3 style="margin-top:22px;">
-            Generated AI Analysis Prompt
-        </h3>
-
-        <textarea
-            id="analysisPrompt"
-            class="prompt-box"
-            readonly
-            placeholder="Upload a screenshot to generate your analysis prompt..."
-        ></textarea>
-
-        <p class="note">
-            This prompt asks ChatGPT to identify visible evidence,
-            explain uncertainty, and avoid inventing patterns or levels.
-        </p>
-
-    </div>
-
+<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">CURRENT PRICE</div><div class="stat-value" id="currentPrice">Loading...</div><div class="stat-change">Selected market</div></div>
+    <div class="stat-card"><div class="stat-label">MARKET TREND</div><div class="stat-value" id="marketTrend">--</div><div class="stat-change">Technical overview</div></div>
+    <div class="stat-card"><div class="stat-label">RSI</div><div class="stat-value" id="rsiValue">--</div><div class="stat-change">Relative Strength Index</div></div>
+    <div class="stat-card"><div class="stat-label">MOMENTUM</div><div class="stat-value" id="momentumValue">--</div><div class="stat-change">Recent price movement</div></div>
 </div>
 
+<section class="panel">
+    <div class="panel-header"><div><h2>Live Market Chart</h2><p>TradingView chart display</p></div></div>
+    <div class="chart-container" id="tradingViewChart"><div id="tradingview_widget" style="width:100%;height:100%;"></div></div>
+</section>
+
+<section class="panel">
+    <div class="panel-header"><div><h2>Technical Analysis</h2><p>Indicators calculated from retrieved market candles</p></div></div>
+    <div class="analysis-grid">
+        <div class="analysis-item"><div class="label">EMA 20</div><div class="value" id="ema20Value">--</div></div>
+        <div class="analysis-item"><div class="label">EMA 50</div><div class="value" id="ema50Value">--</div></div>
+        <div class="analysis-item"><div class="label">MACD LINE</div><div class="value" id="macdValue">--</div></div>
+        <div class="analysis-item"><div class="label">SUPPORT</div><div class="value" id="supportValue">--</div></div>
+        <div class="analysis-item"><div class="label">RESISTANCE</div><div class="value" id="resistanceValue">--</div></div>
+        <div class="analysis-item"><div class="label">ANALYSIS STATUS</div><div class="value" id="analysisStatus">Waiting...</div></div>
+    </div>
+    <p class="note" id="analysisMessage">Waiting for market data.</p>
+</section>
+
+<section class="panel" id="marketSignalPanel">
+    <div class="panel-header">
+        <div><h2>Market Signal Analysis</h2><p>Hypothetical levels calculated from current market indicators</p></div>
+        <span id="signalStatus" class="status-indicator">WAITING</span>
+    </div>
+    <div class="analysis-grid">
+        <div class="analysis-item"><div class="label">SIGNAL DIRECTION</div><div class="value neutral" id="signalDirection">WAITING...</div></div>
+        <div class="analysis-item"><div class="label">SIGNAL CONFIDENCE CHECKS</div><div class="value" id="signalScore">--</div></div>
+        <div class="analysis-item"><div class="label">HYPOTHETICAL ENTRY</div><div class="value" id="signalEntry">--</div></div>
+        <div class="analysis-item"><div class="label">STOP LOSS (SL)</div><div class="value negative" id="signalSL">--</div></div>
+        <div class="analysis-item"><div class="label">TAKE PROFIT 1 (TP1)</div><div class="value positive" id="signalTP1">--</div></div>
+        <div class="analysis-item"><div class="label">TAKE PROFIT 2 (TP2)</div><div class="value positive" id="signalTP2">--</div></div>
+        <div class="analysis-item"><div class="label">TAKE PROFIT 3 (TP3)</div><div class="value positive" id="signalTP3">--</div></div>
+        <div class="analysis-item"><div class="label">RISK / REWARD (TP2)</div><div class="value" id="signalRR">--</div></div>
+    </div>
+    <div class="ew-explanation"><strong>Signal Explanation</strong><p id="signalExplanation">Waiting for market data.</p></div>
+    <p class="note">Educational paper-study output only. These calculations are not financial advice, predictions or instructions to place real orders.</p>
+</section>
+
+<section class="panel">
+    <div class="panel-header">
+        <div><h2>Elliott Wave Analyzer</h2><p>Automated swing-point and basic impulse-rule study</p></div>
+        <button class="primary-btn" id="ewAnalyzeBtn" onclick="ewAnalyze()">Analyze Elliott Waves</button>
+    </div>
+    <div class="analysis-grid">
+        <div class="analysis-item"><div class="label">WAVE DIRECTION</div><div class="value" id="ewDirection">--</div></div>
+        <div class="analysis-item"><div class="label">WAVE COUNT STATUS</div><div class="value" id="ewStatus">Waiting...</div></div>
+        <div class="analysis-item"><div class="label">DETECTED SWING POINTS</div><div class="value" id="ewPivotCount">--</div></div>
+        <div class="analysis-item"><div class="label">WAVE INTERPRETATION</div><div class="value" id="ewInterpretation">--</div></div>
+    </div>
+    <div class="ew-explanation"><strong>Wave Analysis Summary</strong><p id="ewSummary">Run Elliott Wave analysis to examine the available market data.</p></div>
+    <h3 style="margin-top:22px">Detected Swing Points</h3>
+    <div class="ew-table-wrap"><table class="ew-table"><thead><tr><th>Point</th><th>Type</th><th>Price</th><th>Time</th></tr></thead><tbody id="ewSwingPoints"><tr><td colspan="4">No swing points analyzed yet.</td></tr></tbody></table></div>
+    <h3 style="margin-top:22px">Impulse Wave Rule Validation</h3>
+    <div class="ew-table-wrap"><table class="ew-table"><thead><tr><th>Rule</th><th>Result</th><th>Explanation</th></tr></thead><tbody id="ewRuleChecks"><tr><td colspan="3">No rules checked yet.</td></tr></tbody></table></div>
+    <h3 style="margin-top:22px">Alternative Wave Count Detector</h3>
+    <p class="note">The detector examines earlier six-point swing sequences and ranks them using the programmed basic impulse rules. A candidate is not a confirmed Elliott Wave count.</p>
+    <div class="ew-explanation"><strong>Best alternative candidate</strong><p id="ewAlternativeSummary">Run Elliott Wave analysis to search for alternative counts.</p></div>
+    <div class="ew-table-wrap"><table class="ew-table"><thead><tr><th>Candidate</th><th>Direction</th><th>Rule Score</th><th>Status</th><th>Failed Rules</th></tr></thead><tbody id="ewAlternativeResults"><tr><td colspan="5">No alternative counts analyzed yet.</td></tr></tbody></table></div>
+    <h3 style="margin-top:22px">Fibonacci Levels</h3>
+    <div class="ew-table-wrap"><table class="ew-table"><thead><tr><th>Level</th><th>Price</th></tr></thead><tbody id="ewFibonacci"><tr><td colspan="2">No Fibonacci levels calculated yet.</td></tr></tbody></table></div>
+    <p class="note">Elliott Wave counts are heuristic educational interpretations of historical price data, not predictions or guaranteed trading signals.</p>
+</section>
+
+<section class="panel">
+    <div class="panel-header"><div><h2>Paper Trade Simulator</h2><p>Practice recording hypothetical setups without real orders</p></div></div>
+    <div class="paper-grid">
+        <div class="control-group"><label for="paperDirection">Direction</label><select id="paperDirection"><option value="BUY">BUY</option><option value="SELL">SELL</option></select></div>
+        <div class="control-group"><label for="paperEntry">Hypothetical Entry</label><input type="number" id="paperEntry" placeholder="Entry price"></div>
+        <div class="control-group"><label for="paperStopLoss">Hypothetical Stop Loss</label><input type="number" id="paperStopLoss" placeholder="Stop loss"></div>
+        <div class="control-group"><label for="paperTakeProfit">Hypothetical Take Profit</label><input type="number" id="paperTakeProfit" placeholder="Take profit"></div>
+    </div>
+    <button class="primary-btn" id="savePaperTradeBtn" style="margin-top:15px">Save Paper Trade</button>
+    <div class="paper-result" id="paperTradeResult">No paper trade recorded yet.</div>
+</section>
+
+<section class="panel">
+    <div class="panel-header"><div><h2>AI Screenshot Analyzer</h2><p>Upload a chart screenshot for an educational chart review</p></div></div>
+    <div class="upload-area">
+        <h3>Upload Chart Screenshot</h3><p>Select an image from your device</p>
+        <input type="file" id="chartScreenshot" accept="image/*">
+        <img id="screenshotPreview" class="upload-preview" alt="Chart screenshot preview">
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:15px">
+        <button class="primary-btn" id="generatePromptBtn">Generate Analysis Prompt</button>
+        <button class="secondary-btn" id="copyPromptBtn">Copy Prompt</button>
+        <button class="secondary-btn" id="openChatGPTBtn">Open ChatGPT</button>
+    </div>
+    <div class="paper-result" id="screenshotAnalysisResult">Upload a chart screenshot to begin.</div>
+    <textarea id="screenshotPrompt" rows="8" style="display:none;width:100%;margin-top:15px;background:#0b1421;color:white;border:1px solid var(--border);border-radius:8px;padding:12px" placeholder="Generated analysis prompt"></textarea>
+</section>
+
+<p class="note" style="text-align:center;padding:15px">QM PROFITER is an educational analysis and paper-trading platform. It does not guarantee market outcomes.</p>
 </main>
 </div>
 
-<!-- SUPABASE LIBRARY -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
+"use strict";
 
-/* SUPABASE AND BACKEND CONNECTION */
+/* CONFIGURATION */
+const SUPABASE_URL = "https://wuvzojlpegfqwsfhoobc.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_Vnp9F9r4AtZmiNLdO8SzBvg_WCb-PF2t";
 
-const SUPABASE_URL =
-    "https://wuvzojlpegfqwsfhoobc.supabase.co";
-
-const SUPABASE_ANON_KEY =
-    "sb_publishable_VnpF9r4AtZmiNLdO8SzBvg_WCb-PF2t";
-
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-);
-
-const API_URL = "https://qm-profiter.vercel.app";
-
-
-/* AUTHENTICATION CHECK */
-
-async function checkAnalyzerAuthentication() {
-
-    try {
-
-        const { data, error } =
-            await supabaseClient.auth.getSession();
-
-        if (error) throw error;
-
-        if (!data.session) {
-
-            window.location.href = "login.html";
-
-            return false;
-        }
-
-        return true;
-
-    } catch (error) {
-
-        console.error("Authentication check failed:", error);
-
-        document.getElementById("paperTradeStatus").textContent =
-            "Could not verify your login. Please refresh the page.";
-
-        return false;
-    }
-}
-
-
-/* SIDEBAR TOGGLE */
-
-const sidebar = document.getElementById("sidebar");
-const navToggle = document.getElementById("navToggle");
-
-function updateNavigationMode(iconOnly) {
-
-    sidebar.classList.toggle("icons-only", iconOnly);
-
-    navToggle.textContent = iconOnly
-        ? "☰ Show Labels"
-        : "☰ Icons Only";
-
-    navToggle.title = iconOnly
-        ? "Show navigation labels"
-        : "Show icons only";
-
-    try {
-        localStorage.setItem(
-            "qmNavigationMode",
-            iconOnly ? "icons" : "full"
-        );
-    } catch (error) {
-        console.warn("Navigation preference could not be saved.");
-    }
-}
-
-let savedNavigationMode = "full";
-
-try {
-    savedNavigationMode =
-        localStorage.getItem("qmNavigationMode") || "full";
-} catch (error) {
-    console.warn("Navigation preference could not be loaded.");
-}
-
-updateNavigationMode(savedNavigationMode === "icons");
-
-navToggle.addEventListener("click", function() {
-
-    const currentlyIconsOnly =
-        sidebar.classList.contains("icons-only");
-
-    updateNavigationMode(!currentlyIconsOnly);
-});
-
-
-/* ANALYZER */
-
-const coinSelect = document.getElementById("coin");
-const timeframeSelect = document.getElementById("timeframe");
-
-let requestNumber = 0;
+let supabaseClient = null;
+let currentCoin = "BTC-USD";
+let currentTimeframe = "5m";
+let currentCandles = [];
+let currentPivots = [];
+let currentAnalysis = null;
 
 const timeframeSettings = {
-    "1m":  { base: 60, factor: 1, chart: "1" },
-    "5m":  { base: 300, factor: 1, chart: "5" },
-    "15m": { base: 900, factor: 1, chart: "15" },
-    "30m": { base: 900, factor: 2, chart: "30" },
-    "1h":  { base: 3600, factor: 1, chart: "60" },
-    "4h":  { base: 3600, factor: 4, chart: "240" },
-    "1d":  { base: 86400, factor: 1, chart: "D" },
-    "1w":  { base: 86400, factor: 7, chart: "W" }
+    "1m":{granularity:60,factor:1},
+    "5m":{granularity:300,factor:1},
+    "15m":{granularity:900,factor:1},
+    "30m":{granularity:900,factor:2},
+    "1h":{granularity:3600,factor:1},
+    "4h":{granularity:3600,factor:4},
+    "1d":{granularity:86400,factor:1},
+    "1w":{granularity:86400,factor:7}
 };
 
-function setValue(id, value, colorClass = "") {
+/* GENERAL HELPERS */
+function byId(id){return document.getElementById(id)}
+function setText(id,value){const el=byId(id);if(el)el.textContent=value}
+function formatPrice(value){
+    if(!Number.isFinite(Number(value)))return "--";
+    return "$"+Number(value).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:6});
+}
+function formatTime(timestamp){return new Date(timestamp*1000).toLocaleString()}
+function setStatus(message,color="neutral"){
+    const el=byId("analysisStatus");
+    if(el){el.textContent=message;el.className="value "+color}
+}
+function average(values){return values.length?values.reduce((a,b)=>a+b,0)/values.length:0}
 
-    const element = document.getElementById(id);
-
-    element.textContent = value;
-    element.className = colorClass;
+/* SUPABASE AUTHENTICATION */
+if(window.supabase&&window.supabase.createClient){
+    supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 }
 
-function formatPrice(value) {
+async function checkAnalyzerAuthentication(){
+    if(!supabaseClient){console.warn("Supabase client could not be initialized.");return}
+    try{
+        const {data,error}=await supabaseClient.auth.getSession();
+        if(error)throw error;
+        if(!data.session)window.location.href="login.html";
+    }catch(error){console.error("Authentication check:",error)}
+}
 
-    if (!Number.isFinite(value)) {
-        return "Unavailable";
+async function logoutAnalyzer(){
+    if(supabaseClient){
+        const {error}=await supabaseClient.auth.signOut();
+        if(error){alert("Logout failed: "+error.message);return}
     }
+    window.location.href="login.html";
+}
 
-    return "$" + value.toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 6
+byId("logoutBtn")?.addEventListener("click",event=>{
+    event.preventDefault();
+    logoutAnalyzer();
+});
+
+/* COIN SEARCH AND TIMEFRAME */
+byId("coinSearch")?.addEventListener("input",function(){
+    const search=this.value.toLowerCase().trim();
+    const select=byId("coinSelect");
+    if(!select)return;
+    const match=Array.from(select.options).find(option=>
+        option.textContent.toLowerCase().includes(search)||
+        option.value.toLowerCase().includes(search)
+    );
+    if(match&&search.length>0){
+        select.value=match.value;
+        currentCoin=match.value;
+        resetElliottAfterSelectionChange();
+        loadTradingViewChart();
+        loadTechnicalAnalysis();
+    }
+});
+
+byId("coinSelect")?.addEventListener("change",function(){
+    currentCoin=this.value;
+    resetElliottAfterSelectionChange();
+    loadTradingViewChart();
+    loadTechnicalAnalysis();
+});
+
+document.querySelectorAll(".timeframe-btn").forEach(button=>{
+    button.addEventListener("click",function(){
+        document.querySelectorAll(".timeframe-btn").forEach(item=>item.classList.remove("active"));
+        this.classList.add("active");
+        currentTimeframe=this.dataset.timeframe;
+        resetElliottAfterSelectionChange();
+        loadTradingViewChart();
+        loadTechnicalAnalysis();
     });
+});
+
+/* TRADINGVIEW CHART */
+function loadTradingViewChart(){
+    const container=byId("tradingview_widget");
+    if(!container)return;
+
+    const symbols={
+        "BTC-USD":"COINBASE:BTCUSD",
+        "ETH-USD":"COINBASE:ETHUSD",
+        "SOL-USD":"COINBASE:SOLUSD",
+        "BNB-USD":"BINANCE:BNBUSDT",
+        "XRP-USD":"COINBASE:XRPUSD",
+        "DOGE-USD":"COINBASE:DOGEUSD",
+        "ADA-USD":"COINBASE:ADAUSD",
+        "AVAX-USD":"COINBASE:AVAXUSD",
+        "LINK-USD":"COINBASE:LINKUSD",
+        "LTC-USD":"COINBASE:LTCUSD"
+    };
+    const intervals={"1m":"1","5m":"5","15m":"15","30m":"30","1h":"60","4h":"240","1d":"D","1w":"W"};
+
+    container.innerHTML="";
+    const script=document.createElement("script");
+    script.src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+    script.async=true;
+    script.innerHTML=JSON.stringify({
+        autosize:true,
+        symbol:symbols[currentCoin]||"COINBASE:BTCUSD",
+        interval:intervals[currentTimeframe]||"5",
+        timezone:"Etc/UTC",
+        theme:"dark",
+        style:"1",
+        locale:"en",
+        allow_symbol_change:true,
+        calendar:false,
+        support_host:"https://www.tradingview.com"
+    });
+    container.appendChild(script);
 }
 
-function calculateEMA(values, period) {
+/* MARKET CANDLE DATA */
+async function getHistoricalCandles(){
+    const settings=timeframeSettings[currentTimeframe];
+    if(!settings)throw new Error("Unsupported timeframe.");
 
-    if (values.length < period) return null;
+    const url="https://api.exchange.coinbase.com/products/"+
+        encodeURIComponent(currentCoin)+"/candles?granularity="+settings.granularity;
 
-    const multiplier = 2 / (period + 1);
+    const response=await fetch(url,{headers:{"Accept":"application/json"}});
+    if(!response.ok)throw new Error("Market data request failed: HTTP "+response.status);
 
-    let ema = values
-        .slice(0, period)
-        .reduce((sum, value) => sum + value, 0) / period;
-
-    for (let i = period; i < values.length; i++) {
-
-        ema = (values[i] - ema) * multiplier + ema;
+    const raw=await response.json();
+    if(!Array.isArray(raw)||raw.length<20){
+        throw new Error("Not enough market candle data was returned for this coin/timeframe.");
     }
 
-    return ema;
-}
+    const candles=raw.map(item=>({
+        time:Number(item[0]),
+        low:Number(item[1]),
+        high:Number(item[2]),
+        open:Number(item[3]),
+        close:Number(item[4]),
+        volume:Number(item[5])
+    })).filter(c=>
+        Number.isFinite(c.time)&&Number.isFinite(c.high)&&
+        Number.isFinite(c.low)&&Number.isFinite(c.open)&&
+        Number.isFinite(c.close)
+    ).sort((a,b)=>a.time-b.time);
 
-function calculateRSI(values, period = 14) {
+    if(settings.factor===1)return candles.slice(-300);
 
-    if (values.length <= period) return null;
-
-    let gains = 0;
-    let losses = 0;
-
-    for (let i = 1; i <= period; i++) {
-
-        const change = values[i] - values[i - 1];
-
-        if (change > 0) gains += change;
-        else losses += Math.abs(change);
-    }
-
-    let avgGain = gains / period;
-    let avgLoss = losses / period;
-
-    for (let i = period + 1; i < values.length; i++) {
-
-        const change = values[i] - values[i - 1];
-
-        avgGain =
-            (avgGain * (period - 1) + Math.max(change, 0)) / period;
-
-        avgLoss =
-            (avgLoss * (period - 1) + Math.max(-change, 0)) / period;
-    }
-
-    if (avgLoss === 0) return 100;
-
-    const rs = avgGain / avgLoss;
-
-    return 100 - (100 / (1 + rs));
-}
-
-function calculateMACD(values) {
-
-    if (values.length < 35) return null;
-
-    const ema12 = calculateEMA(values, 12);
-    const ema26 = calculateEMA(values, 26);
-
-    if (ema12 === null || ema26 === null) return null;
-
-    return ema12 - ema26;
-}
-
-function aggregateCandles(candles, factor) {
-
-    if (factor === 1) return candles;
-
-    const result = [];
-
-    for (let i = 0; i + factor <= candles.length; i += factor) {
-
-        const group = candles.slice(i, i + factor);
-
-        result.push({
-            time: group[0].time,
-            low: Math.min(...group.map(c => c.low)),
-            high: Math.max(...group.map(c => c.high)),
-            close: group[group.length - 1].close
+    const aggregated=[];
+    for(let i=0;i+settings.factor<=candles.length;i+=settings.factor){
+        const group=candles.slice(i,i+settings.factor);
+        aggregated.push({
+            time:group[0].time,
+            open:group[0].open,
+            high:Math.max(...group.map(c=>c.high)),
+            low:Math.min(...group.map(c=>c.low)),
+            close:group[group.length-1].close,
+            volume:group.reduce((sum,c)=>sum+c.volume,0)
         });
     }
+    return aggregated.slice(-300);
+}
 
+/* TECHNICAL INDICATORS */
+function calculateEMA(values,period){
+    if(!values.length)return [];
+    const multiplier=2/(period+1);
+    const result=[];
+    let previous=values[0];
+    result.push(previous);
+    for(let i=1;i<values.length;i++){
+        previous=values[i]*multiplier+previous*(1-multiplier);
+        result.push(previous);
+    }
     return result;
 }
 
-function updateChart() {
-
-    const option = coinSelect.selectedOptions[0];
-
-    const symbol = option.dataset.tv;
-
-    const interval =
-        timeframeSettings[timeframeSelect.value].chart;
-
-    const url =
-        "https://s.tradingview.com/widgetembed/?" +
-        "symbol=" + encodeURIComponent(symbol) +
-        "&interval=" + encodeURIComponent(interval) +
-        "&hidesidetoolbar=0" +
-        "&symboledit=1" +
-        "&saveimage=1" +
-        "&toolbarbg=111a2b" +
-        "&theme=dark" +
-        "&style=1" +
-        "&timezone=Etc%2FUTC" +
-        "&withdateranges=1" +
-        "&hideideas=1" +
-        "&hidevolume=0" +
-        "&locale=en";
-
-    document.getElementById("liveChart").src = url;
-
-    document.getElementById("chartSymbol").textContent =
-        option.textContent;
+function calculateRSI(values,period=14){
+    if(values.length<=period)return null;
+    let gains=0,losses=0;
+    for(let i=1;i<=period;i++){
+        const difference=values[i]-values[i-1];
+        if(difference>0)gains+=difference;
+        else losses+=Math.abs(difference);
+    }
+    let averageGain=gains/period;
+    let averageLoss=losses/period;
+    for(let i=period+1;i<values.length;i++){
+        const difference=values[i]-values[i-1];
+        averageGain=(averageGain*(period-1)+Math.max(difference,0))/period;
+        averageLoss=(averageLoss*(period-1)+Math.max(-difference,0))/period;
+    }
+    if(averageLoss===0)return 100;
+    const rs=averageGain/averageLoss;
+    return 100-(100/(1+rs));
 }
 
-async function loadTechnicalAnalysis() {
+/* Keep MACD numeric: the signal calculator checks macd > 0 and macd < 0. */
+function calculateMACD(values){
+    if(!values||values.length<26)return null;
+    const ema12=calculateEMA(values,12);
+    const ema26=calculateEMA(values,26);
+    return ema12[ema12.length-1]-ema26[ema26.length-1];
+}
 
-    const thisRequest = ++requestNumber;
+function calculateMomentum(values,period=10){
+    if(values.length<=period)return null;
+    const previous=values[values.length-1-period];
+    const latest=values[values.length-1];
+    if(!Number.isFinite(previous)||previous===0)return null;
+    return ((latest-previous)/previous)*100;
+}
 
-    const product = coinSelect.value;
+/* MARKET ANALYSIS - CORRECTED */
+async function loadTechnicalAnalysis(){
+    const button=byId("analyzeBtn");
+    if(button){button.disabled=true;button.textContent="Analyzing..."}
 
-    const timeframe = timeframeSelect.value;
+    setStatus("Loading market data...");
+    setText("analysisMessage","Retrieving market candles and calculating indicators...");
 
-    const settings = timeframeSettings[timeframe];
+    try{
+        currentCoin=byId("coinSelect")?.value||currentCoin;
 
-    const status = document.getElementById("analysisStatus");
-
-    status.textContent = "Loading market data...";
-
-    try {
-
-        const end = new Date();
-
-        const start = new Date(
-            end.getTime() - settings.base * 300 * 1000
-        );
-
-        const url =
-            "https://api.exchange.coinbase.com/products/" +
-            encodeURIComponent(product) +
-            "/candles?granularity=" +
-            settings.base +
-            "&start=" +
-            encodeURIComponent(start.toISOString()) +
-            "&end=" +
-            encodeURIComponent(end.toISOString());
-
-        const response = await fetch(url);
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Market data unavailable. HTTP " + response.status
-            );
+        const candles=await getHistoricalCandles();
+        if(candles.length<50){
+            throw new Error("At least 50 candles are required to calculate EMA 50. Try another timeframe.");
         }
 
-        const data = await response.json();
+        currentCandles=candles;
+        const closes=candles.map(c=>c.close);
+        const latest=closes[closes.length-1];
 
-        if (thisRequest !== requestNumber) return;
+        const ema20Array=calculateEMA(closes,20);
+        const ema50Array=calculateEMA(closes,50);
+        const ema20=ema20Array[ema20Array.length-1];
+        const ema50=ema50Array[ema50Array.length-1];
 
-        if (!Array.isArray(data) || data.length < 20) {
+        /* These three declarations were missing in your previous code. */
+        const rsi=calculateRSI(closes);
+        const macd=calculateMACD(closes);
+        const momentum=calculateMomentum(closes);
 
-            throw new Error(
-                "Not enough candle data for this selection."
-            );
+        const recentCandles=candles.slice(-50);
+        const support=Math.min(...recentCandles.map(c=>c.low));
+        const resistance=Math.max(...recentCandles.map(c=>c.high));
+
+        let trend="SIDEWAYS";
+        if(latest>ema20&&ema20>ema50)trend="BULLISH";
+        else if(latest<ema20&&ema20<ema50)trend="BEARISH";
+
+        setText("currentPrice",formatPrice(latest));
+        setText("marketTrend",trend);
+        setText("rsiValue",rsi===null?"--":rsi.toFixed(2));
+        setText("momentumValue",momentum===null?"--":momentum.toFixed(2)+"%");
+        setText("ema20Value",formatPrice(ema20));
+        setText("ema50Value",formatPrice(ema50));
+        setText("macdValue",macd===null?"--":macd.toFixed(6));
+        setText("supportValue",formatPrice(support));
+        setText("resistanceValue",formatPrice(resistance));
+
+        const trendElement=byId("marketTrend");
+        if(trendElement){
+            trendElement.className="stat-value "+
+                (trend==="BULLISH"?"positive":trend==="BEARISH"?"negative":"neutral");
         }
 
-        const baseCandles = data
-            .map(item => ({
-                time: Number(item[0]),
-                low: Number(item[1]),
-                high: Number(item[2]),
-                close: Number(item[4])
-            }))
-            .filter(c =>
-                Number.isFinite(c.low) &&
-                Number.isFinite(c.high) &&
-                Number.isFinite(c.close)
-            )
-            .sort((a, b) => a.time - b.time);
+        let message="Market data loaded. This is an educational indicator summary, not a trading recommendation.";
+        if(rsi!==null&&rsi>=70)message+=" RSI is relatively high.";
+        else if(rsi!==null&&rsi<=30)message+=" RSI is relatively low.";
 
-        const candles = aggregateCandles(
-            baseCandles,
-            settings.factor
-        );
+        setText("analysisMessage",message);
+        setStatus("Data updated","positive");
 
-        if (candles.length < 20) {
+        currentAnalysis={
+            coin:currentCoin,
+            timeframe:currentTimeframe,
+            price:latest,
+            trend,
+            rsi,
+            ema20,
+            ema50,
+            macd,
+            momentum,
+            support,
+            resistance
+        };
 
-            throw new Error(
-                "Not enough historical candles for this timeframe."
-            );
-        }
+        generateMarketSignal(currentAnalysis,candles);
+        return currentAnalysis;
 
-        const closes = candles.map(c => c.close);
+    }catch(error){
+        console.error("Market analysis error:",error);
+        currentCandles=[];
+        currentAnalysis=null;
 
-        const currentPrice = closes[closes.length - 1];
+        setStatus("Data unavailable","negative");
+        setText("analysisMessage",error.message);
+        setText("currentPrice","--");
+        setText("marketTrend","--");
+        setText("rsiValue","--");
+        setText("momentumValue","--");
+        setText("ema20Value","--");
+        setText("ema50Value","--");
+        setText("macdValue","--");
+        setText("supportValue","--");
+        setText("resistanceValue","--");
 
-        const ema20 = calculateEMA(closes, 20);
+        generateMarketSignal(null,[]);
+        return null;
 
-        const ema50 = calculateEMA(closes, 50);
-
-        const rsi = calculateRSI(closes, 14);
-
-        const macd = calculateMACD(closes);
-
-        const recent = candles.slice(-20);
-
-        const support = Math.min(
-            ...recent.map(c => c.low)
-        );
-
-        const resistance = Math.max(
-            ...recent.map(c => c.high)
-        );
-
-        let trend = "SIDEWAYS";
-        let trendClass = "neutral";
-
-        if (ema20 !== null && ema50 !== null) {
-
-            if (ema20 > ema50 && currentPrice > ema20) {
-
-                trend = "UPTREND";
-                trendClass = "green";
-
-            } else if (ema20 < ema50 && currentPrice < ema20) {
-
-                trend = "DOWNTREND";
-                trendClass = "red";
-            }
-        }
-
-        let momentum = "NEUTRAL";
-        let momentumClass = "neutral";
-
-        if (rsi !== null && rsi >= 55) {
-
-            momentum = "POSITIVE";
-            momentumClass = "green";
-
-        } else if (rsi !== null && rsi <= 45) {
-
-            momentum = "NEGATIVE";
-            momentumClass = "red";
-        }
-
-        setValue("qm-price", formatPrice(currentPrice));
-
-        setValue("qm-trend", trend, trendClass);
-
-        setValue(
-            "qm-rsi",
-            rsi === null ? "Unavailable" : rsi.toFixed(2)
-        );
-
-        setValue(
-            "qm-ema20",
-            ema20 === null ? "Not enough data" : formatPrice(ema20)
-        );
-
-        setValue(
-            "qm-ema50",
-            ema50 === null ? "Not enough data" : formatPrice(ema50)
-        );
-
-        setValue(
-            "qm-macd",
-            macd === null ? "Unavailable" : macd.toFixed(6)
-        );
-
-        setValue("qm-momentum", momentum, momentumClass);
-
-        setValue("qm-support", formatPrice(support));
-
-        setValue("qm-resistance", formatPrice(resistance));
-
-        status.textContent =
-            "Market data updated: " + new Date().toLocaleTimeString();
-
-    } catch (error) {
-
-        if (thisRequest !== requestNumber) return;
-
-        console.error("QM PROFITER analysis error:", error);
-
-        status.textContent = error.message;
+    }finally{
+        if(button){button.disabled=false;button.textContent="Analyze Market"}
     }
 }
 
-function refreshAnalyzer() {
+/* EDUCATIONAL MARKET SIGNAL CALCULATOR */
+function generateMarketSignal(analysis,candles){
+    const fields=["signalDirection","signalScore","signalEntry","signalSL","signalTP1","signalTP2","signalTP3","signalRR"];
 
-    updateChart();
+    function clearSignal(message){
+        fields.forEach(id=>setText(id,"--"));
+        setText("signalDirection","NO CLEAR SETUP");
+        setText("signalExplanation",message);
+        setText("signalStatus","WAIT");
+        const direction=byId("signalDirection");
+        if(direction)direction.className="value neutral";
+    }
 
-    loadTechnicalAnalysis();
-}
+    if(!analysis||!Array.isArray(candles)||candles.length<30){
+        clearSignal("Insufficient market data for this educational calculation.");
+        return;
+    }
 
-coinSelect.addEventListener("change", refreshAnalyzer);
+    const {price,trend,rsi,ema20,ema50,macd,momentum,support,resistance}=analysis;
 
-timeframeSelect.addEventListener("change", refreshAnalyzer);
+    if(![price,rsi,ema20,ema50,macd,momentum,support,resistance].every(Number.isFinite)){
+        clearSignal("One or more indicators are unavailable.");
+        return;
+    }
 
-document.getElementById("refreshButton")
-    .addEventListener("click", refreshAnalyzer);
+    const recent=candles.slice(-15);
+    const ranges=recent.map((c,i)=>{
+        const previous=i>0?recent[i-1].close:c.open;
+        return Math.max(c.high-c.low,Math.abs(c.high-previous),Math.abs(c.low-previous));
+    });
+    const atr=average(ranges);
 
+    if(!Number.isFinite(atr)||atr<=0){
+        clearSignal("Volatility data is insufficient.");
+        return;
+    }
 
-/* COIN SEARCH */
+    const buyChecks=[
+        trend==="BULLISH",
+        price>ema20&&ema20>ema50,
+        rsi>=50&&rsi<=68,
+        macd>0,
+        momentum>0
+    ];
+    const sellChecks=[
+        trend==="BEARISH",
+        price<ema20&&ema20<ema50,
+        rsi>=32&&rsi<=50,
+        macd<0,
+        momentum<0
+    ];
 
-document.getElementById("coinSearch")
-    .addEventListener("input", function() {
+    const buyScore=buyChecks.filter(Boolean).length;
+    const sellScore=sellChecks.filter(Boolean).length;
 
-        const search = this.value.trim().toUpperCase();
-
-        for (const option of coinSelect.options) {
-
-            if (
-                option.textContent.toUpperCase().includes(search) ||
-                option.value.toUpperCase().includes(search)
-            ) {
-
-                if (coinSelect.value !== option.value) {
-
-                    coinSelect.value = option.value;
-
-                    refreshAnalyzer();
-                }
-
-                break;
-            }
-        }
+    console.log("BUY CHECK DETAILS:",{
+        trend:buyChecks[0],emaAlignment:buyChecks[1],
+        rsi:buyChecks[2],macd:buyChecks[3],momentum:buyChecks[4]
+    });
+    console.log("SELL CHECK DETAILS:",{
+        trend:sellChecks[0],emaAlignment:sellChecks[1],
+        rsi:sellChecks[2],macd:sellChecks[3],momentum:sellChecks[4]
     });
 
+    let direction=null;
+    if(buyScore===5)direction="BUY";
+    else if(sellScore===5)direction="SELL";
 
-/* PAPER TRADE SIMULATOR */
+    if(!direction){
+        clearSignal("NO CLEAR SETUP. BUY checks: "+buyScore+
+            "/5. SELL checks: "+sellScore+
+            "/5. The indicators do not currently agree.");
+        setText("signalScore","BUY "+buyScore+"/5 | SELL "+sellScore+"/5");
+        return;
+    }
 
-const savePaperTradeButton =
-    document.getElementById("savePaperTrade");
+    const entry=price;
+    const stopLoss=direction==="BUY"
+        ?Math.min(support-atr*0.25,entry-atr*1.5)
+        :Math.max(resistance+atr*0.25,entry+atr*1.5);
 
-const paperTradeStatus =
-    document.getElementById("paperTradeStatus");
+    const risk=Math.abs(entry-stopLoss);
+    if(!Number.isFinite(risk)||risk<=0){
+        clearSignal("Could not calculate a valid hypothetical risk distance.");
+        return;
+    }
 
-function setPaperTradeStatus(message, color = "#f3bd54") {
+    const target=multiplier=>direction==="BUY"
+        ?entry+risk*multiplier
+        :entry-risk*multiplier;
 
-    paperTradeStatus.textContent = message;
-    paperTradeStatus.style.color = color;
+    const tp1=target(1);
+    const tp2=target(1.5);
+    const tp3=target(2);
+    const rr=Math.abs(tp2-entry)/risk;
+
+    setText("signalDirection",direction);
+    setText("signalScore","5 / 5 checks");
+    setText("signalEntry",formatPrice(entry));
+    setText("signalSL",formatPrice(stopLoss));
+    setText("signalTP1",formatPrice(tp1));
+    setText("signalTP2",formatPrice(tp2));
+    setText("signalTP3",formatPrice(tp3));
+    setText("signalRR","1 : "+rr.toFixed(2));
+    setText("signalExplanation",direction+
+        " scenario: all five programmed indicator checks agree. "+
+        "These hypothetical levels use the latest candle close and recent volatility. "+
+        "They are educational calculations, not predictions.");
+    setText("signalStatus","CALCULATED");
+
+    const directionElement=byId("signalDirection");
+    if(directionElement){
+        directionElement.className="value "+(direction==="BUY"?"positive":"negative");
+    }
 }
 
-savePaperTradeButton.addEventListener("click", async function() {
+/* ELLIOTT WAVE SWING POINT DETECTION */
+function ewFindPivots(candles,sensitivity=3){
+    if(!Array.isArray(candles)||candles.length<sensitivity*2+1)return [];
+    const rawPivots=[];
 
-    if (savePaperTradeButton.disabled) return;
+    for(let i=sensitivity;i<candles.length-sensitivity;i++){
+        const current=candles[i];
+        let isHigh=true,isLow=true;
 
-    const symbol =
-        document.getElementById("paperSymbol").value.trim().toUpperCase();
+        for(let j=i-sensitivity;j<=i+sensitivity;j++){
+            if(j===i)continue;
+            if(candles[j].high>=current.high)isHigh=false;
+            if(candles[j].low<=current.low)isLow=false;
+        }
 
-    const direction =
-        document.getElementById("paperDirection").value;
+        if(isHigh)rawPivots.push({type:"H",price:current.high,time:current.time,index:i});
+        if(isLow)rawPivots.push({type:"L",price:current.low,time:current.time,index:i});
+    }
 
-    const entry =
-        Number(document.getElementById("paperEntry").value);
+    rawPivots.sort((a,b)=>a.index-b.index);
+    const pivots=[];
 
-    const stopLoss =
-        Number(document.getElementById("paperStopLoss").value);
+    for(const pivot of rawPivots){
+        const last=pivots[pivots.length-1];
+        if(!last){pivots.push(pivot);continue}
+        if(last.type===pivot.type){
+            const moreExtreme=pivot.type==="H"
+                ?pivot.price>last.price:pivot.price<last.price;
+            if(moreExtreme)pivots[pivots.length-1]=pivot;
+        }else pivots.push(pivot);
+    }
+    return pivots;
+}
 
-    const takeProfit =
-        Number(document.getElementById("paperTakeProfit").value);
+/* ELLIOTT WAVE IMPULSE VALIDATION */
+function ewValidateImpulse(points,direction){
+    if(!Array.isArray(points)||points.length!==6){
+        return {
+            valid:false,reason:"Exactly six alternating swing points are required.",
+            failedRules:["Six-point sequence"],
+            checks:[{rule:"Six-point sequence",passed:false,explanation:"Exactly six swing points are required."}],
+            waveLengths:[]
+        };
+    }
 
-    if (!symbol || !/^[A-Z0-9]+(?:[/-][A-Z0-9]+)*$/.test(symbol)) {
+    const expectedTypes=direction==="UP"
+        ?["L","H","L","H","L","H"]
+        :["H","L","H","L","H","L"];
 
-        setPaperTradeStatus(
-            "Please enter a valid coin symbol, such as BTC/USDT.",
-            "#ff6475"
-        );
+    if(!points.every((point,index)=>point.type===expectedTypes[index])){
+        return {
+            valid:false,reason:"The points do not alternate in the required direction.",
+            failedRules:["Alternating swing points"],
+            checks:[{rule:"Alternating swing points",passed:false,explanation:"The six points do not alternate correctly."}],
+            waveLengths:[]
+        };
+    }
 
+    const prices=points.map(point=>Number(point.price));
+    if(!prices.every(Number.isFinite)){
+        return {
+            valid:false,reason:"Invalid swing-point prices.",
+            failedRules:["Valid prices"],
+            checks:[{rule:"Valid prices",passed:false,explanation:"One or more swing prices are invalid."}],
+            waveLengths:[]
+        };
+    }
+
+    const lengths=[];
+    for(let i=0;i<5;i++)lengths.push(Math.abs(prices[i+1]-prices[i]));
+
+    const tolerance=Math.max(...prices)*0.00000001;
+    let wave2Pass,wave3Pass,wave4Pass;
+
+    if(direction==="UP"){
+        wave2Pass=prices[2]>prices[0];
+        wave3Pass=prices[3]>prices[1];
+        wave4Pass=prices[4]>prices[1];
+    }else{
+        wave2Pass=prices[2]<prices[0];
+        wave3Pass=prices[3]<prices[1];
+        wave4Pass=prices[4]<prices[1];
+    }
+
+    const wave3ShortestPass=lengths[2]>Math.min(lengths[0],lengths[4])+tolerance;
+
+    const checks=[
+        {rule:"Wave 2 retracement",passed:wave2Pass,explanation:wave2Pass?"Wave 2 does not cross the start of Wave 1.":"Wave 2 crosses the start of Wave 1."},
+        {rule:"Wave 3 extension",passed:wave3Pass,explanation:wave3Pass?"Wave 3 extends beyond the end of Wave 1.":"Wave 3 does not extend beyond the end of Wave 1."},
+        {rule:"Wave 4 overlap",passed:wave4Pass,explanation:wave4Pass?"Wave 4 does not overlap Wave 1 price territory.":"Wave 4 overlaps Wave 1 price territory."},
+        {rule:"Wave 3 not shortest",passed:wave3ShortestPass,explanation:wave3ShortestPass?"Wave 3 is longer than at least one of Waves 1 or 5.":"Wave 3 is the shortest of Waves 1, 3 and 5."}
+    ];
+
+    const failedRules=checks.filter(check=>!check.passed).map(check=>check.rule);
+    return {
+        valid:failedRules.length===0,
+        reason:failedRules.length?"Some basic rules failed.":"All programmed basic impulse checks passed.",
+        failedRules,
+        checks,
+        waveLengths:lengths
+    };
+}
+
+/* ALTERNATIVE WAVE COUNT DETECTOR */
+function ewFindAlternativeCounts(pivots){
+    const candidates=[];
+    if(!Array.isArray(pivots)||pivots.length<7)return candidates;
+
+    const latestStart=pivots.length-6;
+    for(let start=0;start<latestStart;start++){
+        const window=pivots.slice(start,start+6);
+        const direction=window[0].type==="L"?"UP":window[0].type==="H"?"DOWN":null;
+        if(!direction)continue;
+
+        const validation=ewValidateImpulse(window,direction);
+        const passedCount=validation.checks.filter(c=>c.passed).length;
+        candidates.push({
+            start:start+1,end:start+6,direction,validation,
+            passedCount,totalChecks:validation.checks.length
+        });
+    }
+
+    candidates.sort((a,b)=>{
+        if(b.passedCount!==a.passedCount)return b.passedCount-a.passedCount;
+        return b.end-a.end;
+    });
+    return candidates.slice(0,5);
+}
+
+function ewClearAlternativeCounts(message="No alternative counts analyzed yet."){
+    setText("ewAlternativeSummary",message);
+    const body=byId("ewAlternativeResults");
+    if(!body)return;
+    body.innerHTML="";
+    const row=document.createElement("tr");
+    const cell=document.createElement("td");
+    cell.colSpan=5;
+    cell.textContent=message;
+    row.appendChild(cell);
+    body.appendChild(row);
+}
+
+function ewRenderAlternativeCounts(candidates){
+    const body=byId("ewAlternativeResults");
+    if(!body)return;
+    body.innerHTML="";
+
+    if(!candidates.length){
+        ewClearAlternativeCounts("Not enough earlier swing points to identify alternative candidates.");
         return;
     }
 
-    if (
-        !Number.isFinite(entry) ||
-        !Number.isFinite(stopLoss) ||
-        !Number.isFinite(takeProfit) ||
-        entry <= 0 ||
-        stopLoss <= 0 ||
-        takeProfit <= 0
-    ) {
+    const best=candidates[0];
+    setText("ewAlternativeSummary",
+        "Candidate P"+best.start+"–P"+best.end+" ("+best.direction+
+        ") passed "+best.passedCount+" of "+best.totalChecks+
+        " programmed basic checks. This is an unconfirmed historical pattern.");
 
-        setPaperTradeStatus(
-            "Please enter valid positive prices for all three fields.",
-            "#ff6475"
-        );
+    candidates.forEach(candidate=>{
+        const row=document.createElement("tr");
+        const values=[
+            "P"+candidate.start+"–P"+candidate.end,
+            candidate.direction,
+            candidate.passedCount+"/"+candidate.totalChecks,
+            candidate.validation.valid?"POSSIBLE COUNT":"UNCONFIRMED",
+            candidate.validation.failedRules.length
+                ?candidate.validation.failedRules.join(", "):"No basic rule failures"
+        ];
 
+        values.forEach((value,index)=>{
+            const cell=document.createElement("td");
+            cell.textContent=value;
+            if(index===1)cell.className=candidate.direction==="UP"?"ew-signal-buy":"ew-signal-sell";
+            if(index===3)cell.className=candidate.validation.valid?"ew-rule-pass":"ew-rule-skip";
+            row.appendChild(cell);
+        });
+        body.appendChild(row);
+    });
+}
+
+/* ELLIOTT WAVE TABLE RENDERING */
+function ewRenderSwingPoints(pivots){
+    const body=byId("ewSwingPoints");
+    if(!body)return;
+    body.innerHTML="";
+
+    if(!pivots.length){
+        const row=document.createElement("tr");
+        const cell=document.createElement("td");
+        cell.colSpan=4;
+        cell.textContent="No swing points detected.";
+        row.appendChild(cell);
+        body.appendChild(row);
         return;
     }
 
-    if (direction === "BUY" && !(stopLoss < entry && takeProfit > entry)) {
+    pivots.slice(-30).forEach((point,index)=>{
+        const row=document.createElement("tr");
+        const firstIndex=pivots.length-Math.min(30,pivots.length);
+        const values=[
+            "P"+(firstIndex+index+1),
+            point.type==="H"?"Swing High":"Swing Low",
+            formatPrice(point.price),
+            formatTime(point.time)
+        ];
+        values.forEach(value=>{
+            const cell=document.createElement("td");
+            cell.textContent=value;
+            row.appendChild(cell);
+        });
+        body.appendChild(row);
+    });
+}
 
-        setPaperTradeStatus(
-            "For a BUY simulation, Stop Loss must be below Entry and Take Profit must be above Entry.",
-            "#ff6475"
-        );
+function ewRenderRuleChecks(validation){
+    const body=byId("ewRuleChecks");
+    if(!body)return;
+    body.innerHTML="";
 
+    validation.checks.forEach(check=>{
+        const row=document.createElement("tr");
+        const ruleCell=document.createElement("td");
+        ruleCell.textContent=check.rule;
+        const resultCell=document.createElement("td");
+        resultCell.textContent=check.passed?"PASS":"FAIL";
+        resultCell.className=check.passed?"ew-rule-pass":"ew-rule-fail";
+        const explanationCell=document.createElement("td");
+        explanationCell.textContent=check.explanation;
+        row.append(ruleCell,resultCell,explanationCell);
+        body.appendChild(row);
+    });
+}
+
+function ewRenderFibonacci(points,direction){
+    const body=byId("ewFibonacci");
+    if(!body)return;
+    body.innerHTML="";
+
+    if(!points||points.length<2){
+        const row=document.createElement("tr");
+        const cell=document.createElement("td");
+        cell.colSpan=2;
+        cell.textContent="Not enough points for Fibonacci calculations.";
+        row.appendChild(cell);
+        body.appendChild(row);
         return;
     }
 
-    if (direction === "SELL" && !(stopLoss > entry && takeProfit < entry)) {
+    const start=Number(points[0].price);
+    const end=Number(points[1].price);
+    const distance=Math.abs(end-start);
+    [0,0.236,0.382,0.5,0.618,0.786,1].forEach(level=>{
+        const price=direction==="UP"?end-distance*level:end+distance*level;
+        const row=document.createElement("tr");
+        const levelCell=document.createElement("td");
+        levelCell.textContent=(level*100).toFixed(1)+"%";
+        const priceCell=document.createElement("td");
+        priceCell.textContent=formatPrice(price);
+        row.append(levelCell,priceCell);
+        body.appendChild(row);
+    });
+}
 
-        setPaperTradeStatus(
-            "For a SELL simulation, Stop Loss must be above Entry and Take Profit must be below Entry.",
-            "#ff6475"
-        );
+/* ELLIOTT WAVE RESET AND ANALYSIS */
+function resetElliottAfterSelectionChange(){
+    currentPivots=[];
+    setText("ewDirection","--");
+    setText("ewStatus","Waiting...");
+    setText("ewPivotCount","--");
+    setText("ewInterpretation","--");
+    setText("ewSummary","Market selection changed. Run the analysis again.");
 
-        return;
-    }
+    const swingBody=byId("ewSwingPoints");
+    const ruleBody=byId("ewRuleChecks");
+    const fibBody=byId("ewFibonacci");
 
-    savePaperTradeButton.disabled = true;
+    if(swingBody)swingBody.innerHTML='<tr><td colspan="4">No swing points analyzed yet.</td></tr>';
+    if(ruleBody)ruleBody.innerHTML='<tr><td colspan="3">No rules checked yet.</td></tr>';
+    if(fibBody)fibBody.innerHTML='<tr><td colspan="2">No Fibonacci levels calculated yet.</td></tr>';
 
-    savePaperTradeButton.textContent = "Saving...";
+    ewClearAlternativeCounts();
+}
 
-    setPaperTradeStatus("Checking your login...");
+async function ewAnalyze(){
+    const button=byId("ewAnalyzeBtn");
+    if(button){button.disabled=true;button.textContent="Analyzing..."}
+    ewClearAlternativeCounts("Searching earlier swing sequences...");
 
-    try {
+    try{
+        if(!currentCandles.length)await loadTechnicalAnalysis();
+        if(!currentCandles.length)throw new Error("Market candle data is not available.");
 
-        const { data: sessionData, error: sessionError } =
-            await supabaseClient.auth.getSession();
+        const pivots=ewFindPivots(currentCandles,3);
+        currentPivots=pivots;
+        setText("ewPivotCount",String(pivots.length));
+        ewRenderSwingPoints(pivots);
 
-        if (sessionError) throw sessionError;
+        const alternatives=ewFindAlternativeCounts(pivots);
+        ewRenderAlternativeCounts(alternatives);
 
-        const session = sessionData.session;
-
-        if (!session) {
-
-            window.location.href = "login.html";
-
+        if(pivots.length<6){
+            setText("ewDirection","--");
+            setText("ewStatus","Insufficient data");
+            setText("ewInterpretation","Not enough pivots");
+            setText("ewSummary","The current data did not produce six usable alternating swing points.");
+            ewRenderRuleChecks({checks:[{
+                rule:"Six-point sequence",passed:false,
+                explanation:"At least six alternating swing points are required."
+            }]});
+            ewRenderFibonacci([],"UP");
             return;
         }
 
-        setPaperTradeStatus("Saving simulated trade...");
+        const latestPoints=pivots.slice(-6);
+        const direction=latestPoints[0].type==="L"?"UP":"DOWN";
+        const validation=ewValidateImpulse(latestPoints,direction);
 
-        const response = await fetch(
-            API_URL + "/api/paper-trades",
-            {
-                method: "POST",
+        setText("ewDirection",direction==="UP"?"UPWARD":"DOWNWARD");
+        setText("ewStatus",validation.valid?"BASIC RULES PASSED":"RULES NOT PASSED");
+        setText("ewInterpretation",validation.valid?"Possible impulse pattern":"Unconfirmed pattern");
 
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + session.access_token
-                },
+        ewRenderRuleChecks(validation);
+        ewRenderFibonacci(latestPoints,direction);
 
-                body: JSON.stringify({
-    symbol,
-    direction: direction === "BUY" ? "LONG" : "SHORT",
-    entry,
-    stopLoss,
-    takeProfit
-})
-            }
-        );
+        const summary=validation.valid
+            ?"The latest six-point sequence passed the four programmed basic impulse checks. This does not confirm a complete Elliott Wave count."
+            :"The latest six-point sequence failed "+validation.failedRules.length+
+              " of the four programmed checks: "+validation.failedRules.join(", ")+
+              ". The sequence is unconfirmed.";
 
-        const result = await response.json().catch(() => ({}));
+        setText("ewSummary",summary);
 
-        if (!response.ok) {
-
-            throw new Error(
-                result.error ||
-                result.message ||
-                "The backend could not save this simulated trade."
-            );
-        }
-
-        setPaperTradeStatus(
-            "Simulated trade saved successfully! You can view it in Paper Trading History.",
-            "#28d995"
-        );
-
-        document.getElementById("paperSymbol").value = "";
-        document.getElementById("paperEntry").value = "";
-        document.getElementById("paperStopLoss").value = "";
-        document.getElementById("paperTakeProfit").value = "";
-
-    } catch (error) {
-
-        console.error("Paper trade save error:", error);
-
-        setPaperTradeStatus(
-            "Could not save simulated trade: " + error.message,
-            "#ff6475"
-        );
-
-    } finally {
-
-        savePaperTradeButton.disabled = false;
-
-        savePaperTradeButton.textContent =
-            "Save Simulated Trade";
+    }catch(error){
+        console.error("Elliott Wave analysis error:",error);
+        setText("ewStatus","Analysis unavailable");
+        setText("ewSummary",error.message);
+        ewRenderRuleChecks({checks:[{
+            rule:"Analysis",passed:false,explanation:error.message
+        }]});
+        ewClearAlternativeCounts("Alternative analysis unavailable.");
+    }finally{
+        if(button){button.disabled=false;button.textContent="Analyze Elliott Waves"}
     }
-});
-
-
-/* AI SCREENSHOT ANALYZER */
-
-const chartUpload = document.getElementById("chartUpload");
-
-const imagePreview = document.getElementById("imagePreview");
-
-const imageStatus = document.getElementById("imageStatus");
-
-const copyPromptButton =
-    document.getElementById("copyPromptButton");
-
-const openChatGPTButton =
-    document.getElementById("openChatGPTButton");
-
-const removeImageButton =
-    document.getElementById("removeImageButton");
-
-const analysisPrompt =
-    document.getElementById("analysisPrompt");
-
-let selectedImage = null;
-
-let imageObjectUrl = null;
-
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
-
-function setImageStatus(message, color = "#f3bd54") {
-
-    imageStatus.textContent = message;
-
-    imageStatus.style.color = color;
 }
 
-function generateAnalysisPrompt() {
+/* PAPER TRADE SIMULATOR - LOCAL PRACTICE ONLY */
+const PAPER_STORAGE_KEY="qm_profiter_paper_trades";
 
-    const selectedCoin =
-        coinSelect.selectedOptions[0].textContent;
-
-    const selectedTimeframe =
-        timeframeSelect.options[
-            timeframeSelect.selectedIndex
-        ].textContent;
-
-    const currentPrice =
-        document.getElementById("qm-price").textContent;
-
-    const trend =
-        document.getElementById("qm-trend").textContent;
-
-    const rsi =
-        document.getElementById("qm-rsi").textContent;
-
-    const ema20 =
-        document.getElementById("qm-ema20").textContent;
-
-    const ema50 =
-        document.getElementById("qm-ema50").textContent;
-
-    const macd =
-        document.getElementById("qm-macd").textContent;
-
-    const momentum =
-        document.getElementById("qm-momentum").textContent;
-
-    const support =
-        document.getElementById("qm-support").textContent;
-
-    const resistance =
-        document.getElementById("qm-resistance").textContent;
-
-    return `
-You are helping me understand a cryptocurrency chart for educational purposes.
-
-I have attached a chart screenshot. Carefully inspect the actual image before making any observations.
-
-QM PROFITER CHART DETAILS
-
-Coin: ${selectedCoin}
-Selected timeframe: ${selectedTimeframe}
-
-Additional indicator readings from QM PROFITER:
-Current price: ${currentPrice}
-Market trend: ${trend}
-RSI (14): ${rsi}
-EMA 20: ${ema20}
-EMA 50: ${ema50}
-MACD: ${macd}
-Momentum: ${momentum}
-Support estimate: ${support}
-Resistance estimate: ${resistance}
-
-IMPORTANT ANALYSIS RULES
-
-1. Only describe patterns and levels that are actually visible or reasonably supported by the screenshot.
-2. Do not invent missing price levels, volume information, candles, indicators or patterns.
-3. If the screenshot is unclear, say what cannot be identified.
-4. Explain the difference between observed evidence and interpretation.
-5. Do not claim that any method guarantees a successful outcome.
-6. Do not assume that every strategy or theory will produce a valid result.
-7. If there is insufficient evidence, clearly report NO CLEAR EDUCATIONAL SETUP.
-8. This is an educational chart-reading exercise, not real-money trading advice.
-
-ANALYSIS AREAS
-
-A. MARKET STRUCTURE
-- Higher highs and higher lows
-- Lower highs and lower lows
-- Break of Structure (BOS)
-- Change of Character (CHoCH)
-- Consolidation and range conditions
-
-B. SMC AND ICT CONCEPTS
-- Visible liquidity areas
-- Possible liquidity sweeps
-- Order blocks, only where supported
-- Fair Value Gaps (FVG)
-- Premium and discount areas, if identifiable
-- Possible displacement
-- Possible mitigation areas
-
-C. ELLIOTT WAVE
-- Whether a wave structure is reasonably identifiable
-- Possible wave count
-- Alternative wave interpretation
-- Explain why the count may be uncertain
-
-D. WYCKOFF
-- Possible accumulation or distribution
-- Trading range
-- Signs of supply or demand
-- Explain whether there is enough evidence
-
-E. FIBONACCI
-- Identify visible swing points if possible
-- Explain relevant retracement or extension areas
-- Do not invent exact Fibonacci levels if swing points are unclear
-
-F. CANDLESTICK ANALYSIS
-- Visible candlestick patterns
-- Rejection candles
-- Engulfing patterns
-- Doji or other recognizable formations
-- Explain the context of each pattern
-
-G. TECHNICAL INDICATORS
-- EMA relationship
-- RSI interpretation
-- MACD interpretation
-- Volume, only if visible
-- Momentum
-- Possible divergence, only if supported
-
-H. MULTI-TIMEFRAME ANALYSIS
-- Identify which timeframe is actually visible
-- Do not pretend that other timeframes were inspected
-- Explain what additional timeframes would be needed for confirmation
-
-REQUIRED REPORT FORMAT
-
-1. SCREENSHOT QUALITY
-Explain whether the chart is readable and what information is missing.
-
-2. MARKET OVERVIEW
-Describe the visible trend and market structure.
-
-3. STRATEGY-BY-STRATEGY ANALYSIS
-Create a table with:
-Strategy | Observation | Evidence | Confidence
-
-Include SMC, ICT, liquidity, order blocks, FVG, Elliott Wave, Wyckoff, Fibonacci, candlesticks, market structure and indicators.
-
-Use "Not identifiable" when the screenshot does not provide enough evidence.
-
-4. SUPPORT AND RESISTANCE
-Describe visible or supplied levels. Explain their limitations.
-
-5. CONFLICTING EVIDENCE
-Explain which observations support one another and which disagree.
-
-6. EDUCATIONAL SCENARIO
-If the screenshot supports a clearly defined hypothetical paper-trading exercise, describe:
-- Possible scenario direction
-- Hypothetical observation or entry area
-- A hypothetical invalidation area
-- Possible educational target areas TP1, TP2 and TP3
-
-Do not invent exact numerical levels. If the chart scale or evidence is insufficient, write "Not enough information".
-
-These hypothetical levels are for learning and paper simulation only. They are not instructions to place real orders.
-
-7. FINAL ASSESSMENT
-Choose one:
-- Bullish evidence
-- Bearish evidence
-- Mixed evidence
-- No clear educational setup
-
-Explain the reasons.
-
-8. WHAT TO LEARN NEXT
-Give a short list of additional chart information or concepts that would improve the analysis.
-
-Be careful, honest and evidence-based. Accuracy and uncertainty are more important than producing a confident-looking report.
-`.trim();
+function getSavedPaperTrades(){
+    try{
+        const saved=localStorage.getItem(PAPER_STORAGE_KEY);
+        return saved?JSON.parse(saved):[];
+    }catch(error){
+        console.error("Could not read paper trade history:",error);
+        return [];
+    }
 }
 
+function savePaperTrade(){
+    const direction=byId("paperDirection")?.value;
+    const entry=Number(byId("paperEntry")?.value);
+    const stopLoss=Number(byId("paperStopLoss")?.value);
+    const takeProfit=Number(byId("paperTakeProfit")?.value);
+    const result=byId("paperTradeResult");
+    if(!result)return;
 
-/* IMAGE UPLOAD */
-
-chartUpload.addEventListener("change", function(event) {
-
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    const allowedTypes = [
-        "image/png",
-        "image/jpeg",
-        "image/webp"
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-
-        setImageStatus(
-            "Please select a PNG, JPG or WEBP image.",
-            "#ff6475"
-        );
-
-        chartUpload.value = "";
-
+    if(!Number.isFinite(entry)||!Number.isFinite(stopLoss)||
+       !Number.isFinite(takeProfit)||entry<=0||stopLoss<=0||takeProfit<=0){
+        result.textContent="Please enter valid positive prices in all fields.";
         return;
     }
 
-    if (file.size > MAX_IMAGE_SIZE) {
-
-        setImageStatus(
-            "Image is too large. Please select an image smaller than 10 MB.",
-            "#ff6475"
-        );
-
-        chartUpload.value = "";
-
+    if(direction==="BUY"&&(stopLoss>=entry||takeProfit<=entry)){
+        result.textContent="For this BUY simulation, stop loss must be below entry and take profit above entry.";
+        return;
+    }
+    if(direction==="SELL"&&(stopLoss<=entry||takeProfit>=entry)){
+        result.textContent="For this SELL simulation, stop loss must be above entry and take profit below entry.";
         return;
     }
 
-    if (imageObjectUrl) {
+    const riskDistance=Math.abs(entry-stopLoss);
+    const rewardDistance=Math.abs(takeProfit-entry);
+    const ratio=rewardDistance/riskDistance;
 
-        URL.revokeObjectURL(imageObjectUrl);
+    const paperTrade={
+        id:Date.now(),
+        coin:currentCoin,
+        timeframe:currentTimeframe,
+        direction,
+        entry,
+        stopLoss,
+        takeProfit,
+        riskDistance,
+        rewardDistance,
+        rewardRiskRatio:ratio,
+        createdAt:new Date().toISOString(),
+        status:"PAPER SIMULATION"
+    };
 
-        imageObjectUrl = null;
+    try{
+        const trades=getSavedPaperTrades();
+        trades.unshift(paperTrade);
+        localStorage.setItem(PAPER_STORAGE_KEY,JSON.stringify(trades.slice(0,200)));
+
+        result.textContent="Paper simulation saved locally. Pair: "+currentCoin+
+            " | Direction: "+direction+
+            " | Entry: "+formatPrice(entry)+
+            " | Stop Loss: "+formatPrice(stopLoss)+
+            " | Take Profit: "+formatPrice(takeProfit)+
+            " | Hypothetical reward/risk ratio: "+ratio.toFixed(2)+
+            ". No real order was placed.";
+    }catch(error){
+        console.error("Paper trade save error:",error);
+        result.textContent="Could not save the paper simulation in this browser.";
     }
+}
 
-    selectedImage = file;
+byId("savePaperTradeBtn")?.addEventListener("click",savePaperTrade);
 
-    imageObjectUrl = URL.createObjectURL(file);
+/* SCREENSHOT ANALYZER */
+let selectedScreenshot=null;
 
-    imagePreview.src = imageObjectUrl;
+byId("chartScreenshot")?.addEventListener("change",function(){
+    const file=this.files&&this.files[0];
+    const preview=byId("screenshotPreview");
+    const result=byId("screenshotAnalysisResult");
+    selectedScreenshot=null;
 
-    imagePreview.style.display = "block";
-
-    copyPromptButton.disabled = false;
-
-    removeImageButton.disabled = false;
-
-    analysisPrompt.value = generateAnalysisPrompt();
-
-    setImageStatus(
-        "Screenshot loaded successfully. Copy your prompt and upload this same image to ChatGPT.",
-        "#28d995"
-    );
-});
-
-
-/* REFRESH PROMPT WHEN COIN OR TIMEFRAME CHANGES */
-
-coinSelect.addEventListener("change", function() {
-
-    if (selectedImage) {
-
-        analysisPrompt.value = generateAnalysisPrompt();
-    }
-});
-
-timeframeSelect.addEventListener("change", function() {
-
-    if (selectedImage) {
-
-        analysisPrompt.value = generateAnalysisPrompt();
-    }
-});
-
-
-/* COPY AI PROMPT */
-
-copyPromptButton.addEventListener("click", async function() {
-
-    if (!selectedImage) {
-
-        setImageStatus(
-            "Please upload a chart screenshot first.",
-            "#ff6475"
-        );
-
+    if(!file){
+        if(preview){preview.style.display="none";preview.removeAttribute("src")}
+        if(result)result.textContent="No screenshot selected.";
         return;
     }
 
-    analysisPrompt.value = generateAnalysisPrompt();
+    if(!file.type.startsWith("image/")){
+        if(result)result.textContent="Please select a valid image file.";
+        this.value="";
+        return;
+    }
 
-    try {
+    if(file.size>10*1024*1024){
+        if(result)result.textContent="Image is too large. Please select an image under 10 MB.";
+        this.value="";
+        return;
+    }
 
-        await navigator.clipboard.writeText(
-            analysisPrompt.value
-        );
+    selectedScreenshot=file;
+    const reader=new FileReader();
 
-        setImageStatus(
-            "AI analysis prompt copied! Now open ChatGPT, upload your screenshot and paste the prompt.",
-            "#28d995"
-        );
+    reader.onload=event=>{
+        if(preview){preview.src=event.target.result;preview.style.display="block"}
+        if(result)result.textContent="Screenshot selected: "+file.name+
+            ". Generate an educational analysis prompt to continue.";
+    };
+    reader.onerror=()=>{
+        if(result)result.textContent="Could not preview this image.";
+    };
+    reader.readAsDataURL(file);
+});
 
-    } catch (error) {
+function generateScreenshotPrompt(){
+    const result=byId("screenshotAnalysisResult");
+    const promptArea=byId("screenshotPrompt");
 
-        analysisPrompt.focus();
+    if(!selectedScreenshot){
+        if(result)result.textContent="Please upload a chart screenshot first.";
+        return;
+    }
 
-        analysisPrompt.select();
+    const prompt=`
+Please review the chart screenshot I have uploaded.
 
-        setImageStatus(
-            "Automatic copying is unavailable. Select the prompt below and press Ctrl + C.",
-            "#f3bd54"
-        );
+This is for educational chart study and paper trading only.
+
+Market: ${currentCoin}
+Timeframe selected in QM PROFITER: ${currentTimeframe}
+
+Please examine the visible information carefully:
+
+1. Describe the visible market structure.
+2. Identify any clear swing highs and swing lows.
+3. Explain possible support and resistance areas.
+4. Discuss visible trend and momentum.
+5. Explain any possible Elliott Wave interpretation, including alternative counts.
+6. Identify what information is unclear or missing.
+7. Explain what evidence would be needed to confirm or invalidate a hypothetical scenario.
+
+If the chart does not show a clear educational setup, say "NO CLEAR SETUP".
+
+Do not invent prices or claim certainty. Clearly distinguish observations from possibilities.
+
+If presenting a hypothetical paper-trading scenario, label it educational and include:
+- Possible entry area
+- Invalidation level
+- Possible target areas
+- Reasons supporting and contradicting the scenario
+
+Do not recommend placing real-money trades.
+`;
+
+    if(promptArea){promptArea.value=prompt.trim();promptArea.style.display="block"}
+    if(result)result.textContent="Analysis prompt generated. Copy it and upload your chart screenshot in ChatGPT.";
+}
+
+byId("generatePromptBtn")?.addEventListener("click",generateScreenshotPrompt);
+
+byId("copyPromptBtn")?.addEventListener("click",async function(){
+    const promptArea=byId("screenshotPrompt");
+    if(!promptArea||!promptArea.value.trim())generateScreenshotPrompt();
+
+    const textToCopy=byId("screenshotPrompt")?.value||"";
+    if(!textToCopy)return;
+
+    try{
+        await navigator.clipboard.writeText(textToCopy);
+        setText("screenshotAnalysisResult","Analysis prompt copied. Open ChatGPT and upload your screenshot.");
+    }catch(error){
+        const area=byId("screenshotPrompt");
+        if(area){area.style.display="block";area.focus();area.select()}
+        setText("screenshotAnalysisResult","Automatic copying was unavailable. Select and copy the prompt manually.");
     }
 });
 
-
-/* OPEN CHATGPT */
-
-openChatGPTButton.addEventListener("click", function() {
-
-    window.open(
-        "https://chatgpt.com/",
-        "_blank",
-        "noopener,noreferrer"
-    );
-
-    if (selectedImage) {
-
-        setImageStatus(
-            "ChatGPT opened. Upload your selected screenshot there and paste the prompt from QM PROFITER.",
-            "#28d995"
-        );
-
-    } else {
-
-        setImageStatus(
-            "ChatGPT opened. Upload a chart screenshot in QM PROFITER first to prepare the analysis prompt.",
-            "#f3bd54"
-        );
-    }
+byId("openChatGPTBtn")?.addEventListener("click",function(){
+    window.open("https://chatgpt.com/","_blank","noopener,noreferrer");
 });
 
+/* APPLICATION INITIALIZATION */
+async function initializeAnalyzer(){
+    loadTradingViewChart();
+    await checkAnalyzerAuthentication();
+    await loadTechnicalAnalysis();
 
-/* REMOVE SCREENSHOT */
+    setText("analysisMessage",
+        "Market data refreshed. Technical indicators are educational tools, not guaranteed predictions.");
+}
 
-removeImageButton.addEventListener("click", function() {
+document.addEventListener("DOMContentLoaded",function(){
+    initializeAnalyzer();
 
-    selectedImage = null;
-
-    chartUpload.value = "";
-
-    imagePreview.removeAttribute("src");
-
-    imagePreview.style.display = "none";
-
-    if (imageObjectUrl) {
-
-        URL.revokeObjectURL(imageObjectUrl);
-
-        imageObjectUrl = null;
-    }
-
-    analysisPrompt.value = "";
-
-    copyPromptButton.disabled = true;
-
-    removeImageButton.disabled = true;
-
-    setImageStatus(
-        "Screenshot removed. Upload another chart when ready.",
-        "#f3bd54"
-    );
+    // Refresh market data every 60 seconds.
+    window.setInterval(function(){
+        loadTechnicalAnalysis();
+    },60000);
 });
-
-
-/* INITIAL LOAD */
-
-refreshAnalyzer();
-
-
-/* AUTOMATIC MARKET DATA REFRESH */
-
-setInterval(() => {
-
-    loadTechnicalAnalysis();
-
-}, 60000);
-
-
-/* CLEAN UP IMAGE URL WHEN PAGE CLOSES */
-
-window.addEventListener("beforeunload", function() {
-
-    if (imageObjectUrl) {
-
-        URL.revokeObjectURL(imageObjectUrl);
-    }
-});
-
-
-/* CHECK LOGIN */
-
-checkAnalyzerAuthentication();
-
 </script>
-
 </body>
 </html>
