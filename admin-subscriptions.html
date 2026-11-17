@@ -9,180 +9,388 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-
-body{
-    font-family:Arial,sans-serif;
-    background:#080d18;
-    color:#e8edf7;
-    padding:25px;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-.container{max-width:1350px;margin:auto}
-
-.header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:15px;
-    margin-bottom:25px;
+body {
+    font-family: Arial, sans-serif;
+    background: #080d18;
+    color: #e8edf7;
+    padding: 25px;
 }
 
-h1{color:#ffd400;font-size:27px}
-.subtitle{color:#94a3b8;margin-top:8px}
-
-.back-btn{
-    background:#1e293b;
-    color:white;
-    padding:12px 18px;
-    border-radius:8px;
-    text-decoration:none;
+.container {
+    max-width: 1450px;
+    margin: auto;
 }
 
-.stats{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:15px;
-    margin-bottom:25px;
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
 }
 
-.stat{
-    background:#101827;
-    border:1px solid #263449;
-    padding:20px;
-    border-radius:12px;
+h1 {
+    color: #ffd400;
+    font-size: 27px;
 }
 
-.stat h3{color:#94a3b8;font-size:13px}
-.stat p{font-size:28px;font-weight:bold;margin-top:10px}
-
-.panel{
-    background:#101827;
-    border:1px solid #263449;
-    padding:20px;
-    border-radius:12px;
+.subtitle {
+    color: #94a3b8;
+    margin-top: 8px;
 }
 
-.panel h2{font-size:19px;margin-bottom:18px}
-
-.search{
-    width:100%;
-    padding:13px;
-    background:#080d18;
-    border:1px solid #334155;
-    border-radius:8px;
-    color:white;
-    margin-bottom:18px;
+.back-btn {
+    background: #1e293b;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    text-decoration: none;
 }
 
-.table-wrap{overflow-x:auto}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:1050px;
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
 }
 
-th,td{
-    text-align:left;
-    padding:14px 12px;
-    border-bottom:1px solid #263449;
-    font-size:14px;
+.stat {
+    background: #101827;
+    border: 1px solid #263449;
+    padding: 20px;
+    border-radius: 12px;
 }
 
-th{color:#94a3b8}
-
-.email{
-    font-weight:bold;
-    color:#e8edf7;
-    overflow-wrap:anywhere;
+.stat h3 {
+    color: #94a3b8;
+    font-size: 13px;
 }
 
-.status{
-    display:inline-block;
-    padding:6px 10px;
-    border-radius:20px;
-    font-size:11px;
-    font-weight:bold;
+.stat p {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 10px;
 }
 
-.active{background:#064e3b;color:#6ee7b7}
-.expired{background:#7f1d1d;color:#fecaca}
-.unpaid{background:#78350f;color:#fde68a}
-.paused{background:#713f12;color:#fde68a}
-
-.countdown{
-    font-weight:bold;
-    color:#22d3a0;
-    font-size:13px;
-    white-space:nowrap;
+.panel {
+    background: #101827;
+    border: 1px solid #263449;
+    padding: 20px;
+    border-radius: 12px;
 }
 
-.countdown.warning{color:#fbbf24}
-.countdown.danger{color:#f87171}
-.countdown.stopped{color:#f87171}
-
-.expiry-date{
-    color:#94a3b8;
-    font-size:12px;
-    line-height:1.6;
+.panel h2 {
+    font-size: 19px;
+    margin-bottom: 18px;
 }
 
-.action-btn{
-    border:0;
-    border-radius:6px;
-    padding:9px 12px;
-    font-weight:bold;
-    cursor:pointer;
-    margin:3px;
-    white-space:nowrap;
+.search {
+    width: 100%;
+    padding: 13px;
+    background: #080d18;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: white;
+    margin-bottom: 18px;
+    outline: none;
 }
 
-.activate-btn{
-    background:#ffd400;
-    color:#080808;
+.search:focus,
+.time-input:focus {
+    border-color: #ffd400;
 }
 
-.pause-btn{
-    background:#7f1d1d;
-    color:#fecaca;
+.table-wrap {
+    overflow-x: auto;
 }
 
-.resume-btn{
-    background:#065f46;
-    color:#a7f3d0;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1150px;
 }
 
-.action-btn:disabled{
-    opacity:.5;
-    cursor:not-allowed;
+th, td {
+    text-align: left;
+    padding: 14px 12px;
+    border-bottom: 1px solid #263449;
+    font-size: 14px;
 }
 
-.message{
-    color:#94a3b8;
-    margin-top:15px;
-    font-size:14px;
-    overflow-wrap:anywhere;
+th {
+    color: #94a3b8;
 }
 
-.empty{text-align:center;padding:35px;color:#94a3b8}
-
-.note{
-    background:#0b1b2b;
-    border:1px solid #263449;
-    border-radius:9px;
-    padding:13px;
-    color:#94a3b8;
-    font-size:12px;
-    line-height:1.7;
-    margin-bottom:18px;
+.email {
+    font-weight: bold;
+    color: #e8edf7;
+    overflow-wrap: anywhere;
 }
 
-@media(max-width:600px){
-    body{padding:14px}
-    h1{font-size:22px}
-    .panel{padding:13px}
+.status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.active {
+    background: #064e3b;
+    color: #6ee7b7;
+}
+
+.expired {
+    background: #7f1d1d;
+    color: #fecaca;
+}
+
+.unpaid {
+    background: #78350f;
+    color: #fde68a;
+}
+
+.paused {
+    background: #713f12;
+    color: #fde68a;
+}
+
+.countdown {
+    font-weight: bold;
+    color: #22d3a0;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.countdown.warning {
+    color: #fbbf24;
+}
+
+.countdown.danger {
+    color: #f87171;
+}
+
+.countdown.stopped {
+    color: #f87171;
+}
+
+.expiry-date {
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.action-btn {
+    border: 0;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 3px;
+    white-space: nowrap;
+}
+
+.activate-btn {
+    background: #ffd400;
+    color: #080808;
+}
+
+.pause-btn {
+    background: #7f1d1d;
+    color: #fecaca;
+}
+
+.resume-btn {
+    background: #065f46;
+    color: #a7f3d0;
+}
+
+.manage-btn {
+    background: #1d4ed8;
+    color: white;
+}
+
+.action-btn:hover {
+    filter: brightness(1.15);
+}
+
+.action-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.message {
+    color: #94a3b8;
+    margin-top: 15px;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.empty {
+    text-align: center;
+    padding: 35px;
+    color: #94a3b8;
+}
+
+.note {
+    background: #0b1b2b;
+    border: 1px solid #263449;
+    border-radius: 9px;
+    padding: 13px;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.7;
+    margin-bottom: 18px;
+}
+
+/* TIME MANAGEMENT MODAL */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .78);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    z-index: 9999;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal {
+    width: 100%;
+    max-width: 480px;
+    background: #101827;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 23px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+}
+
+.modal h2 {
+    color: #ffd400;
+    font-size: 21px;
+    margin-bottom: 8px;
+}
+
+.modal-subtitle {
+    color: #94a3b8;
+    font-size: 13px;
+    margin-bottom: 20px;
+    overflow-wrap: anywhere;
+}
+
+.time-fields {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.field label {
+    display: block;
+    color: #94a3b8;
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+.time-input {
+    width: 100%;
+    padding: 12px 8px;
+    border-radius: 7px;
+    border: 1px solid #334155;
+    background: #080d18;
+    color: white;
+    outline: none;
+}
+
+.modal-info {
+    background: #0b1b2b;
+    border: 1px solid #263449;
+    border-radius: 8px;
+    padding: 12px;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+
+.modal-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 9px;
+}
+
+.modal-btn {
+    border: 0;
+    border-radius: 7px;
+    padding: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.add-time-btn {
+    background: #065f46;
+    color: #a7f3d0;
+}
+
+.reduce-time-btn {
+    background: #7f1d1d;
+    color: #fecaca;
+}
+
+.set-time-btn {
+    background: #1d4ed8;
+    color: white;
+    grid-column: span 2;
+}
+
+.cancel-btn {
+    background: #334155;
+    color: white;
+    grid-column: span 2;
+}
+
+.modal-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.modal-message {
+    color: #fbbf24;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-top: 13px;
+    min-height: 18px;
+    overflow-wrap: anywhere;
+}
+
+@media(max-width: 600px) {
+    body {
+        padding: 14px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    .panel {
+        padding: 13px;
+    }
+
+    .modal {
+        padding: 18px;
+    }
 }
 </style>
 </head>
@@ -229,10 +437,10 @@ th{color:#94a3b8}
         <h2>Registered Users</h2>
 
         <div class="note">
-            Every activation starts a 30-day subscription.
+            Manage each user's subscription directly from this page.
+            You can activate or renew 30 days, add time, reduce time,
+            set exact remaining time, and pause or resume access.
             The countdown continues while access is paused.
-            Renewals add another 30 days to the existing expiry date,
-            or start a new 30 days if the subscription has expired.
         </div>
 
         <input
@@ -253,13 +461,14 @@ th{color:#94a3b8}
                         <th>Expiry Date</th>
                         <th>Status</th>
                         <th>Subscription</th>
+                        <th>Time Management</th>
                         <th>Access Control</th>
                     </tr>
                 </thead>
 
                 <tbody id="usersTable">
                     <tr>
-                        <td colspan="6" class="empty">
+                        <td colspan="7" class="empty">
                             Loading users...
                         </td>
                     </tr>
@@ -275,6 +484,114 @@ th{color:#94a3b8}
 
 </div>
 
+
+<!-- TIME MANAGEMENT MODAL -->
+
+<div class="modal-overlay" id="timeModal">
+
+    <div class="modal">
+
+        <h2>Manage Subscription Time</h2>
+
+        <p class="modal-subtitle" id="selectedUserEmail">
+            Selected user
+        </p>
+
+        <div class="time-fields">
+
+            <div class="field">
+                <label for="timeDays">Days</label>
+                <input
+                    type="number"
+                    class="time-input"
+                    id="timeDays"
+                    min="0"
+                    max="366"
+                    value="0"
+                >
+            </div>
+
+            <div class="field">
+                <label for="timeHours">Hours</label>
+                <input
+                    type="number"
+                    class="time-input"
+                    id="timeHours"
+                    min="0"
+                    max="23"
+                    value="0"
+                >
+            </div>
+
+            <div class="field">
+                <label for="timeMinutes">Minutes</label>
+                <input
+                    type="number"
+                    class="time-input"
+                    id="timeMinutes"
+                    min="0"
+                    max="59"
+                    value="0"
+                >
+            </div>
+
+        </div>
+
+        <div class="modal-info">
+            <strong>How it works:</strong><br>
+            Add Time: Adds the entered duration.<br>
+            Reduce Time: Removes the entered duration.<br>
+            Set Exact Time: Replaces the remaining duration
+            with the entered amount.<br><br>
+            Setting all fields to zero expires access immediately.
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="modal-btn add-time-btn"
+                id="addTimeBtn"
+                type="button"
+                onclick="manageTime('add')"
+            >
+                + Add Time
+            </button>
+
+            <button
+                class="modal-btn reduce-time-btn"
+                id="reduceTimeBtn"
+                type="button"
+                onclick="manageTime('reduce')"
+            >
+                − Reduce Time
+            </button>
+
+            <button
+                class="modal-btn set-time-btn"
+                id="setTimeBtn"
+                type="button"
+                onclick="manageTime('set')"
+            >
+                Set Exact Remaining Time
+            </button>
+
+            <button
+                class="modal-btn cancel-btn"
+                type="button"
+                onclick="closeTimeModal()"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+        <p class="modal-message" id="modalMessage"></p>
+
+    </div>
+
+</div>
+
+
 <script>
 
 /* SUPABASE CONFIGURATION */
@@ -282,8 +599,7 @@ th{color:#94a3b8}
 const SUPABASE_URL =
     "https://wuvzojlpegfqwsfhoobc.supabase.co";
 
-const SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1dnpvamxwZWdmcXdzZmhvb2JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0MTUwMzcsImV4cCI6MjEwOTk5MTAzN30.aL3ijARNugegh-Cge0GXt4QM10RqVM7iFz9AlNgReuQ";
+const SUPABASE_ANON_KEY = "sb_publishable_VnpF9r4AtZmiNLdO8SzBvg_WCb-PF2t";
 
 const ADMIN_EMAIL = "jathushara54@gmail.com";
 
@@ -293,17 +609,19 @@ const db = window.supabase.createClient(
 );
 
 let users = [];
+let selectedUserId = null;
+let selectedUserEmail = "";
 
 let countdownInterval = null;
 
 
 /* ADMIN AUTHENTICATION */
 
-async function checkAdmin(){
+async function checkAdmin() {
 
-    const {data,error} = await db.auth.getSession();
+    const { data, error } = await db.auth.getSession();
 
-    if(error || !data.session){
+    if (error || !data.session) {
 
         document.body.innerHTML =
             "<h2 style='color:white;text-align:center;margin-top:100px'>Please log in first.</h2>";
@@ -313,7 +631,7 @@ async function checkAdmin(){
 
     const email = data.session.user.email;
 
-    if(email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()){
+    if (email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
 
         document.body.innerHTML =
             "<h2 style='color:#ef4444;text-align:center;margin-top:100px'>Access Denied - Admin Only</h2>";
@@ -327,25 +645,25 @@ async function checkAdmin(){
 
 /* LOAD USERS */
 
-async function loadUsers(){
+async function loadUsers() {
 
     const table = document.getElementById("usersTable");
     const message = document.getElementById("message");
 
     table.innerHTML =
-        "<tr><td colspan='6' class='empty'>Loading users...</td></tr>";
+        "<tr><td colspan='7' class='empty'>Loading users...</td></tr>";
 
     message.textContent = "";
 
-    const {data,error} =
+    const { data, error } =
         await db.rpc("admin_list_subscriptions");
 
-    if(error){
+    if (error) {
 
         console.error(error);
 
         table.innerHTML =
-            "<tr><td colspan='6' class='empty'>Unable to load users.</td></tr>";
+            "<tr><td colspan='7' class='empty'>Unable to load users.</td></tr>";
 
         message.textContent = error.message;
 
@@ -359,18 +677,18 @@ async function loadUsers(){
 }
 
 
-/* SUBSCRIPTION TIME REMAINING */
+/* GET REMAINING TIME */
 
-function getRemainingTime(expiryDate){
+function getRemainingTime(expiryDate) {
 
-    if(!expiryDate){
+    if (!expiryDate) {
         return null;
     }
 
     const difference =
         new Date(expiryDate).getTime() - Date.now();
 
-    if(!Number.isFinite(difference) || difference <= 0){
+    if (!Number.isFinite(difference) || difference <= 0) {
         return null;
     }
 
@@ -401,30 +719,30 @@ function getRemainingTime(expiryDate){
 
 /* FORMAT COUNTDOWN */
 
-function formatCountdown(expiryDate){
+function formatCountdown(expiryDate) {
 
-    if(!expiryDate){
+    if (!expiryDate) {
         return "Not activated";
     }
 
     const remaining = getRemainingTime(expiryDate);
 
-    if(!remaining){
+    if (!remaining) {
         return "EXPIRED";
     }
 
     return (
         remaining.days + "d " +
-        String(remaining.hours).padStart(2,"0") + "h " +
-        String(remaining.minutes).padStart(2,"0") + "m " +
-        String(remaining.seconds).padStart(2,"0") + "s"
+        String(remaining.hours).padStart(2, "0") + "h " +
+        String(remaining.minutes).padStart(2, "0") + "m " +
+        String(remaining.seconds).padStart(2, "0") + "s"
     );
 }
 
 
 /* UPDATE LIVE COUNTDOWNS */
 
-function updateCountdowns(){
+function updateCountdowns() {
 
     document.querySelectorAll("[data-expiry]").forEach(element => {
 
@@ -440,15 +758,15 @@ function updateCountdowns(){
             "stopped"
         );
 
-        if(!remaining){
+        if (!remaining) {
 
             element.classList.add("danger");
 
-        }else if(remaining.days <= 3){
+        } else if (remaining.days <= 3) {
 
             element.classList.add("danger");
 
-        }else if(remaining.days <= 7){
+        } else if (remaining.days <= 7) {
 
             element.classList.add("warning");
 
@@ -462,7 +780,7 @@ function updateCountdowns(){
 
 /* UPDATE STATISTICS */
 
-function updateStats(){
+function updateStats() {
 
     const now = Date.now();
 
@@ -492,16 +810,16 @@ function updateStats(){
 
 /* DISPLAY USERS */
 
-function renderUsers(list){
+function renderUsers(list) {
 
     const table = document.getElementById("usersTable");
 
     table.innerHTML = "";
 
-    if(!list.length){
+    if (!list.length) {
 
         table.innerHTML =
-            "<tr><td colspan='6' class='empty'>No registered users found.</td></tr>";
+            "<tr><td colspan='7' class='empty'>No registered users found.</td></tr>";
 
         return;
     }
@@ -520,22 +838,22 @@ function renderUsers(list){
         let statusText;
         let statusClass;
 
-        if(isPaused){
+        if (isPaused) {
 
             statusText = "PAUSED";
             statusClass = "paused";
 
-        }else if(subscriptionActive){
+        } else if (subscriptionActive) {
 
             statusText = "ACTIVE";
             statusClass = "active";
 
-        }else if(expiry){
+        } else if (expiry) {
 
             statusText = "EXPIRED";
             statusClass = "expired";
 
-        }else{
+        } else {
 
             statusText = "NOT ACTIVATED";
             statusClass = "unpaid";
@@ -553,7 +871,7 @@ function renderUsers(list){
         emailCell.textContent = user.email || "Unknown";
 
 
-        /* LIVE COUNTDOWN */
+        /* COUNTDOWN */
 
         const countdownCell = document.createElement("td");
 
@@ -561,14 +879,14 @@ function renderUsers(list){
 
         countdown.className = "countdown";
 
-        if(user.expires_at){
+        if (user.expires_at) {
 
             countdown.dataset.expiry = user.expires_at;
 
             countdown.textContent =
                 formatCountdown(user.expires_at);
 
-        }else{
+        } else {
 
             countdown.textContent = "Not activated";
             countdown.classList.add("stopped");
@@ -614,9 +932,24 @@ function renderUsers(list){
             : "Activate 30 Days";
 
         renewButton.onclick = () =>
-            activateUser(user.user_id,renewButton);
+            activateUser(user.user_id, renewButton);
 
         subscriptionCell.appendChild(renewButton);
+
+
+        /* TIME MANAGEMENT */
+
+        const timeCell = document.createElement("td");
+
+        const manageButton = document.createElement("button");
+
+        manageButton.className = "action-btn manage-btn";
+        manageButton.textContent = "Manage Time";
+
+        manageButton.onclick = () =>
+            openTimeModal(user.user_id, user.email);
+
+        timeCell.appendChild(manageButton);
 
 
         /* PAUSE / RESUME */
@@ -629,17 +962,17 @@ function renderUsers(list){
             ? "action-btn resume-btn"
             : "action-btn pause-btn";
 
-        if(!expiry){
+        if (!expiry) {
 
             accessButton.textContent = "Activate First";
             accessButton.disabled = true;
 
-        }else if(isPaused && !subscriptionActive){
+        } else if (isPaused && !subscriptionActive) {
 
             accessButton.textContent = "Renew First";
             accessButton.disabled = true;
 
-        }else{
+        } else {
 
             accessButton.textContent = isPaused
                 ? "Resume Access"
@@ -661,6 +994,7 @@ function renderUsers(list){
         row.appendChild(expiryCell);
         row.appendChild(statusCell);
         row.appendChild(subscriptionCell);
+        row.appendChild(timeCell);
         row.appendChild(accessCell);
 
         table.appendChild(row);
@@ -673,34 +1007,36 @@ function renderUsers(list){
 
 /* ACTIVATE OR RENEW SUBSCRIPTION */
 
-async function activateUser(userId,button){
+async function activateUser(userId, button) {
 
     const confirmed = confirm(
         "Confirm that payment has been received. Activate or renew this user's subscription for 30 days?"
     );
 
-    if(!confirmed) return;
+    if (!confirmed) return;
 
     button.disabled = true;
     button.textContent = "Processing...";
 
-    try{
+    try {
 
-        const {error} = await db.rpc(
+        const { error } = await db.rpc(
             "admin_set_subscription",
             {
-                target_user_id:userId,
-                days_to_add:30
+                target_user_id: userId,
+                days_to_add: 30
             }
         );
 
-        if(error) throw error;
+        if (error) throw error;
 
         alert("Subscription activated or renewed successfully!");
 
         await loadUsers();
 
-    }catch(error){
+    } catch (error) {
+
+        console.error(error);
 
         alert("Subscription update failed: " + error.message);
 
@@ -711,33 +1047,243 @@ async function activateUser(userId,button){
 }
 
 
+/* OPEN TIME MANAGEMENT MODAL */
+
+function openTimeModal(userId, email) {
+
+    selectedUserId = userId;
+    selectedUserEmail = email || "Unknown user";
+
+    document.getElementById("selectedUserEmail").textContent =
+        selectedUserEmail;
+
+    document.getElementById("timeDays").value = 0;
+    document.getElementById("timeHours").value = 0;
+    document.getElementById("timeMinutes").value = 0;
+
+    document.getElementById("modalMessage").textContent = "";
+
+    setTimeButtonsDisabled(false);
+
+    document.getElementById("timeModal").classList.add("show");
+}
+
+
+/* CLOSE TIME MANAGEMENT MODAL */
+
+function closeTimeModal() {
+
+    document.getElementById("timeModal").classList.remove("show");
+
+    selectedUserId = null;
+    selectedUserEmail = "";
+}
+
+
+/* DISABLE / ENABLE TIME BUTTONS */
+
+function setTimeButtonsDisabled(disabled) {
+
+    document.getElementById("addTimeBtn").disabled = disabled;
+    document.getElementById("reduceTimeBtn").disabled = disabled;
+    document.getElementById("setTimeBtn").disabled = disabled;
+}
+
+
+/* READ AND VALIDATE DURATION */
+
+function getDurationMinutes() {
+
+    const daysInput =
+        document.getElementById("timeDays");
+
+    const hoursInput =
+        document.getElementById("timeHours");
+
+    const minutesInput =
+        document.getElementById("timeMinutes");
+
+    const days = Number(daysInput.value);
+    const hours = Number(hoursInput.value);
+    const minutes = Number(minutesInput.value);
+
+    if (
+        daysInput.value === "" ||
+        hoursInput.value === "" ||
+        minutesInput.value === ""
+    ) {
+        throw new Error("Please fill in all three time fields.");
+    }
+
+    if (
+        !Number.isInteger(days) ||
+        !Number.isInteger(hours) ||
+        !Number.isInteger(minutes)
+    ) {
+        throw new Error("Please enter whole numbers only.");
+    }
+
+    if (
+        days < 0 ||
+        days > 366 ||
+        hours < 0 ||
+        hours > 23 ||
+        minutes < 0 ||
+        minutes > 59
+    ) {
+        throw new Error("Please enter valid days, hours and minutes.");
+    }
+
+    const totalMinutes =
+        (days * 1440) + (hours * 60) + minutes;
+
+    if (totalMinutes > 527040) {
+        throw new Error("The maximum duration is 366 days.");
+    }
+
+    return totalMinutes;
+}
+
+
+/* MANAGE SUBSCRIPTION TIME */
+
+async function manageTime(action) {
+
+    if (!selectedUserId) {
+        alert("Please select a user first.");
+        return;
+    }
+
+    const modalMessage =
+        document.getElementById("modalMessage");
+
+    let minutes;
+
+    try {
+
+        minutes = getDurationMinutes();
+
+        if (
+            (action === "add" || action === "reduce") &&
+            minutes === 0
+        ) {
+            throw new Error(
+                "Please enter a duration greater than zero."
+            );
+        }
+
+    } catch (error) {
+
+        modalMessage.textContent = error.message;
+        return;
+    }
+
+    let actionName = "";
+
+    if (action === "add") {
+        actionName = "ADD";
+    } else if (action === "reduce") {
+        actionName = "REDUCE";
+    } else if (action === "set") {
+        actionName = "SET";
+    }
+
+    const days = Math.floor(minutes / 1440);
+    const hours = Math.floor((minutes % 1440) / 60);
+    const remainingMinutes = minutes % 60;
+
+    const durationText =
+        days + " days, " +
+        hours + " hours, " +
+        remainingMinutes + " minutes";
+
+    const confirmed = confirm(
+        "Confirm this action:\n\n" +
+        actionName + " TIME\n\n" +
+        "User: " + selectedUserEmail + "\n" +
+        "Duration: " + durationText + "\n\n" +
+        "Continue?"
+    );
+
+    if (!confirmed) return;
+
+    setTimeButtonsDisabled(true);
+
+    modalMessage.textContent =
+        "Updating subscription time...";
+
+    try {
+
+        const { data, error } = await db.rpc(
+            "admin_manage_subscription_time",
+            {
+                p_target_user_id: selectedUserId,
+                p_action: action,
+                p_minutes: minutes
+            }
+        );
+
+        if (error) throw error;
+
+        if (!data) {
+            throw new Error(
+                "The database did not return the updated expiry date."
+            );
+        }
+
+        modalMessage.textContent =
+            "Subscription time updated successfully!";
+
+        alert(
+            "Subscription time updated successfully.\n\n" +
+            "New expiry date: " +
+            new Date(data).toLocaleString()
+        );
+
+        closeTimeModal();
+
+        await loadUsers();
+
+    } catch (error) {
+
+        console.error("Time management error:", error);
+
+        modalMessage.textContent =
+            "Update failed: " + error.message;
+
+        setTimeButtonsDisabled(false);
+
+    }
+}
+
+
 /* PAUSE OR RESUME USER ACCESS */
 
-async function toggleUserAccess(userId,pausedState,button){
+async function toggleUserAccess(userId, pausedState, button) {
 
     const action = pausedState ? "PAUSE" : "RESUME";
 
     const confirmed = confirm(
         "Are you sure you want to " + action +
-        " this user's access? The 30-day countdown will continue."
+        " this user's access? The subscription countdown will continue."
     );
 
-    if(!confirmed) return;
+    if (!confirmed) return;
 
     button.disabled = true;
     button.textContent = "Processing...";
 
-    try{
+    try {
 
-        const {error} = await db.rpc(
+        const { error } = await db.rpc(
             "admin_set_user_paused",
             {
-                target_user_id:userId,
-                paused_state:pausedState
+                target_user_id: userId,
+                paused_state: pausedState
             }
         );
 
-        if(error) throw error;
+        if (error) throw error;
 
         alert(
             pausedState
@@ -747,9 +1293,9 @@ async function toggleUserAccess(userId,pausedState,button){
 
         await loadUsers();
 
-    }catch(error){
+    } catch (error) {
 
-        console.error("Access control error:",error);
+        console.error("Access control error:", error);
 
         alert("Access update failed: " + error.message);
 
@@ -765,7 +1311,7 @@ async function toggleUserAccess(userId,pausedState,button){
 
 /* SEARCH USERS */
 
-function filterUsers(){
+function filterUsers() {
 
     const query = document.getElementById("searchInput")
         .value.toLowerCase();
@@ -781,18 +1327,30 @@ function filterUsers(){
 /* SEARCH LISTENER */
 
 document.getElementById("searchInput")
-    .addEventListener("input",filterUsers);
+    .addEventListener("input", filterUsers);
+
+
+/* CLOSE MODAL WHEN CLICKING OUTSIDE */
+
+document.getElementById("timeModal")
+    .addEventListener("click", function(event) {
+
+        if (event.target === this) {
+            closeTimeModal();
+        }
+
+    });
 
 
 /* START ADMIN DASHBOARD */
 
-(async function(){
+(async function() {
 
-    try{
+    try {
 
         const allowed = await checkAdmin();
 
-        if(allowed){
+        if (allowed) {
 
             await loadUsers();
 
@@ -803,13 +1361,13 @@ document.getElementById("searchInput")
 
         }
 
-    }catch(error){
+    } catch (error) {
 
-        console.error("Dashboard error:",error);
+        console.error("Dashboard error:", error);
 
         const message = document.getElementById("message");
 
-        if(message){
+        if (message) {
             message.textContent = error.message;
         }
 

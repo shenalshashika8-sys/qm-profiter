@@ -93,16 +93,47 @@ textarea{width:100%;margin-top:15px;background:#0b1421;color:white;border:1px so
  .sidebar{width:210px;min-width:210px}
  .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media(max-width:700px){
- .dashboard{display:block;padding-bottom:20px}
- .sidebar{display:none}
- .main-content{padding:15px}
- .topbar{align-items:flex-start}
+@media(max-width:768px){
+ html,body{width:100%;min-height:100%;overflow-x:hidden}
+ .dashboard{display:block !important;width:100%;min-height:100vh;padding-bottom:0 !important}
+ .sidebar{
+  position:fixed !important;top:auto !important;bottom:0 !important;
+  left:0 !important;right:0 !important;width:100% !important;min-width:0 !important;
+  height:calc(76px + env(safe-area-inset-bottom)) !important;min-height:76px !important;
+  padding:5px 4px env(safe-area-inset-bottom) !important;margin:0 !important;
+  background:#0c1525 !important;border-top:1px solid #26354d !important;
+  border-right:none !important;box-shadow:0 -8px 25px rgba(0,0,0,.35);
+  z-index:99999 !important;display:flex !important;flex-direction:row !important;
+  align-items:center !important;justify-content:center !important;
+ }
+ .sidebar .logo,.sidebar .sidebar-subtitle,.sidebar .nav-title,.sidebar .sidebar-footer{display:none !important}
+ .sidebar nav{display:flex !important;flex-direction:row !important;flex-wrap:nowrap !important;
+  justify-content:space-around !important;align-items:center !important;width:100% !important;
+  height:100% !important;gap:2px !important;margin:0 !important}
+ .sidebar nav a{flex:1 1 0 !important;min-width:0 !important;width:auto !important;
+  height:58px !important;min-height:58px !important;display:flex !important;
+  flex-direction:column !important;justify-content:center !important;align-items:center !important;
+  gap:5px !important;padding:4px 1px !important;margin:0 !important;
+  border:0 !important;border-radius:10px !important;background:transparent !important;
+  color:#91a2bb !important;text-align:center !important;font-size:9px !important;
+  text-decoration:none !important;white-space:nowrap}
+ .sidebar nav a.active{background:#142c35 !important;color:#00e5a0 !important;border-left:0 !important}
+ .sidebar nav a:hover{background:#142c35 !important;color:#00e5a0 !important;transform:none !important}
+ .sidebar nav a[href="history.html"]{display:none !important}
+ .sidebar nav a[href="vip-signals.html"]{color:#f3c969 !important;background:rgba(243,201,105,.08) !important}
+ .sidebar nav a#logoutBtn{color:#ff7777 !important}
+ .main-content{display:block;width:100% !important;max-width:100% !important;min-width:0 !important;
+  margin:0 !important;padding:15px 12px 105px !important}
+ .topbar{align-items:flex-start;flex-wrap:wrap}
  .page-heading h1{font-size:21px}
  .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .analysis-grid,.paper-grid{grid-template-columns:1fr}
  .chart-container{height:380px}
  .panel{padding:14px}
+}
+@media(max-width:360px){
+ .main-content{padding-left:9px !important;padding-right:9px !important}
+ .sidebar nav a{font-size:8px !important}
 }
 </style>
 </head>
@@ -110,10 +141,11 @@ textarea{width:100%;margin-top:15px;background:#0b1421;color:white;border:1px so
 <body>
 <div class="dashboard">
 
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
  <div class="logo">QM <span>PROFITER</span></div>
  <div class="sidebar-subtitle">INTELLIGENT MARKET ANALYSIS</div>
 
+ <nav>
  <div class="nav-title">MAIN MENU</div>
  <a href="index.html" class="nav-link">⌂ Home</a>
  <a href="analyzer.html" class="nav-link active">⌕ Analyzer</a>
@@ -125,6 +157,7 @@ textarea{width:100%;margin-top:15px;background:#0b1421;color:white;border:1px so
  <a href="history.html" class="nav-link">◷ Paper Trading History</a>
  <a href="vip-signals.html" class="nav-link">★ VIP Signals</a>
  <a href="#" class="nav-link" id="logoutBtn">⇥ Logout</a>
+ </nav>
 
  <div class="sidebar-footer">
   QM PROFITER<br>

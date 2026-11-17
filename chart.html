@@ -130,11 +130,6 @@ body{
 
 body.icons-only{padding-left:110px}
 
-h1{
-    color:#00e5a0;
-    letter-spacing:2px;
-}
-
 .back{
     display:inline-block;
     color:#00e5a0;
@@ -142,21 +137,253 @@ h1{
     margin-bottom:20px;
 }
 
+h1{
+    color:#00e5a0;
+    letter-spacing:2px;
+    font-size:25px;
+}
+
+.page-description{
+    color:#93a4bb;
+    margin-bottom:25px;
+    font-size:14px;
+}
+
+/* CHART TABS */
+
+.chart-tabs{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+    padding:8px;
+    background:#0c1626;
+    border:1px solid #202d43;
+    border-radius:12px;
+}
+
+.chart-tab{
+    flex:1;
+    min-width:150px;
+    padding:13px 15px;
+    border:1px solid transparent;
+    border-radius:8px;
+    background:transparent;
+    color:#9cabc0;
+    font-size:13px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.chart-tab:hover{
+    background:#13283a;
+    color:white;
+}
+
+.chart-tab.active{
+    background:#12352f;
+    color:#20d9a0;
+    border-color:#176c53;
+}
+
+.tab-content{
+    display:none;
+}
+
+.tab-content.active{
+    display:block;
+}
+
+/* CHART PANEL */
+
+.panel{
+    background:#0b1423;
+    border:1px solid #202d43;
+    border-radius:12px;
+    padding:18px;
+    margin-bottom:20px;
+}
+
+.panel-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:15px;
+}
+
+.panel-header h2{
+    font-size:17px;
+    color:#e5edf8;
+    margin:0;
+}
+
+.status{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    border-radius:20px;
+    padding:7px 11px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.status.pending{
+    background:rgba(255,180,60,.1);
+    color:#ffbd5c;
+    border:1px solid rgba(255,180,60,.25);
+}
+
+.status-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:currentColor;
+}
+
 .chart{
     height:650px;
     width:100%;
 }
 
+.tradingview-widget-container{
+    height:100%;
+    width:100%;
+}
+
+/* HEATMAP PLACEHOLDER */
+
+.heatmap-placeholder{
+    min-height:420px;
+    background:#080f1c;
+    border:1px dashed #34445d;
+    border-radius:10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:30px 20px;
+}
+
+.heatmap-icon{
+    width:75px;
+    height:75px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:18px;
+    background:#13283a;
+    color:#20d9a0;
+    font-size:35px;
+    margin-bottom:20px;
+}
+
+.heatmap-placeholder h3{
+    color:#e7eef8;
+    font-size:20px;
+    margin:0 0 12px;
+}
+
+.heatmap-placeholder p{
+    color:#91a1b8;
+    font-size:13px;
+    line-height:1.7;
+    max-width:480px;
+    margin:0 0 20px;
+}
+
+.pending-label{
+    display:inline-block;
+    padding:9px 15px;
+    background:rgba(255,180,60,.1);
+    color:#ffbd5c;
+    border:1px solid rgba(255,180,60,.25);
+    border-radius:8px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;
+    margin-top:18px;
+}
+
+.info-card{
+    background:#101d30;
+    border:1px solid #263750;
+    padding:15px;
+    border-radius:9px;
+}
+
+.info-card strong{
+    display:block;
+    color:#20d9a0;
+    font-size:13px;
+    margin-bottom:7px;
+}
+
+.info-card span{
+    color:#91a1b8;
+    font-size:12px;
+    line-height:1.5;
+}
+
+.disclaimer{
+    color:#718199;
+    font-size:11px;
+    line-height:1.6;
+    margin-top:18px;
+}
+
 @media(max-width:700px){
-    body{padding:12px;padding-left:100px}
+    body{
+        padding:12px;
+        padding-left:100px;
+    }
+
     .sidebar{width:88px}
+
     .sidebar .nav-label,
-    .sidebar .sidebar-footer{display:none}
-    .sidebar .nav-link{justify-content:center;padding:13px 5px}
-    .sidebar .sidebar-brand{font-size:16px;padding-left:7px}
-    .sidebar .nav-toggle{font-size:0;padding:11px 5px}
-    .sidebar .nav-toggle::after{content:"☰";font-size:19px}
+    .sidebar .sidebar-footer{
+        display:none;
+    }
+
+    .sidebar .nav-link{
+        justify-content:center;
+        padding:13px 5px;
+    }
+
+    .sidebar .sidebar-brand{
+        font-size:16px;
+        padding-left:7px;
+    }
+
+    .sidebar .nav-toggle{
+        font-size:0;
+        padding:11px 5px;
+    }
+
+    .sidebar .nav-toggle::after{
+        content:"☰";
+        font-size:19px;
+    }
+
+    h1{font-size:19px}
+
     .chart{height:550px}
+
+    .chart-tab{
+        min-width:100%;
+    }
+
+    .heatmap-placeholder{
+        min-height:350px;
+    }
 }
 </style>
 </head>
@@ -167,7 +394,9 @@ h1{
 
     <div class="sidebar-brand">QM PROFITER</div>
 
-    <button class="nav-toggle" id="navToggle">☰ Icons Only</button>
+    <button class="nav-toggle" id="navToggle">
+        ☰ Icons Only
+    </button>
 
     <nav class="nav-links">
 
@@ -226,66 +455,275 @@ h1{
 
     </nav>
 
-    <div class="sidebar-footer">Powered by Shenal Shashika</div>
+    <div class="sidebar-footer">
+        Powered by Shenal Shashika
+    </div>
 
 </aside>
 
 <a class="back" href="index.html">← Back to Dashboard</a>
 
-<h1>QM PROFITER | LIVE CHARTS</h1>
+<h1>QM PROFITER | CHARTS</h1>
 
-<p>Market analysis chart</p>
+<p class="page-description">
+    Professional market charts and liquidity analysis.
+</p>
 
-<div class="chart">
-    <div class="tradingview-widget-container"
-         style="height:100%;width:100%">
+<!-- CHART NAVIGATION TABS -->
 
-        <div class="tradingview-widget-container__widget"
-             style="height:100%;width:100%"></div>
+<div class="chart-tabs">
 
-        <script
-            type="text/javascript"
-            src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js"
-            async>
-        {
-            "autosize": true,
-            "symbol": "BINANCE:BTCUSDT",
-            "interval": "15",
-            "timezone": "Etc/UTC",
-            "theme": "dark",
-            "style": "1",
-            "locale": "en",
-            "allow_symbol_change": true,
-            "hide_side_toolbar": false,
-            "withdateranges": true,
-            "details": true,
-            "hotlist": false,
-            "calendar": false,
-            "support_host": "https://www.tradingview.com"
-        }
-        </script>
+    <button class="chart-tab active" data-tab="tradingview">
+        TradingView
+    </button>
 
-    </div>
+    <button class="chart-tab" data-tab="liquidation">
+        Liquidation Heatmap
+    </button>
+
+    <button class="chart-tab" data-tab="orderbook">
+        Order Book Heatmap
+    </button>
+
 </div>
 
+<!-- TRADINGVIEW -->
+
+<section class="tab-content active" id="tradingview">
+
+    <div class="panel">
+
+        <div class="panel-header">
+            <h2>Live Market Chart</h2>
+        </div>
+
+        <div class="chart">
+
+            <div class="tradingview-widget-container">
+
+                <div class="tradingview-widget-container__widget"></div>
+
+                <script
+                    type="text/javascript"
+                    src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js"
+                    async>
+                {
+                    "autosize": true,
+                    "symbol": "BINANCE:BTCUSDT",
+                    "interval": "15",
+                    "timezone": "Etc/UTC",
+                    "theme": "dark",
+                    "style": "1",
+                    "locale": "en",
+                    "allow_symbol_change": true,
+                    "hide_side_toolbar": false,
+                    "withdateranges": true,
+                    "details": true,
+                    "hotlist": false,
+                    "calendar": false,
+                    "support_host": "https://www.tradingview.com"
+                }
+                </script>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- LIQUIDATION HEATMAP -->
+
+<section class="tab-content" id="liquidation">
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <h2>Liquidation Heatmap</h2>
+
+            <span class="status pending">
+                <span class="status-dot"></span>
+                API CONNECTION PENDING
+            </span>
+
+        </div>
+
+        <div class="heatmap-placeholder">
+
+            <div class="heatmap-icon">▦</div>
+
+            <h3>CoinGlass Liquidation Heatmap</h3>
+
+            <p>
+                Visualize estimated liquidation concentrations across
+                different cryptocurrency price levels and time periods.
+                CoinGlass API access is required to display live data.
+            </p>
+
+            <span class="pending-label">
+                Awaiting CoinGlass API Access
+            </span>
+
+        </div>
+
+        <div class="info-grid">
+
+            <div class="info-card">
+                <strong>Liquidation Levels</strong>
+                <span>View estimated liquidation concentration by price.</span>
+            </div>
+
+            <div class="info-card">
+                <strong>Market Selection</strong>
+                <span>Plan support for BTC, ETH and other supported markets.</span>
+            </div>
+
+            <div class="info-card">
+                <strong>Historical Visualization</strong>
+                <span>Explore available historical liquidation data.</span>
+            </div>
+
+        </div>
+
+        <p class="disclaimer">
+            Liquidation heatmap values are estimates and should not be
+            interpreted as guaranteed future price levels.
+        </p>
+
+    </div>
+
+</section>
+
+<!-- ORDER BOOK HEATMAP -->
+
+<section class="tab-content" id="orderbook">
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <h2>Order Book Heatmap</h2>
+
+            <span class="status pending">
+                <span class="status-dot"></span>
+                API CONNECTION PENDING
+            </span>
+
+        </div>
+
+        <div class="heatmap-placeholder">
+
+            <div class="heatmap-icon">▤</div>
+
+            <h3>CoinGlass Order Book Heatmap</h3>
+
+            <p>
+                Visualize historical order-book liquidity and displayed
+                buy and sell interest across different price levels.
+                CoinGlass API access is required to display live data.
+            </p>
+
+            <span class="pending-label">
+                Awaiting CoinGlass API Access
+            </span>
+
+        </div>
+
+        <div class="info-grid">
+
+            <div class="info-card">
+                <strong>Buy-side Liquidity</strong>
+                <span>Explore displayed buy orders at different price levels.</span>
+            </div>
+
+            <div class="info-card">
+                <strong>Sell-side Liquidity</strong>
+                <span>Explore displayed sell orders at different price levels.</span>
+            </div>
+
+            <div class="info-card">
+                <strong>Historical Order Book</strong>
+                <span>Review available historical liquidity visualizations.</span>
+            </div>
+
+        </div>
+
+        <p class="disclaimer">
+            Displayed orders may be changed or cancelled before execution.
+            Order-book liquidity is not a guarantee of market direction.
+        </p>
+
+    </div>
+
+</section>
+
 <script>
-const sidebar=document.getElementById("sidebar");
-const navToggle=document.getElementById("navToggle");
+
+/* SIDEBAR */
+
+const sidebar = document.getElementById("sidebar");
+const navToggle = document.getElementById("navToggle");
 
 function applyNavigationMode(){
-    const iconsOnly=localStorage.getItem("qmNavigationMode")==="icons";
-    sidebar.classList.toggle("icons-only",iconsOnly);
-    document.body.classList.toggle("icons-only",iconsOnly);
-    navToggle.textContent=iconsOnly?"☰ Show Labels":"☰ Icons Only";
+
+    const iconsOnly =
+        localStorage.getItem("qmNavigationMode") === "icons";
+
+    sidebar.classList.toggle("icons-only", iconsOnly);
+
+    document.body.classList.toggle("icons-only", iconsOnly);
+
+    navToggle.textContent =
+        iconsOnly ? "☰ Show Labels" : "☰ Icons Only";
 }
 
-navToggle.addEventListener("click",function(){
-    const currentlyIcons=sidebar.classList.contains("icons-only");
-    localStorage.setItem("qmNavigationMode",currentlyIcons?"labels":"icons");
+navToggle.addEventListener("click", function(){
+
+    const currentlyIcons =
+        sidebar.classList.contains("icons-only");
+
+    localStorage.setItem(
+        "qmNavigationMode",
+        currentlyIcons ? "labels" : "icons"
+    );
+
     applyNavigationMode();
+
 });
 
 applyNavigationMode();
+
+
+/* CHART TAB SWITCHING */
+
+const chartTabs = document.querySelectorAll(".chart-tab");
+const tabContents = document.querySelectorAll(".tab-content");
+
+chartTabs.forEach(function(button){
+
+    button.addEventListener("click", function(){
+
+        const selectedTab = button.dataset.tab;
+
+        chartTabs.forEach(function(tab){
+            tab.classList.remove("active");
+        });
+
+        tabContents.forEach(function(content){
+            content.classList.remove("active");
+        });
+
+        button.classList.add("active");
+
+        document.getElementById(selectedTab)
+            .classList.add("active");
+
+    });
+
+});
+
 </script>
 
 </body>
