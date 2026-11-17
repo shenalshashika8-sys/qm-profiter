@@ -22,10 +22,54 @@ const ADMIN_EMAIL = "jathushara54@gmail.com";
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
+app.use(express.static(__dirname));
 
 const activityFile = process.env.VERCEL
     ? path.join("/tmp", "activity-log.json")
     : path.join(__dirname, "activity-log.json");
+
+// ------------------------------
+// FRONTEND FILE ALLOWLIST
+// ------------------------------
+
+const frontendPages = [
+    "/index.html",
+    "/login.html",
+    "/signup.html",
+    "/analyzer.html",
+    "/signals.html",
+    "/chart.html",
+    "/calculator.html",
+    "/history.html",
+    "/profit-cards.html",
+    "/admin-subscriptions.html",
+    "/vip-signals.html"
+];
+
+const frontendAssets = [
+    "/style.css",
+    "/auth.js",
+    "/login.js",
+    "/signup.js",
+    "/script.js",
+    "/analysis.js",
+    "/advanced-chart.js",
+    "/sw.js"
+];
+
+function serveFrontendFile(req, res, next) {
+    const filename = req.path.substring(1);
+    const filePath = path.join(__dirname, filename);
+
+    res.sendFile(filePath, error => {
+        if (error) {
+            next(error);
+        }
+    });
+}
+
+app.get(frontendPages, serveFrontendFile);
+app.get(frontendAssets, serveFrontendFile);
 
 // ------------------------------
 // AUTHENTICATION + SUBSCRIPTION
@@ -75,16 +119,12 @@ async function authenticateUser(req, res, next) {
             }
         );
 
-        // ADMIN BYPASS
-
         if (
             req.user.email?.toLowerCase() ===
             ADMIN_EMAIL.toLowerCase()
         ) {
             return next();
         }
-
-        // CHECK SUBSCRIPTION
 
         const { data: subscription, error: subscriptionError } =
             await req.userSupabase
@@ -206,15 +246,247 @@ function formatTrade(trade) {
 }
 
 // ------------------------------
-// HOME / SERVER STATUS
+// SIMULATED HEATMAP DATA
+// ------------------------------
+
+function validateHeatmapSymbol(req, res, next) {
+    const symbol = String(req.query.symbol || "BTCUSDT")
+        .trim()
+        .toUpperCase();
+
+    if (!/^[A-Z0-9]{2,20}$/.test(symbol)) {
+        return res.status(400).json({
+            error: "Invalid demo symbol."
+        });
+    }
+
+    req.heatmapSymbol = symbol;
+    next();
+}
+
+function createDemoHeatmapData(symbol) {
+    const timeBuckets = 24;
+    const priceLevels = 30;
+
+    const now = Date.now();
+    const referencePrice = 1000;
+
+    const cells = [];
+
+    for (let t = 0; t < timeBuckets; t++) {
+        const timestamp = now - (timeBuckets - 1 - t) * 60000;
+
+        for (let p = 0; p < priceLevels; p++) {
+            const price = referencePrice +
+                (p - priceLevels / 2) * 2;
+
+            const wave = Math.sin(
+                (t * 0.7) + (p * 0.35) + symbol.length
+            );
+
+            const intensity = Math.max(
+                0,
+                Math.min(
+                    100,
+                    Math.round(
+                        15 + Math.abs(wave) * 70 +
+                        Math.random() * 15
+                    )
+                )
+            );
+
+            cells.push({
+                time: new Date(timestamp).toISOString(),
+                price: Number(price.toFixed(2)),
+                intensity
+            });
+        }
+    }
+
+    return {
+        symbol,
+        referencePrice,
+        priceUnit: "SIMULATED_PRICE_UNITS",
+        cells,
+        generatedAt: new Date().toISOString()
+    };
+}
+
+// ------------------------------
+// MARKET OVERVIEW API
+// ------------------------------
+
+app.get("/api/market-overview", async (req, res) => {
+    try {
+        const response = await fetch(
+            "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h"
+        );
+
+        if (!response.ok) {
+            return res.status(502).json({
+                error: "Market data provider is temporarily unavailable."
+            });
+        }
+
+        const coins = await response.json();
+
+        const btc = coins.find(coin => coin.id === "bitcoin");
+        const eth = coins.find(coin => coin.id === "ethereum");
+
+        if (!btc || !eth) {
+            return res.status(502).json({
+                error: "Incomplete market data received."
+            });
+        }
+
+        const gainers = [...coins]
+            .filter(coin => Number.isFinite(coin.price_change_percentage_24h))
+            .sort((a, b) =>
+                b.price_change_percentage_24h -
+                a.price_change_percentage_24h
+            )
+            .slice(0, 5);
+
+        const losers = [...coins]
+            .filter(coin => Number.isFinite(coin.price_change_percentage_24h))
+            .sort((a, b) =>
+                a.price_change_percentage_24h -
+                b.price_change_percentage_24h
+            )
+            .slice(0, 5);
+
+        res.json({
+            status: "success",
+            currency: "USD",
+            bitcoin: {
+                price: btc.current_price,
+                change24h: btc.price_change_percentage_24h
+            },
+            ethereum: {
+                price: eth.current_price,
+                change24h: eth.price_change_percentage_24h
+            },
+            marketCap: coins.reduce(
+                (total, coin) =>
+                    total + (coin.market_cap || 0),
+                0
+            ),
+            volume24h: coins.reduce(
+                (total, coin) =>
+                    total + (coin.total_volume || 0),
+                0
+            ),
+            gainers,
+            losers,
+            updatedAt: new Date().toISOString()
+        });
+
+    } catch (error) {
+        console.error("Market overview error:", error);
+
+        res.status(500).json({
+            error: "Unable to load market overview."
+        });
+    }
+});
+
+// ------------------------------
+// HOME / DASHBOARD
 // ------------------------------
 
 app.get("/", (req, res) => {
-    res.json({
-        status: "online",
-        software: "QM PROFITER"
-    });
+    res.sendFile(path.join(__dirname, "index.html"));
 });
+// ------------------------------
+// LIQUIDATION HEATMAP DEMO API
+// ------------------------------
+
+app.get(
+    "/api/heatmaps/liquidation",
+    authenticateUser,
+    validateHeatmapSymbol,
+    (req, res) => {
+        try {
+            const demo = createDemoHeatmapData(
+                req.heatmapSymbol
+            );
+
+            res.json({
+                status: "success",
+                mode: "SIMULATED_DEMO",
+                title: "Liquidation Heatmap Demo",
+                disclaimer: "This is randomly generated demonstration data. It does not represent actual liquidations, exchange data, or market conditions.",
+                ...demo
+            });
+
+        } catch (error) {
+            console.error("Liquidation demo error:", error);
+
+            res.status(500).json({
+                error: "Could not generate liquidation demo data."
+            });
+        }
+    }
+);
+
+// ------------------------------
+// ORDER BOOK HEATMAP DEMO API
+// ------------------------------
+
+app.get(
+    "/api/heatmaps/order-book",
+    authenticateUser,
+    validateHeatmapSymbol,
+    (req, res) => {
+        try {
+            const levels = 40;
+            const referencePrice = 1000;
+            const orderBook = [];
+
+            for (let i = 0; i < levels; i++) {
+                const distance = (i + 1) * 1.5;
+
+                const bidIntensity = Math.round(
+                    10 + Math.random() * 90
+                );
+
+                const askIntensity = Math.round(
+                    10 + Math.random() * 90
+                );
+
+                orderBook.push({
+                    bidPrice: Number(
+                        (referencePrice - distance).toFixed(2)
+                    ),
+                    bidIntensity,
+                    askPrice: Number(
+                        (referencePrice + distance).toFixed(2)
+                    ),
+                    askIntensity
+                });
+            }
+
+            res.json({
+                status: "success",
+                mode: "SIMULATED_DEMO",
+                title: "Order Book Heatmap Demo",
+                symbol: req.heatmapSymbol,
+                referencePrice,
+                priceUnit: "SIMULATED_PRICE_UNITS",
+                disclaimer: "This is randomly generated demonstration data. It does not represent real exchange orders, liquidity, or market conditions.",
+                orderBook,
+                generatedAt: new Date().toISOString()
+            });
+
+        } catch (error) {
+            console.error("Order book demo error:", error);
+
+            res.status(500).json({
+                error: "Could not generate order book demo data."
+            });
+        }
+    }
+);
 
 // ------------------------------
 // MARKET ANALYSIS
@@ -562,7 +834,7 @@ app.post("/api/activity", (req, res) => {
         console.error("Activity save error:", error);
 
         res.status(500).json({
-            error: "Could not record system activity."
+            error: "Could not record activity."
         });
     }
 });
